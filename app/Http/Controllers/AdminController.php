@@ -4,21 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Kamar;
 use App\Models\User;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    // ======================
-    // DASHBOARD ADMIN
-    // ======================
-
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD ADMIN
+    |--------------------------------------------------------------------------
+    */
     public function index()
     {
         $totalUser = User::count();
-
         $totalKamar = Kamar::count();
-
         $kamarTerisi = Kamar::where('status', 'terisi')->count();
 
         $users = User::latest()->take(5)->get();
@@ -31,9 +31,88 @@ class AdminController extends Controller
         ));
     }
 
-    // ======================
-    // LIST KAMAR
-    // ======================
+    public function userIndex()
+{
+    $users = User::latest()->get();
+
+    return view('admin.user.adminuser', compact('users'));
+}
+
+public function deleteUser($id)
+{
+    $user = User::findOrFail($id);
+
+    // ❌ blok admin
+    if ($user->is_admin == 1) {
+        return back()->with('error', 'Akun admin tidak dapat dihapus.');
+    }
+
+    $user->delete();
+
+    return back()->with('success', 'Akun user berhasil dihapus');
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | ================= BOOKING MANAGEMENT =================
+    |--------------------------------------------------------------------------
+    */
+
+    // LIST BOOKING
+    public function bookingIndex()
+    {
+        $bookings = Booking::with(['user', 'kamar'])
+            ->latest()
+            ->get();
+
+        return view('admin.booking.adminbooking', compact('bookings'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPROVE BOOKING
+    |--------------------------------------------------------------------------
+    */
+   public function approveBooking($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    $booking->update([
+        'status_pembayaran' => 'dibayar'
+    ]);
+
+    return back()->with('success', 'Pembayaran disetujui');
+}
+
+public function rejectBooking($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    $booking->update([
+        'status_pembayaran' => 'ditolak'
+    ]);
+
+    return back()->with('success', 'Pembayaran ditolak');
+}
+
+public function deleteBooking($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    if ($booking->bukti_pembayaran) {
+        \Storage::disk('public')->delete($booking->bukti_pembayaran);
+    }
+
+    $booking->delete();
+
+    return back()->with('success', 'Booking dihapus');
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | ================= KAMAR MANAGEMENT =================
+    |--------------------------------------------------------------------------
+    */
 
     public function kamarIndex()
     {
@@ -42,103 +121,56 @@ class AdminController extends Controller
         return view('admin.kamar.index', compact('kamars'));
     }
 
-    // ======================
-    // FORM TAMBAH
-    // ======================
-
     public function kamarCreate()
     {
         return view('admin.kamar.create');
     }
 
-    // ======================
-    // SIMPAN KAMAR
-    // ======================
-
     public function kamarStore(Request $request)
-{
-    $request->validate([
-        'nama_kamar'   => 'required',
-        'deskripsi'    => 'nullable',
-        'harga'        => 'required|numeric',
-        'fasilitas'    => 'nullable|array',
-        'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+    {
+        $request->validate([
+            'nama_kamar' => 'required',
+            'deskripsi' => 'nullable',
+            'harga' => 'required|numeric',
+            'fasilitas' => 'nullable|array',
+            'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    $fotoPaths = [];
+        $fotoPaths = [];
 
-    /*
-    |------------------------------------------------------------------
-    | Upload Foto
-    |------------------------------------------------------------------
-    */
-
-    if ($request->hasFile('foto_kamar')) {
-
-        foreach ($request->file('foto_kamar') as $foto) {
-
-            $path = $foto->store('kamar', 'public');
-
-            $fotoPaths[] = $path;
+        if ($request->hasFile('foto_kamar')) {
+            foreach ($request->file('foto_kamar') as $foto) {
+                $fotoPaths[] = $foto->store('kamar', 'public');
+            }
         }
+
+        Kamar::create([
+            'nama_kamar' => $request->nama_kamar,
+            'deskripsi' => $request->deskripsi,
+            'harga' => $request->harga,
+            'status' => 'kosong',
+            'fasilitas' => $request->fasilitas ?? [],
+            'foto_kamar' => $fotoPaths,
+        ]);
+
+        return redirect()->route('admin.kamar.index')
+            ->with('success', 'Kamar berhasil ditambahkan');
     }
-
-    /*
-    |------------------------------------------------------------------
-    | Simpan Data
-    |------------------------------------------------------------------
-    */
-
-    Kamar::create([
-
-        'nama_kamar' => $request->nama_kamar,
-
-        'deskripsi' => $request->deskripsi,
-
-        'harga' => $request->harga,
-
-        'status' => 'kosong',
-
-        'fasilitas' => $request->fasilitas ?? [],
-
-        'foto_kamar' => $fotoPaths,
-
-    ]);
-
-    return redirect()
-        ->route('admin.kamar.index')
-        ->with('success', 'Kamar berhasil ditambahkan');
-}
-
-    // ======================
-    // FORM EDIT
-    // ======================
 
     public function kamarEdit(Kamar $kamar)
     {
         return view('admin.kamar.edit', compact('kamar'));
     }
 
-    // ======================
-    // UPDATE KAMAR
-    // ======================
-
     public function kamarUpdate(Request $request, Kamar $kamar)
     {
         $request->validate([
-            'nama_kamar'   => 'required',
-            'deskripsi'    => 'nullable',
-            'harga'        => 'required|numeric',
-            'fasilitas'    => 'nullable|array',
-
+            'nama_kamar' => 'required',
+            'deskripsi' => 'nullable',
+            'harga' => 'required|numeric',
+            'fasilitas' => 'nullable|array',
             'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil Foto Lama
-        |--------------------------------------------------------------------------
-        */
 
         $fotoLama = $kamar->foto_kamar ?? [];
 
@@ -146,88 +178,41 @@ class AdminController extends Controller
             $fotoLama = [];
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Upload Foto Baru
-        |--------------------------------------------------------------------------
-        */
+        $fotoBaru = $fotoLama;
 
         if ($request->hasFile('foto_kamar')) {
 
-            // hapus foto lama
             foreach ($fotoLama as $foto) {
-
-                if (Storage::disk('public')->exists($foto)) {
-
-                    Storage::disk('public')->delete($foto);
-                }
+                Storage::disk('public')->delete($foto);
             }
 
             $fotoBaru = [];
 
             foreach ($request->file('foto_kamar') as $foto) {
-
-                $path = $foto->store('kamar', 'public');
-
-                $fotoBaru[] = $path;
+                $fotoBaru[] = $foto->store('kamar', 'public');
             }
-
-        } else {
-
-            $fotoBaru = $fotoLama;
         }
 
-        
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Data
-        |--------------------------------------------------------------------------
-        */
-
         $kamar->update([
+            'nama_kamar' => $request->nama_kamar,
+            'deskripsi' => $request->deskripsi,
+            'harga' => $request->harga,
+            'status' => $request->status ?? $kamar->status,
+            'fasilitas' => $request->fasilitas ?? [],
+            'foto_kamar' => $fotoBaru,
+        ]);
 
-    'nama_kamar' => $request->nama_kamar,
-
-    'deskripsi' => $request->deskripsi,
-
-    'harga' => $request->harga,
-
-    'status' => $request->status,
-
-    'fasilitas' => $request->fasilitas ?? [],
-
-    'foto_kamar' => $fotoBaru,
-
-]);
-
-        return redirect()
-            ->route('admin.kamar.index')
+        return redirect()->route('admin.kamar.index')
             ->with('success', 'Kamar berhasil diupdate');
     }
 
-    // ======================
-    // HAPUS KAMAR
-    // ======================
-
     public function kamarDestroy(Kamar $kamar)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus Foto
-        |--------------------------------------------------------------------------
-        */
-
         $fotos = $kamar->foto_kamar ?? [];
 
         if (is_array($fotos)) {
-
             foreach ($fotos as $foto) {
-
-                if (Storage::disk('public')->exists($foto)) {
-
-                    Storage::disk('public')->delete($foto);
-                }
+                Storage::disk('public')->delete($foto);
             }
         }
 

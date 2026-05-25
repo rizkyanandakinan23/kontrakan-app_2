@@ -8,6 +8,7 @@
 
     <div class="bg-white rounded-3xl shadow-xl p-8">
 
+        <!-- TITLE -->
         <h1 class="text-3xl font-bold text-gray-800 mb-6">
             Pembayaran Booking
         </h1>
@@ -16,11 +17,11 @@
         <div class="mb-8 border-b pb-6">
 
             <h2 class="text-2xl font-bold text-amber-700 mb-2">
-                {{ $kamar->nama_kamar }}
+                {{ $kamar->nama_kamar ?? '-' }}
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-                {{ $kamar->deskripsi }}
+                {{ $kamar->deskripsi ?? '-' }}
             </p>
 
         </div>
@@ -30,41 +31,31 @@
 
             <!-- METODE -->
             <div>
-
-                <p class="text-gray-500 mb-1">
-                    Metode Pembayaran
-                </p>
+                <p class="text-gray-500 mb-1">Metode Pembayaran</p>
 
                 <h3 class="text-2xl font-bold text-gray-800">
-                    {{ $metode }}
+                    {{ $metode ?? '-' }}
                 </h3>
-
             </div>
 
-            <!-- BANK -->
-            @if($metode != 'QRIS')
+            <!-- BANK / QRIS -->
+            @if(($metode ?? null) && $metode != 'QRIS')
 
                 <div>
-
-                    <p class="text-gray-500 mb-1">
-                        Nomor Rekening
-                    </p>
+                    <p class="text-gray-500 mb-1">Nomor Rekening</p>
 
                     <h3 class="text-3xl font-extrabold text-amber-700 tracking-wide">
-                        {{ $rekening }}
+                        {{ $rekening ?? '-' }}
                     </h3>
 
                     <p class="text-gray-500 mt-2">
-                        a/n {{ $atasNama }}
+                        a/n {{ $atasNama ?? '-' }}
                     </p>
-
                 </div>
 
             @else
 
-                <!-- QRIS -->
                 <div>
-
                     <p class="text-gray-500 mb-4">
                         Scan QRIS Berikut
                     </p>
@@ -72,8 +63,8 @@
                     <img
                         src="{{ asset('images/qris.png') }}"
                         class="w-72 rounded-2xl border shadow"
+                        alt="QRIS"
                     >
-
                 </div>
 
             @endif
@@ -81,12 +72,10 @@
             <!-- TOTAL -->
             <div class="bg-amber-50 rounded-2xl p-6 mt-8">
 
-                <p class="text-gray-500 mb-2">
-                    Total Pembayaran
-                </p>
+                <p class="text-gray-500 mb-2">Total Pembayaran</p>
 
                 <h2 class="text-4xl font-extrabold text-amber-700">
-                    Rp {{ number_format($totalHarga, 0, ',', '.') }}
+                    Rp {{ number_format($totalHarga ?? 0, 0, ',', '.') }}
                 </h2>
 
             </div>
@@ -101,11 +90,10 @@
             </h2>
 
             <form
-                action="#"
+                action="{{ route('booking.uploadBukti', $booking->id ?? 0) }}"
                 method="POST"
                 enctype="multipart/form-data"
             >
-
                 @csrf
 
                 <!-- FILE -->
@@ -124,7 +112,7 @@
                     >
 
                     <p class="text-sm text-gray-500 mt-2">
-                        Format yang didukung: JPG, JPEG, PNG
+                        Format JPG, JPEG, PNG
                     </p>
 
                 </div>
@@ -141,7 +129,7 @@
 
         </div>
 
-        <!-- KEMBALI -->
+        <!-- BACK -->
         <div class="mt-8">
 
             <a

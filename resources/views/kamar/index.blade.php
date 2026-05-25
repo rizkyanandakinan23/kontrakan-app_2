@@ -119,12 +119,24 @@
                     </div>
 
                     <!-- BUTTON -->
-                    <a
-                        href="{{ route('kamar.show', $kamar->id) }}"
-                        class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition"
-                    >
-                        Lihat Detail
-                    </a>
+                    @if(($kamar->status ?? '') == 'terisi')
+
+    <!-- BUTTON DISABLED -->
+    <div class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold cursor-not-allowed text-center">
+        Tidak Tersedia
+    </div>
+
+@else
+
+    <!-- BUTTON AKTIF -->
+    <a
+        href="{{ route('kamar.show', $kamar->id) }}"
+        class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition inline-block"
+    >
+        Lihat Detail
+    </a>
+
+@endif
 
                 </div>
 

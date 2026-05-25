@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Booking extends Model
 {
@@ -15,7 +16,22 @@ class Booking extends Model
         'durasi',
         'metode_pembayaran',
         'total_harga',
-        'status',
 
+        // FIX INI
+        'status_pembayaran',
+        'bukti_pembayaran',
     ];
+
+    // ======================
+    // RELASI KE USER
+    // ======================
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+public function kamar()
+{
+    return $this->belongsTo(Kamar::class);
+}
 }

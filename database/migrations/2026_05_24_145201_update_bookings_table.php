@@ -10,23 +10,16 @@ return new class extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
 
-            // hapus kolom lama
-            $table->dropColumn('status');
+            // hapus kolom lama kalau masih ada
+            if (Schema::hasColumn('bookings', 'status')) {
+                $table->dropColumn('status');
+            }
 
-        });
+            // status pembayaran (REKOMENDASI STRING, bukan ENUM)
+            $table->string('status_pembayaran')->default('pending');
 
-        Schema::table('bookings', function (Blueprint $table) {
-
-            // buat kolom baru
-            $table->enum('status_pembayaran', [
-                'pending',
-                'pembayaran berhasil',
-                'pembayaran gagal'
-            ])->default('pending');
-
-            // upload bukti
+            // bukti transfer
             $table->string('bukti_pembayaran')->nullable();
-
         });
     }
 
@@ -39,12 +32,8 @@ return new class extends Migration
                 'bukti_pembayaran'
             ]);
 
-            $table->enum('status', [
-                'pending',
-                'pembayaran berhasil',
-                'pembayaran gagal'
-            ])->default('pending');
-
+            // rollback ke versi lama (kalau dibutuhkan)
+            $table->string('status')->default('pending');
         });
     }
 };

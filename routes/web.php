@@ -50,14 +50,21 @@ Route::get('/booking/{id}', [BookingController::class, 'index'])
 Route::post('/booking/{id}', [BookingController::class, 'store'])
     ->name('booking.store');
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN PANEL
-|--------------------------------------------------------------------------
-*/
+Route::post('/booking/{id}/upload-bukti', [BookingController::class, 'uploadBukti'])
+    ->name('booking.uploadBukti');
+
+Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
+    ->name('booking.riwayat');
+
+ /*
+ |--------------------------------------------------------------------------
+ | ADMIN PANEL
+ |--------------------------------------------------------------------------
+ */
 
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
+    ->name('admin.')
     ->group(function () {
 
         /*
@@ -65,34 +72,54 @@ Route::middleware(['auth', 'is_admin'])
         | DASHBOARD ADMIN
         |--------------------------------------------------------------------------
         */
-
         Route::get('/', [AdminController::class, 'index'])
-            ->name('admin.panel');
+            ->name('panel');
+
+        Route::get('/user', [AdminController::class, 'userIndex'])
+    ->name('user.index');
+
+    Route::delete('/user/{id}', [AdminController::class, 'deleteUser'])
+    ->name('user.delete');
 
         /*
         |--------------------------------------------------------------------------
-        | CRUD KAMAR
+        | KAMAR MANAGEMENT
         |--------------------------------------------------------------------------
         */
-
         Route::get('/kamar', [AdminController::class, 'kamarIndex'])
-            ->name('admin.kamar.index');
+            ->name('kamar.index');
 
         Route::get('/kamar/create', [AdminController::class, 'kamarCreate'])
-            ->name('admin.kamar.create');
+            ->name('kamar.create');
 
         Route::post('/kamar/store', [AdminController::class, 'kamarStore'])
-            ->name('admin.kamar.store');
+            ->name('kamar.store');
 
         Route::get('/kamar/{kamar}/edit', [AdminController::class, 'kamarEdit'])
-            ->name('admin.kamar.edit');
+            ->name('kamar.edit');
 
         Route::put('/kamar/{kamar}', [AdminController::class, 'kamarUpdate'])
-            ->name('admin.kamar.update');
+            ->name('kamar.update');
 
         Route::delete('/kamar/{kamar}', [AdminController::class, 'kamarDestroy'])
-            ->name('admin.kamar.destroy');
+            ->name('kamar.destroy');
 
+        /*
+        |--------------------------------------------------------------------------
+        | BOOKING MANAGEMENT (FIXED)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/booking', [AdminController::class, 'bookingIndex'])
+            ->name('booking.index');
+
+        Route::patch('/booking/{id}/approve', [AdminController::class, 'approveBooking'])
+            ->name('booking.approve');
+
+        Route::patch('/booking/{id}/reject', [AdminController::class, 'rejectBooking'])
+            ->name('booking.reject');
+
+        Route::delete('/booking/{id}', [AdminController::class, 'deleteBooking'])
+            ->name('booking.delete');
     });
 
 /*
@@ -111,6 +138,10 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
+        ->name('booking.riwayat');
+
 
 });
 
