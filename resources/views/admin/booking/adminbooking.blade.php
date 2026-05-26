@@ -131,14 +131,16 @@
                         <td class="p-4 flex gap-2">
 
                             <!-- APPROVE -->
-                            <form action="{{ route('admin.booking.approve', $booking->id) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
+<form action="{{ route('admin.booking.approve', $booking->id) }}" method="POST">
+    @csrf
+    @method('PATCH')
 
-                                <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs">
-                                    Approve
-                                </button>
-                            </form>
+    <button
+        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs"
+    >
+        Approve
+    </button>
+</form>
 
                             <!-- REJECT -->
                             <form action="{{ route('admin.booking.reject', $booking->id) }}" method="POST">
@@ -183,5 +185,15 @@
     </div>
 
 </div>
+
+@if(session('wa_link'))
+
+<script>
+
+    window.open("{{ session('wa_link') }}", "_blank");
+
+</script>
+
+@endif
 
 @endsection

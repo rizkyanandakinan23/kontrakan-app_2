@@ -7,6 +7,7 @@ use App\Http\Controllers\KamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
+use App\Models\Kamar;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,11 @@ use App\Http\Controllers\ReviewController;
 */
 
 Route::get('/', function () {
-    return view('dashboard');
+
+    $kamars = Kamar::latest()->get();
+
+    return view('dashboard', compact('kamars'));
+
 })->name('home');
 
 /*
@@ -25,7 +30,14 @@ Route::get('/', function () {
 */
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+
+    $kamars = Kamar::where('status', '!=', 'terisi')
+        ->latest()
+        ->take(3)
+        ->get();
+
+    return view('dashboard', compact('kamars'));
+
 })
 ->middleware(['auth'])
 ->name('dashboard');

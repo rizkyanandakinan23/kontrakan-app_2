@@ -24,26 +24,63 @@ class ProfileController extends Controller
     /**
      * UPDATE PROFILE
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
+public function update(ProfileUpdateRequest $request): RedirectResponse
+{
+    $validated = $request->validate([
 
-        $user->fill([
-            'nama_lengkap' => $request->nama_lengkap,
-            'username' => $request->username,
-            'email' => $request->email,
-        ]);
+        'nama_lengkap' => [
+            'required',
+            'string',
+            'max:255',
+        ],
 
-        // RESET VERIFIKASI EMAIL JIKA EMAIL DIUBAH
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        'username' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:users,username,' . auth()->id(),
+        ],
+
+        'foto' => [
+            'nullable',
+            'image',
+            'mimes:jpg,jpeg,png',
+            'max:2048',
+        ],
+
+    ]);
+
+    $user = $request->user();
+
+    $data = [
+        'nama_lengkap' => $validated['nama_lengkap'],
+        'username' => $validated['username'],
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD FOTO PROFILE
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->hasFile('foto')) {
+
+        // hapus foto lama
+        if ($user->foto) {
+
+            \Storage::disk('public')->delete($user->foto);
         }
 
-        $user->save();
-
-        return Redirect::route('profile.edit')
-            ->with('success', 'Profile berhasil diperbarui');
+        // upload foto baru
+        $data['foto'] = $request->file('foto')
+            ->store('profile', 'public');
     }
+
+    $user->update($data);
+
+    return Redirect::route('profile.edit')
+        ->with('status', 'profile-updated');
+}
 
     /**
      * DELETE ACCOUNT

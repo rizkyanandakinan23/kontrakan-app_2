@@ -13,90 +13,252 @@
             Frequently Asked Questions
         </h1>
 
-        <p class="text-white/90">
-            Pertanyaan yang sering ditanyakan tentang sistem kontrakan.
+        <p class="text-white/90 text-lg">
+            Pertanyaan yang sering ditanyakan mengenai sistem Kontrakan RDP.
         </p>
 
     </div>
 
     <!-- FAQ LIST -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
+    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 space-y-5">
 
-        <!-- ITEM -->
-        <details class="border rounded-xl p-4 cursor-pointer">
+        <!-- 1 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
 
-            <summary class="font-semibold text-gray-800">
+            <summary class="font-bold text-gray-800 text-lg">
                 Apa itu sistem Kontrakan RDP?
             </summary>
 
-            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+            <p class="mt-4 text-gray-600 leading-relaxed">
 
-                Kontrakan RDP adalah sistem berbasis web untuk memudahkan
-                pencarian, pemesanan, dan pengelolaan kamar kontrakan secara online.
-
-            </p>
-
-        </details>
-
-        <!-- ITEM -->
-        <details class="border rounded-xl p-4 cursor-pointer">
-
-            <summary class="font-semibold text-gray-800">
-                Apakah bisa booking kamar secara online?
-            </summary>
-
-            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
-
-                Ya, pengguna dapat melakukan pemesanan kamar secara online
-                melalui sistem tanpa harus datang langsung ke lokasi.
+                Kontrakan RDP adalah sistem berbasis web yang membantu pengguna
+                mencari, melihat detail kamar, melakukan booking, dan mengelola
+                penyewaan kontrakan secara online.
 
             </p>
 
         </details>
 
-        <!-- ITEM -->
-        <details class="border rounded-xl p-4 cursor-pointer">
+        <!-- 2 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
 
-            <summary class="font-semibold text-gray-800">
-                Apakah pembayaran sudah otomatis?
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah saya harus login untuk booking kamar?
             </summary>
 
-            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+            <p class="mt-4 text-gray-600 leading-relaxed">
 
-                Tidak. Pembayaran masih manual melalui transfer bank, QRIS,
-                atau tunai, kemudian dikonfirmasi melalui sistem.
+                Ya. Pengguna wajib memiliki akun dan login terlebih dahulu
+                sebelum melakukan pemesanan kamar.
 
             </p>
 
         </details>
 
-        <!-- ITEM -->
-        <details class="border rounded-xl p-4 cursor-pointer">
+        <!-- 3 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
 
-            <summary class="font-semibold text-gray-800">
-                Siapa yang bisa menggunakan sistem ini?
+            <summary class="font-bold text-gray-800 text-lg">
+                Bagaimana cara booking kamar?
             </summary>
 
-            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+            <p class="mt-4 text-gray-600 leading-relaxed">
 
-                Sistem ini digunakan oleh admin (pemilik kontrakan) dan penyewa
-                untuk mengelola serta mencari kamar kontrakan.
+                Pilih kamar yang tersedia, masuk ke halaman detail kamar,
+                lalu tekan tombol <strong>Sewa Sekarang</strong> untuk
+                melakukan proses booking.
 
             </p>
 
         </details>
 
-        <!-- ITEM -->
-        <details class="border rounded-xl p-4 cursor-pointer">
+        <!-- 4 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
 
-            <summary class="font-semibold text-gray-800">
-                Apakah data aman?
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah pembayaran dilakukan secara online?
             </summary>
 
-            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+            <p class="mt-4 text-gray-600 leading-relaxed">
 
-                Ya, sistem menggunakan autentikasi login sehingga data pengguna
-                lebih terkontrol dan aman.
+                Pembayaran dilakukan melalui transfer bank atau metode pembayaran
+                lain yang disediakan admin, kemudian pengguna mengupload bukti pembayaran.
+
+            </p>
+
+        </details>
+
+        <!-- 5 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Kapan booking saya dikonfirmasi?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Booking akan dikonfirmasi setelah admin melakukan verifikasi
+                terhadap bukti pembayaran yang diupload pengguna.
+
+            </p>
+
+        </details>
+
+        <!-- 6 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apa arti status “Terisi” pada kamar?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Status “Terisi” berarti kamar sedang disewa dan tidak dapat
+                dibooking oleh pengguna lain.
+
+            </p>
+
+        </details>
+
+        <!-- 7 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah saya bisa membatalkan booking?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Untuk saat ini pembatalan booking dilakukan melalui admin
+                atau pemilik kontrakan.
+
+            </p>
+
+        </details>
+
+        <!-- 8 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah saya bisa melihat riwayat booking?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Ya. Pengguna dapat melihat seluruh riwayat booking
+                melalui menu Riwayat Booking pada akun masing-masing.
+
+            </p>
+
+        </details>
+
+        <!-- 9 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Bagaimana cara memberikan review kamar?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Pengguna dapat memberikan review dan rating melalui
+                halaman detail kamar setelah login ke dalam sistem.
+
+            </p>
+
+        </details>
+
+        <!-- 10 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah review pengguna lain bisa dilaporkan?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Ya. Jika terdapat review yang tidak pantas, pengguna
+                dapat menggunakan fitur report untuk melaporkannya kepada admin.
+
+            </p>
+
+        </details>
+
+        <!-- 11 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Siapa yang mengelola sistem ini?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Sistem dikelola oleh admin atau pemilik kontrakan
+                untuk memonitor kamar, booking, pengguna, dan review.
+
+            </p>
+
+        </details>
+
+        <!-- 12 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah data pengguna aman?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Ya. Sistem menggunakan autentikasi login dan pengelolaan akses
+                pengguna agar data lebih aman dan terkontrol.
+
+            </p>
+
+        </details>
+
+        <!-- 13 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah sistem bisa diakses melalui HP?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Bisa. Sistem dirancang responsif sehingga dapat diakses
+                melalui smartphone, tablet, maupun komputer.
+
+            </p>
+
+        </details>
+
+        <!-- 14 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Bagaimana jika lupa password akun?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Pengguna dapat menggunakan fitur reset password
+                atau menghubungi admin untuk bantuan pemulihan akun.
+
+            </p>
+
+        </details>
+
+        <!-- 15 -->
+        <details class="border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition">
+
+            <summary class="font-bold text-gray-800 text-lg">
+                Apakah sistem ini gratis digunakan?
+            </summary>
+
+            <p class="mt-4 text-gray-600 leading-relaxed">
+
+                Ya. Sistem dapat digunakan secara gratis oleh pengguna
+                untuk mencari dan melakukan booking kamar kontrakan.
 
             </p>
 

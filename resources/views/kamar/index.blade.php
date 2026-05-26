@@ -119,12 +119,15 @@
                     </div>
 
                     <!-- BUTTON -->
-                    @if(($kamar->status ?? '') == 'terisi')
+@if(($kamar->status ?? '') == 'terisi')
 
     <!-- BUTTON DISABLED -->
-    <div class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold cursor-not-allowed text-center">
-        Tidak Tersedia
-    </div>
+    <button
+        disabled
+        class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold cursor-not-allowed opacity-80"
+    >
+        Sudah Terisi
+    </button>
 
 @else
 
@@ -167,5 +170,7 @@
     </div>
 
 </div>
+
+@include('components.maps')
 
 @endsection

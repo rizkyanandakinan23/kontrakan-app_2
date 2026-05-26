@@ -63,8 +63,8 @@
     <div class="p-5 border-b bg-gray-100 flex items-center justify-between">
 
         <h2 class="text-xl font-bold text-gray-700">
-            Menu
-        </h2>
+    {{ Auth::user()->nama_lengkap ?? 'Menu' }}
+</h2>
 
         <!-- CLOSE BUTTON -->
         <button onclick="toggleSidebar()"
@@ -87,7 +87,7 @@
                 </p>
 
                 <p class="font-semibold text-gray-800">
-                    {{ auth()->user()->nama_lengkap }}
+                    {{ auth()->user()->username }}
                 </p>
 
                 <p class="text-xs text-gray-500 mt-1">

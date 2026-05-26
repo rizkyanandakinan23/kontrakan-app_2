@@ -7,28 +7,29 @@
 <div class="max-w-7xl mx-auto">
 
     <!-- HERO -->
-    <div class="bg-white/95 rounded-3xl shadow-xl p-10 mb-10">
+    <div class="bg-white/95 rounded-3xl shadow-2xl overflow-hidden mb-12">
 
-        <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div class="grid md:grid-cols-2 gap-10 items-center p-10">
 
             <!-- TEXT -->
             <div>
 
-                <p class="text-amber-700 font-semibold mb-3">
-                    Selamat Datang di Kontrakan RDP
-                </p>
+                <span class="inline-block bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-semibold mb-5">
+                    Selamat Datang di Kontrakan Raden Panghulu Djaja
+                </span>
 
-                <h1 class="text-5xl font-bold text-gray-800 leading-tight mb-5">
-
+                <h1 class="text-5xl font-bold text-gray-800 leading-tight mb-6">
                     Cari Kamar Kontrakan
-                    Nyaman & Strategis
-
+                    <span class="text-amber-700">
+                        Nyaman & Strategis
+                    </span>
                 </h1>
 
-                <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+                <p class="text-gray-600 text-lg leading-relaxed mb-8">
 
                     Temukan kamar kontrakan terbaik dengan fasilitas lengkap,
-                    lokasi strategis, dan harga terjangkau untuk kebutuhan Anda.
+                    lingkungan nyaman, lokasi strategis, dan harga yang terjangkau
+                    untuk kebutuhan tempat tinggal Anda.
 
                 </p>
 
@@ -36,7 +37,7 @@
 
                     <a
                         href="{{ route('kamar.index') }}"
-                        class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 rounded-xl font-semibold transition"
+                        class="bg-amber-700 hover:bg-amber-800 text-white px-7 py-3 rounded-2xl font-semibold shadow-lg transition"
                     >
                         Lihat Kamar
                     </a>
@@ -45,7 +46,7 @@
 
                         <a
                             href="{{ route('register') }}"
-                            class="border border-amber-700 text-amber-700 hover:bg-amber-700 hover:text-white px-6 py-3 rounded-xl font-semibold transition"
+                            class="border-2 border-amber-700 text-amber-700 hover:bg-amber-700 hover:text-white px-7 py-3 rounded-2xl font-semibold transition"
                         >
                             Daftar Sekarang
                         </a>
@@ -62,7 +63,7 @@
                 <img
                     src="{{ asset('images/kamar1.jpg') }}"
                     alt="Kamar"
-                    class="rounded-3xl shadow-lg w-full h-[400px] object-cover"
+                    class="rounded-3xl shadow-xl w-full h-[420px] object-cover"
                 >
 
             </div>
@@ -72,127 +73,171 @@
     </div>
 
     <!-- FITUR -->
-    <div class="grid md:grid-cols-3 gap-6 mb-10">
+    <div class="grid md:grid-cols-3 gap-7 mb-14">
 
         <!-- CARD -->
-        <div class="bg-white/95 rounded-2xl shadow-lg p-6">
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-            <div class="text-4xl mb-4">
+            <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
                 🏠
             </div>
 
-            <h3 class="text-xl font-bold text-gray-800 mb-2">
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
                 Kamar Nyaman
             </h3>
 
-            <p class="text-gray-600">
-                Kamar bersih dan nyaman dengan fasilitas lengkap.
+            <p class="text-gray-600 leading-relaxed">
+                Kamar bersih, nyaman, dan cocok untuk mahasiswa maupun pekerja.
             </p>
 
         </div>
 
         <!-- CARD -->
-        <div class="bg-white/95 rounded-2xl shadow-lg p-6">
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-            <div class="text-4xl mb-4">
+            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
                 📍
             </div>
 
-            <h3 class="text-xl font-bold text-gray-800 mb-2">
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
                 Lokasi Strategis
             </h3>
 
-            <p class="text-gray-600">
-                Dekat kampus, jalan utama, dan fasilitas umum.
+            <p class="text-gray-600 leading-relaxed">
+                Dekat kampus, minimarket, tempat makan, dan akses transportasi.
             </p>
 
         </div>
 
         <!-- CARD -->
-        <div class="bg-white/95 rounded-2xl shadow-lg p-6">
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-            <div class="text-4xl mb-4">
+            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
                 💰
             </div>
 
-            <h3 class="text-xl font-bold text-gray-800 mb-2">
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
                 Harga Terjangkau
             </h3>
 
-            <p class="text-gray-600">
-                Harga sesuai fasilitas dengan pembayaran mudah.
+            <p class="text-gray-600 leading-relaxed">
+                Harga sesuai fasilitas dengan proses booking yang mudah dan cepat.
             </p>
 
         </div>
 
     </div>
 
-    <!-- KAMAR POPULER -->
+
+    <!-- KAMAR TERSEDIA -->
     <div class="mb-10">
 
-        <div class="flex items-center justify-between mb-6">
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-7">
 
-            <h2 class="text-3xl font-bold text-white">
-                Kamar Tersedia
-            </h2>
+            <div>
+
+                <h2 class="text-4xl font-bold text-white">
+                    Rekomendasi kamar
+                </h2>
+
+                <p class="text-white/80 mt-2">
+                    Pilihan kamar terbaru yang tersedia untuk Anda.
+                </p>
+
+            </div>
 
             <a
                 href="{{ route('kamar.index') }}"
-                class="text-white hover:underline"
+                class="bg-white/20 backdrop-blur text-white px-5 py-3 rounded-2xl hover:bg-white/30 transition font-semibold"
             >
                 Lihat Semua
             </a>
 
         </div>
 
+        <!-- CARD -->
         <div class="grid md:grid-cols-3 gap-8">
 
-            @for ($i = 1; $i <= 3; $i++)
+            @forelse ($kamars->where('status', '!=', 'terisi')->take(3) as $kamar)
 
-            <div class="bg-white rounded-3xl overflow-hidden shadow-xl">
+            <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
 
                 <!-- IMAGE -->
-                <img
-                    src="{{ asset('images/kamar1.jpg') }}"
-                    class="w-full h-56 object-cover"
-                    alt="Kamar"
-                >
+                <div class="relative overflow-hidden">
+
+                    @php
+                        $foto = $kamar->foto_kamar;
+
+                        if (is_string($foto)) {
+                            $decoded = json_decode($foto, true);
+                            $foto = is_array($decoded) ? $decoded : [$foto];
+                        }
+                    @endphp
+
+                    <img
+                        src="{{ asset('storage/' . ($foto[0] ?? 'default.jpg')) }}"
+                        class="w-full h-64 object-cover hover:scale-110 transition duration-500"
+                        alt="{{ $kamar->nama_kamar }}"
+                    >
+
+                    <!-- STATUS -->
+                    <div class="absolute top-4 right-4">
+
+                        @if(($kamar->status ?? '') == 'terisi')
+
+                            <span class="bg-red-500 text-white text-xs px-4 py-2 rounded-full shadow">
+                                Terisi
+                            </span>
+
+                        @else
+
+                            <span class="bg-green-500 text-white text-xs px-4 py-2 rounded-full shadow">
+                                Tersedia
+                            </span>
+
+                        @endif
+
+                    </div>
+
+                </div>
 
                 <!-- CONTENT -->
                 <div class="p-6">
 
-                    <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                        {{ $kamar->nama_kamar }}
+                    </h3>
 
-                        <h3 class="text-2xl font-bold text-gray-800">
-                            Kamar {{ $i }}
-                        </h3>
-
-                        <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">
-                            Tersedia
-                        </span>
-
-                    </div>
-
-                    <p class="text-gray-600 mb-4">
-
-                        Kamar nyaman dengan fasilitas lengkap dan lokasi strategis.
-
+                    <p class="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-3">
+                        {{ $kamar->deskripsi }}
                     </p>
 
                     <!-- FASILITAS -->
-                    <div class="flex flex-wrap gap-2 mb-5">
+                    <div class="space-y-2 mb-6">
 
-                        <span class="bg-gray-100 text-sm px-3 py-1 rounded-full">
-                            WiFi
-                        </span>
+                        @php
+                            $fasilitas = $kamar->fasilitas;
 
-                        <span class="bg-gray-100 text-sm px-3 py-1 rounded-full">
-                            Kasur
-                        </span>
+                            if (is_string($fasilitas)) {
+                                $decoded = json_decode($fasilitas, true);
+                                $fasilitas = is_array($decoded)
+                                    ? $decoded
+                                    : [$fasilitas];
+                            }
+                        @endphp
 
-                        <span class="bg-gray-100 text-sm px-3 py-1 rounded-full">
-                            Lemari
-                        </span>
+                        @foreach(array_slice($fasilitas ?? [], 0, 3) as $item)
+
+                            <div class="flex items-center gap-2 text-sm text-gray-600">
+
+                                <span>✔️</span>
+
+                                <span>{{ $item }}</span>
+
+                            </div>
+
+                        @endforeach
 
                     </div>
 
@@ -206,19 +251,31 @@
                             </p>
 
                             <h4 class="text-2xl font-bold text-amber-700">
-
-                                Rp 750K
-
+                                Rp {{ number_format($kamar->harga, 0, ',', '.') }}
                             </h4>
+
+                            <p class="text-xs text-gray-400">
+                                / bulan
+                            </p>
 
                         </div>
 
-                        <a
-                            href="#"
-                            class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition"
-                        >
-                            Detail
-                        </a>
+                        @if(($kamar->status ?? '') == 'terisi')
+
+                            <div class="bg-gray-400 text-white px-5 py-3 rounded-2xl font-semibold cursor-not-allowed text-sm">
+                                Tidak Tersedia
+                            </div>
+
+                        @else
+
+                            <a
+                                href="{{ route('kamar.show', $kamar->id) }}"
+                                class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg transition"
+                            >
+                                Detail
+                            </a>
+
+                        @endif
 
                     </div>
 
@@ -226,12 +283,32 @@
 
             </div>
 
-            @endfor
+            @empty
+
+            <div class="col-span-3">
+
+                <div class="bg-white rounded-3xl shadow-xl p-12 text-center">
+
+                    <h2 class="text-3xl font-bold text-gray-700 mb-3">
+                        Belum Ada Kamar
+                    </h2>
+
+                    <p class="text-gray-500">
+                        Saat ini belum ada kamar yang tersedia.
+                    </p>
+
+                </div>
+
+            </div>
+
+            @endforelse
 
         </div>
 
     </div>
 
 </div>
+
+@include('components.maps')
 
 @endsection

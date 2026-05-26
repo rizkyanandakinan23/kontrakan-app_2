@@ -77,23 +77,43 @@ public function deleteUser($id)
     */
    public function approveBooking($id)
 {
-    $booking = Booking::findOrFail($id);
+    $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
 
-    // update status pembayaran
+    // UPDATE STATUS BOOKING
     $booking->update([
         'status_pembayaran' => 'dibayar'
     ]);
 
-    // update status kamar
-    $kamar = Kamar::find($booking->kamar_id);
+    // UPDATE STATUS KAMAR
+    if ($booking->kamar) {
 
-    if ($kamar) {
-        $kamar->update([
+        $booking->kamar->update([
             'status' => 'terisi'
         ]);
+
     }
 
-    return back()->with('success', 'Pembayaran disetujui');
+    // FORMAT NOMOR
+    $nomor = preg_replace('/[^0-9]/', '', $booking->whatsapp);
+
+    if (substr($nomor, 0, 1) == '0') {
+        $nomor = '62' . substr($nomor, 1);
+    }
+
+    // PESAN WA
+    $pesan = urlencode(
+        "Halo {$booking->user->nama_lengkap}, "
+        . "booking kamar '{$booking->kamar->nama_kamar}' "
+        . "telah DISETUJUI dan pembayaran berhasil diverifikasi. "
+        . "Silakan datang ke kontrakan sesuai jadwal. Terima kasih."
+    );
+
+    $waLink = "https://wa.me/{$nomor}?text={$pesan}";
+
+    return redirect()
+        ->back()
+        ->with('success', 'Booking berhasil diapprove')
+        ->with('wa_link', $waLink);
 }
 
 public function rejectBooking($id)
