@@ -57,83 +57,107 @@
 <!-- SIDEBAR -->
 <div id="sidebar"
      class="fixed top-0 right-0 w-80 h-full bg-gray-50 shadow-2xl
-            transform translate-x-full transition-transform duration-300 z-50">
+            transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
 
     <!-- HEADER -->
-<div class="p-5 border-b bg-gray-100 flex items-center justify-between">
+    <div class="p-5 border-b bg-gray-100 flex items-center justify-between">
 
-    <h2 class="text-xl font-bold text-gray-700">
-        Menu
-    </h2>
+        <h2 class="text-xl font-bold text-gray-700">
+            Menu
+        </h2>
 
-    <!-- CLOSE BUTTON -->
-    <button onclick="toggleSidebar()"
-            class="text-gray-600 hover:text-red-500 text-2xl leading-none">
-        ✕
-    </button>
+        <!-- CLOSE BUTTON -->
+        <button onclick="toggleSidebar()"
+                class="text-gray-600 hover:text-red-500 text-2xl leading-none">
+            ✕
+        </button>
 
-</div>
+    </div>
 
-     <!-- USER BOX -->
-            <div class="border-t pt-4 mt-4 bg-gray-100 rounded-lg p-3">
-                <p class="text-xs text-gray-500">Login sebagai:</p>
-                <p class="font-semibold text-gray-800">
-                    {{ auth()->user()->nama_lengkap }}
-                </p>
-                <p class="text-xs text-gray-500 mt-1">
-    {{ auth()->user()->email }}
-</p>
-            </div>
-
-    <div class="p-6 flex flex-col gap-4 text-gray-700">
+    <!-- MENU CONTENT -->
+    <div class="p-6 flex flex-col gap-4 text-gray-700 flex-1">
 
         @auth
 
+            <!-- USER BOX -->
+            <div class="bg-gray-100 rounded-xl p-4 border">
+
+                <p class="text-xs text-gray-500 mb-1">
+                    Login sebagai:
+                </p>
+
+                <p class="font-semibold text-gray-800">
+                    {{ auth()->user()->nama_lengkap }}
+                </p>
+
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ auth()->user()->email }}
+                </p>
+
+            </div>
+
+            <!-- ADMIN PANEL -->
             @if(auth()->user()->is_admin)
+
                 <a href="{{ route('admin.panel') }}"
-                   class="bg-gray-800 text-white px-4 py-2 rounded-lg text-center hover:bg-gray-900">
+                   class="bg-gray-800 text-white px-4 py-3 rounded-xl text-center hover:bg-gray-900 transition">
                     Admin Panel
                 </a>
+
             @endif
+
+            <a href="{{ route('profile.edit') }}"
+   class="hover:text-gray-900 transition">
+    Edit Profile
+</a>
 
         @endauth
 
         <!-- MENU -->
-        <a href="{{ route('home') }}" class="hover:text-gray-900">
+        <a href="{{ route('home') }}"
+           class="hover:text-gray-900 transition">
             Beranda
         </a>
 
-        <a href="{{ route('kamar.index') }}" class="hover:text-gray-900">
+        <a href="{{ route('kamar.index') }}"
+           class="hover:text-gray-900 transition">
             Kamar
         </a>
 
         @auth
 
-            <a href="{{ route('booking.riwayat') }}" class="hover:text-gray-900">
+            <a href="{{ route('booking.riwayat') }}"
+               class="hover:text-gray-900 transition">
                 Riwayat Booking
             </a>
 
             <!-- LOGOUT -->
-            <form action="{{ route('logout') }}" method="POST">
+            <form action="{{ route('logout') }}" method="POST" class="mt-auto">
                 @csrf
-                <button class="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg">
+
+                <button
+                    class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl transition">
                     Logout
                 </button>
+
             </form>
 
         @else
 
-            <a href="{{ route('login') }}" class="hover:text-gray-900">
+            <a href="{{ route('login') }}"
+               class="hover:text-gray-900 transition">
                 Login
             </a>
 
-            <a href="{{ route('register') }}" class="hover:text-gray-900">
+            <a href="{{ route('register') }}"
+               class="bg-amber-700 text-white px-4 py-3 rounded-xl text-center hover:bg-amber-800 transition">
                 Register
             </a>
 
         @endauth
 
     </div>
+
 </div>
 
 <!-- CONTENT -->

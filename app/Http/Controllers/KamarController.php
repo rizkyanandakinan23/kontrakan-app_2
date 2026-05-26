@@ -38,7 +38,8 @@ class KamarController extends Controller
      */
     public function show(string $id)
     {
-        $kamar = Kamar::findOrFail($id);
+        $kamar = Kamar::with(['reviews.user'])
+            ->findOrFail($id);
 
         return view('kamar.detail', compact('kamar'));
     }

@@ -19,4 +19,11 @@ class Kamar extends Model
         'foto_kamar' => 'array',
         'fasilitas' => 'array',
     ];
+
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
 }
+    
+}
+

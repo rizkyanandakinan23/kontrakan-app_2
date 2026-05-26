@@ -41,11 +41,11 @@
     📑 Kelola Booking
 </a>
 
-            <!-- KELOLA REVIEW -->
-            <a href="#"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                ⭐ Kelola Review
-            </a>
+           <!-- KELOLA REVIEW -->
+<a href="{{ route('admin.review.index') }}"
+   class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
+    ⭐ Kelola Review
+</a>
 
             <hr class="my-4">
 

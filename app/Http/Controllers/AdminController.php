@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Kamar;
 use App\Models\User;
 use App\Models\Booking;
+use App\Models\Review;
+use App\Models\ReviewReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -77,9 +79,19 @@ public function deleteUser($id)
 {
     $booking = Booking::findOrFail($id);
 
+    // update status pembayaran
     $booking->update([
         'status_pembayaran' => 'dibayar'
     ]);
+
+    // update status kamar
+    $kamar = Kamar::find($booking->kamar_id);
+
+    if ($kamar) {
+        $kamar->update([
+            'status' => 'terisi'
+        ]);
+    }
 
     return back()->with('success', 'Pembayaran disetujui');
 }
@@ -220,4 +232,46 @@ public function deleteBooking($id)
 
         return back()->with('success', 'Kamar berhasil dihapus');
     }
+
+    /*
+|--------------------------------------------------------------------------
+| ================= REVIEW MANAGEMENT =================
+|--------------------------------------------------------------------------
+*/
+
+public function reviewIndex()
+{
+    $reviews = Review::with([
+        'user',
+        'kamar'
+    ])
+    ->withCount('reports')
+    ->latest()
+    ->get();
+
+    return view('admin.review.adminreview', compact('reviews'));
+}
+
+public function reviewDelete($id)
+{
+    $review = Review::findOrFail($id);
+
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS REPORT TERKAIT
+    |--------------------------------------------------------------------------
+    */
+
+    ReviewReport::where('review_id', $review->id)->delete();
+
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS REVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    $review->delete();
+
+    return back()->with('success', 'Review berhasil dihapus');
+}
 }

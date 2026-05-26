@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +26,9 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+})
+->middleware(['auth'])
+->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -32,11 +36,53 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/kamar', [KamarController::class, 'index'])
-    ->name('kamar.index');
+Route::controller(KamarController::class)->group(function () {
 
-Route::get('/kamar/{id}', [KamarController::class, 'show'])
-    ->name('kamar.show');
+    Route::get('/kamar', 'index')
+        ->name('kamar.index');
+
+    Route::get('/kamar/{id}', 'show')
+        ->name('kamar.show');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| REVIEW
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | STORE REVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/review/{id}', [ReviewController::class, 'store'])
+        ->name('review.store');
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE REVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    Route::delete('/review/{id}', [ReviewController::class, 'destroy'])
+        ->name('review.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | REPORT REVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    Route::patch('/review/{id}/report', [ReviewController::class, 'report'])
+        ->name('review.report');
+
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -44,23 +90,27 @@ Route::get('/kamar/{id}', [KamarController::class, 'show'])
 |--------------------------------------------------------------------------
 */
 
-Route::get('/booking/{id}', [BookingController::class, 'index'])
-    ->name('booking.index');
+Route::middleware('auth')->group(function () {
 
-Route::post('/booking/{id}', [BookingController::class, 'store'])
-    ->name('booking.store');
+    Route::get('/booking/{id}', [BookingController::class, 'index'])
+        ->name('booking.index');
 
-Route::post('/booking/{id}/upload-bukti', [BookingController::class, 'uploadBukti'])
-    ->name('booking.uploadBukti');
+    Route::post('/booking/{id}', [BookingController::class, 'store'])
+        ->name('booking.store');
 
-Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
-    ->name('booking.riwayat');
+    Route::post('/booking/{id}/upload-bukti', [BookingController::class, 'uploadBukti'])
+        ->name('booking.uploadBukti');
 
- /*
- |--------------------------------------------------------------------------
- | ADMIN PANEL
- |--------------------------------------------------------------------------
- */
+    Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
+        ->name('booking.riwayat');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN PANEL
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
@@ -72,20 +122,28 @@ Route::middleware(['auth', 'is_admin'])
         | DASHBOARD ADMIN
         |--------------------------------------------------------------------------
         */
+
         Route::get('/', [AdminController::class, 'index'])
             ->name('panel');
 
-        Route::get('/user', [AdminController::class, 'userIndex'])
-    ->name('user.index');
+        /*
+        |--------------------------------------------------------------------------
+        | USER MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
 
-    Route::delete('/user/{id}', [AdminController::class, 'deleteUser'])
-    ->name('user.delete');
+        Route::get('/user', [AdminController::class, 'userIndex'])
+            ->name('user.index');
+
+        Route::delete('/user/{id}', [AdminController::class, 'deleteUser'])
+            ->name('user.delete');
 
         /*
         |--------------------------------------------------------------------------
         | KAMAR MANAGEMENT
         |--------------------------------------------------------------------------
         */
+
         Route::get('/kamar', [AdminController::class, 'kamarIndex'])
             ->name('kamar.index');
 
@@ -106,9 +164,10 @@ Route::middleware(['auth', 'is_admin'])
 
         /*
         |--------------------------------------------------------------------------
-        | BOOKING MANAGEMENT (FIXED)
+        | BOOKING MANAGEMENT
         |--------------------------------------------------------------------------
         */
+
         Route::get('/booking', [AdminController::class, 'bookingIndex'])
             ->name('booking.index');
 
@@ -120,7 +179,21 @@ Route::middleware(['auth', 'is_admin'])
 
         Route::delete('/booking/{id}', [AdminController::class, 'deleteBooking'])
             ->name('booking.delete');
+
     });
+
+    /*
+|--------------------------------------------------------------------------
+| REVIEW MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/review', [AdminController::class, 'reviewIndex'])
+    ->name('admin.review.index');
+
+Route::delete('/review/{id}', [AdminController::class, 'reviewDelete'])
+    ->name('admin.review.delete');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -138,10 +211,6 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-
-    Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
-        ->name('booking.riwayat');
-
 
 });
 
