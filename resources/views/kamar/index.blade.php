@@ -173,4 +173,6 @@
 
 @include('components.maps')
 
+@include('components.floating-chat')
+
 @endsection

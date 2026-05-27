@@ -55,4 +55,23 @@ class User extends Authenticatable
 {
     return $this->hasMany(Booking::class);
 }
+
+/*
+|-------------------------
+| CHAT RELATION
+|-------------------------
+*/
+
+// 1 user hanya punya 1 conversation
+public function conversation()
+{
+    return $this->hasOne(Conversation::class);
+}
+
+// user bisa kirim banyak message
+public function messages()
+{
+    return $this->hasMany(Message::class, 'sender_id');
+}
+
 }

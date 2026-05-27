@@ -47,6 +47,11 @@
     ⭐ Kelola Review
 </a>
 
+<a href="{{ route('admin.chat.index') }}"
+   class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
+    💬 Chat User
+</a>
+
             <hr class="my-4">
 
             <!-- BACK -->

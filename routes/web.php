@@ -7,6 +7,7 @@ use App\Http\Controllers\KamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ChatController;
 use App\Models\Kamar;
 
 /*
@@ -57,6 +58,19 @@ Route::controller(KamarController::class)->group(function () {
         ->name('kamar.show');
 
 });
+/*
+|--------------------------------------------------------------------------
+| CHAT SYSTEM
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -66,29 +80,11 @@ Route::controller(KamarController::class)->group(function () {
 
 Route::middleware('auth')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | STORE REVIEW
-    |--------------------------------------------------------------------------
-    */
-
     Route::post('/review/{id}', [ReviewController::class, 'store'])
         ->name('review.store');
 
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE REVIEW
-    |--------------------------------------------------------------------------
-    */
-
     Route::delete('/review/{id}', [ReviewController::class, 'destroy'])
-        ->name('review.destroy');
-
-    /*
-    |--------------------------------------------------------------------------
-    | REPORT REVIEW
-    |--------------------------------------------------------------------------
-    */
+        ->name('review.destroy'); // USER DELETE OWN REVIEW
 
     Route::patch('/review/{id}/report', [ReviewController::class, 'report'])
         ->name('review.report');
@@ -192,19 +188,34 @@ Route::middleware(['auth', 'is_admin'])
         Route::delete('/booking/{id}', [AdminController::class, 'deleteBooking'])
             ->name('booking.delete');
 
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | REVIEW MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
 
-    /*
+        Route::get('/review', [AdminController::class, 'reviewIndex'])
+            ->name('review.index');
+
+        Route::delete('/review/{id}', [AdminController::class, 'reviewDelete'])
+            ->name('review.delete');
+
+        /*
 |--------------------------------------------------------------------------
-| REVIEW MANAGEMENT
+| CHAT MANAGEMENT
 |--------------------------------------------------------------------------
 */
 
-Route::get('/review', [AdminController::class, 'reviewIndex'])
-    ->name('admin.review.index');
+Route::get('/chat', [AdminController::class, 'chatIndex'])
+    ->name('chat.index');
 
-Route::delete('/review/{id}', [AdminController::class, 'reviewDelete'])
-    ->name('admin.review.delete');
+Route::get('/chat/open/{conversation}', [AdminController::class, 'chatOpen'])
+    ->name('chat.open');
+
+Route::post('/chat/send/{conversation}', [AdminController::class, 'chatSend'])
+    ->name('chat.send');
+
+    });
 
 
 /*

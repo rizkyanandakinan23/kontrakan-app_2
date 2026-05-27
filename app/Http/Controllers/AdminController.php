@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\ReviewReport;
+use App\Models\Conversation;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -294,4 +296,112 @@ public function reviewDelete($id)
 
     return back()->with('success', 'Review berhasil dihapus');
 }
+
+/*
+|--------------------------------------------------------------------------
+| CHAT MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+public function chatIndex()
+{
+    $conversations = Conversation::with([
+            'user',
+            'messages'
+        ])
+        ->latest()
+        ->get();
+
+    return view('admin.chat.whatsapp', compact('conversations'));
+}
+
+public function chatOpen(Conversation $conversation)
+{
+    $messages = $conversation->messages()
+        ->with('sender')
+        ->orderBy('created_at')
+        ->get();
+
+    return response()->json([
+
+        'user' => [
+            'nama' => $conversation->user->nama_lengkap
+        ],
+
+        'messages' => $messages->map(function($msg){
+
+            return [
+
+                'sender_id' => $msg->sender_id,
+
+                'message' => $msg->message,
+
+                'image' => $msg->image,
+
+                'time' => $msg->created_at->format('H:i'),
+
+                'is_admin' =>
+                    $msg->sender_id == auth()->id()
+
+            ];
+
+        })
+
+    ]);
+}
+
+public function chatSend(Request $request, Conversation $conversation)
+{
+    $request->validate([
+        'message' => 'nullable|string',
+        'image' => 'nullable|image|max:2048'
+    ]);
+
+    if (!$request->message && !$request->hasFile('image')) {
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Pesan kosong'
+        ]);
+
+    }
+
+    $imagePath = null;
+
+    if ($request->hasFile('image')) {
+
+        $imagePath = $request->file('image')
+            ->store('chat', 'public');
+
+    }
+
+    $message = Message::create([
+
+        'conversation_id' => $conversation->id,
+
+        'sender_id' => auth()->id(),
+
+        'message' => $request->message ?? '',
+
+        'image' => $imagePath,
+
+    ]);
+
+    return response()->json([
+
+        'status' => true,
+
+        'data' => [
+
+            'message' => $message->message,
+
+            'image' => $message->image,
+
+            'created_at' => $message->created_at->format('H:i')
+
+        ]
+
+    ]);
+}
+
 }

@@ -196,4 +196,6 @@
 
 @endif
 
+    @include('components.back')
+
 @endsection

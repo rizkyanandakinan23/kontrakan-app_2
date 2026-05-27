@@ -4,6 +4,8 @@
 
 @section('content')
 
+   @include('components.back')
+   
 <div class="max-w-7xl mx-auto">
 
     <!-- HEADER -->
@@ -228,5 +230,7 @@
     </div>
 
 </div>
+
+ 
 
 @endsection

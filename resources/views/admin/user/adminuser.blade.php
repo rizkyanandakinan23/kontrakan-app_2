@@ -126,4 +126,6 @@
 
 </div>
 
+    @include('components.back')
+
 @endsection
