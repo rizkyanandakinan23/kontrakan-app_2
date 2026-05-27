@@ -6,6 +6,9 @@ use App\Models\Kamar;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
+use Midtrans\Config;
+use Midtrans\Snap;
+
 class BookingController extends Controller
 {
     // ======================
@@ -18,7 +21,7 @@ class BookingController extends Controller
     }
 
     // ======================
-    // PROSES BOOKING + HALAMAN PEMBAYARAN
+    // PROSES BOOKING + MIDTRANS
     // ======================
     public function store(Request $request, $id)
     {
@@ -28,48 +31,124 @@ class BookingController extends Controller
             'whatsapp' => 'required',
             'tanggal_masuk' => 'required|date',
             'durasi' => 'required|integer|min:1',
-            'metode_pembayaran' => 'required',
         ]);
 
+        // ======================
+        // TOTAL HARGA
+        // ======================
         $totalHarga = $kamar->harga * $request->durasi;
-        $metode = $request->metode_pembayaran;
 
-        // rekening
-        $rekening = null;
-        $atasNama = null;
-
-        if ($metode == 'BCA') {
-            $rekening = '1234567890';
-            $atasNama = 'Kontrakan RDP';
-        } elseif ($metode == 'BSI') {
-            $rekening = '9876543210';
-            $atasNama = 'Kontrakan RDP';
-        }
-
-        // simpan booking dulu
+        // ======================
+        // SIMPAN BOOKING (AWAL)
+        // ======================
         $booking = Booking::create([
             'user_id' => auth()->id(),
             'kamar_id' => $kamar->id,
             'whatsapp' => $request->whatsapp,
             'tanggal_masuk' => $request->tanggal_masuk,
             'durasi' => $request->durasi,
-            'metode_pembayaran' => $metode,
             'total_harga' => $totalHarga,
+
+            // penting: jangan pakai manual lagi
+            'metode_pembayaran' => 'midtrans',
+
             'status_pembayaran' => 'pending',
         ]);
 
-        return view('booking.pembayaran', [
+        // ======================
+        // MIDTRANS CONFIG
+        // ======================
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production', false);
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        // ======================
+        // ORDER ID UNIQUE
+        // ======================
+        $orderId = 'BOOK-' . $booking->id . '-' . time();
+
+        // ======================
+        // SNAP PARAMS
+        // ======================
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $totalHarga,
+            ],
+            'customer_details' => [
+                'first_name' => auth()->user()->nama_lengkap,
+                'email' => auth()->user()->email,
+                'phone' => $request->whatsapp,
+            ]
+        ];
+
+        // ======================
+        // SNAP TOKEN
+        // ======================
+        $snapToken = Snap::getSnapToken($params);
+
+        // ======================
+        // UPDATE BOOKING
+        // ======================
+        $booking->update([
+            'snap_token' => $snapToken,
+            'order_id' => $orderId,
+        ]);
+
+        // ======================
+        // VIEW MIDTRANS
+        // ======================
+        return view('booking.midtrans', [
             'booking' => $booking,
             'kamar' => $kamar,
-            'totalHarga' => $totalHarga,
-            'metode' => $metode,
-            'rekening' => $rekening,
-            'atasNama' => $atasNama,
+            'snapToken' => $snapToken
         ]);
     }
 
     // ======================
-    // UPLOAD BUKTI PEMBAYARAN
+    // CALLBACK MIDTRANS (WAJIB)
+    // ======================
+    public function callback(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+
+        $hashed = hash(
+            "sha512",
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
+            $serverKey
+        );
+
+        if ($hashed == $request->signature_key) {
+
+            $booking = Booking::where('order_id', $request->order_id)->first();
+
+            if (!$booking) {
+                return response()->json(['message' => 'Booking not found'], 404);
+            }
+
+            if ($request->transaction_status == 'settlement') {
+                $booking->update([
+                    'status_pembayaran' => 'dibayar'
+                ]);
+            } elseif ($request->transaction_status == 'pending') {
+                $booking->update([
+                    'status_pembayaran' => 'pending'
+                ]);
+            } elseif (in_array($request->transaction_status, ['cancel', 'expire', 'deny'])) {
+                $booking->update([
+                    'status_pembayaran' => 'ditolak'
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'callback processed']);
+    }
+
+    // ======================
+    // UPLOAD BUKTI (OPTIONAL fallback)
     // ======================
     public function uploadBukti(Request $request, $id)
     {
@@ -88,11 +167,11 @@ class BookingController extends Controller
 
         return redirect()
             ->route('booking.riwayat')
-            ->with('success', 'Bukti pembayaran berhasil diupload, menunggu verifikasi admin');
+            ->with('success', 'Bukti pembayaran berhasil diupload');
     }
 
     // ======================
-    // RIWAYAT BOOKING
+    // RIWAYAT
     // ======================
     public function riwayat()
     {

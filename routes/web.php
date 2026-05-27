@@ -255,4 +255,9 @@ Route::view('/ketentuan', 'ketentuan')
 |--------------------------------------------------------------------------
 */
 
+Route::post(
+    '/midtrans/callback',
+    [BookingController::class, 'callback']
+)->name('midtrans.callback');
+
 require __DIR__.'/auth.php';
