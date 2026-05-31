@@ -118,17 +118,17 @@
 
                     @if($kamar->status == 'terisi')
 
-                        <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
-                            Sudah Disewa
-                        </span>
+    <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
+        Sudah Disewa
+    </span>
 
-                    @else
+@elseif($kamar->status == 'kosong')
 
-                        <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
-                            Masih Tersedia
-                        </span>
+    <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
+        Masih Tersedia
+    </span>
 
-                    @endif
+@endif
 
                 </div>
 
@@ -211,16 +211,16 @@
                         Kembali
                     </a>
 
-                    @if($kamar->status != 'terisi')
+                    @if($kamar->status == 'kosong')
 
-                        <a
-                            href="{{ route('booking.index', $kamar->id) }}"
-                            class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition"
-                        >
-                            Sewa Sekarang
-                        </a>
+    <a
+        href="{{ route('booking.index', $kamar->id) }}"
+        class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition"
+    >
+        Sewa Sekarang
+    </a>
 
-                    @endif
+@endif
 
                 </div>
 
@@ -233,6 +233,8 @@
     @include('components.maps')
 
     @include('components.review', ['kamar' => $kamar])
+
+    @include('components.floating-chat')
 
 
 

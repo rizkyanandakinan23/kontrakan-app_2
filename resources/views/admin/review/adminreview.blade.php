@@ -4,244 +4,198 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto flex gap-6">
+<div class="max-w-7xl mx-auto">
 
-    <!-- ========================= -->
-    <!-- SIDEBAR -->
-    <!-- ========================= -->
+    <div class="mb-6">
+        @include('components.backtoadminpanel')
+    </div>
 
-    <aside class="w-72 bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-6 h-fit">
+    <!-- HEADER -->
+    <div class="mb-8">
 
-        <h2 class="text-xl font-bold text-amber-700 mb-6">
-            Admin Menu
-        </h2>
+        <h1 class="text-4xl font-bold text-white drop-shadow-lg">
+            Kelola Review
+        </h1>
 
-        <nav class="space-y-3 text-sm font-medium">
+        <p class="text-white/80 mt-2">
+            Monitoring review dan report user
+        </p>
 
-            <a href="{{ route('admin.panel') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                📊 Dashboard
-            </a>
+    </div>
 
-            <a href="{{ route('admin.kamar.index') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                🏠 Kelola Kamar
-            </a>
+    <!-- SUCCESS MESSAGE -->
+    @if(session('success'))
 
-            <a href="{{ route('admin.user.index') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                👤 Kelola User
-            </a>
+        <div class="bg-green-100 border border-green-200 text-green-700 px-5 py-4 rounded-2xl mb-6">
 
-            <a href="{{ route('admin.booking.index') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                📑 Kelola Booking
-            </a>
-
-            <a href="{{ route('admin.review.index') }}"
-               class="block px-4 py-3 rounded-xl bg-amber-100 text-amber-800 font-semibold">
-                ⭐ Kelola Review
-            </a>
-
-            <hr class="my-4">
-
-            <a href="{{ route('home') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition text-gray-700">
-                ↩ Kembali ke Website
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <!-- ========================= -->
-    <!-- MAIN CONTENT -->
-    <!-- ========================= -->
-
-    <main class="flex-1">
-
-        <!-- HEADER -->
-
-        <div class="mb-6">
-
-            <h1 class="text-4xl font-bold text-white drop-shadow-lg">
-                Kelola Review
-            </h1>
-
-            <p class="text-white/80 mt-1">
-                Monitoring review dan report user
-            </p>
+            {{ session('success') }}
 
         </div>
 
-        <!-- SUCCESS -->
+    @endif
 
-        @if(session('success'))
+    <!-- TABLE -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-            <div class="bg-green-100 border border-green-200 text-green-700 px-5 py-4 rounded-2xl mb-6">
+        <!-- TITLE -->
+        <div class="p-6 border-b">
 
-                {{ session('success') }}
+            <h2 class="text-xl font-bold text-gray-800">
+                Daftar Review
+            </h2>
 
-            </div>
+        </div>
 
-        @endif
+        <div class="overflow-x-auto">
 
-        <!-- TABLE -->
+            <table class="w-full text-sm">
 
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <!-- HEAD -->
+                <thead class="bg-amber-600 text-white">
 
-            <div class="overflow-x-auto">
+                    <tr>
 
-                <table class="w-full">
+                        <th class="p-4 text-left">
+                            User
+                        </th>
 
-                    <thead class="bg-amber-600 text-white">
+                        <th class="p-4 text-left">
+                            Kamar
+                        </th>
 
-                        <tr>
+                        <th class="p-4 text-left">
+                            Rating
+                        </th>
 
-                            <th class="p-4 text-left">
-                                User
-                            </th>
+                        <th class="p-4 text-left">
+                            Komentar
+                        </th>
 
-                            <th class="p-4 text-left">
-                                Kamar
-                            </th>
+                        <th class="p-4 text-left">
+                            Report
+                        </th>
 
-                            <th class="p-4 text-left">
-                                Rating
-                            </th>
+                        <th class="p-4 text-left">
+                            Aksi
+                        </th>
 
-                            <th class="p-4 text-left">
-                                Komentar
-                            </th>
+                    </tr>
 
-                            <th class="p-4 text-left">
-                                Report
-                            </th>
+                </thead>
 
-                            <th class="p-4 text-left">
-                                Aksi
-                            </th>
+                <!-- BODY -->
+                <tbody>
 
-                        </tr>
+                    @forelse($reviews as $review)
 
-                    </thead>
+                        <tr class="border-b hover:bg-gray-50 align-top transition">
 
-                    <tbody>
+                            <!-- USER -->
+                            <td class="p-4">
 
-                        @forelse($reviews as $review)
+                                <div class="font-semibold text-gray-800">
+                                    {{ $review->user->name ?? '-' }}
+                                </div>
 
-                            <tr class="border-b hover:bg-gray-50 align-top">
+                            </td>
 
-                                <!-- USER -->
+                            <!-- KAMAR -->
+                            <td class="p-4 text-gray-600">
 
-                                <td class="p-4 font-semibold text-gray-800">
+                                {{ $review->kamar->nama_kamar ?? '-' }}
 
-                                    {{ $review->user->name }}
+                            </td>
 
-                                </td>
+                            <!-- RATING -->
+                            <td class="p-4">
 
-                                <!-- KAMAR -->
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">
 
-                                <td class="p-4 text-gray-600">
+                                    {{ $review->rating }} ⭐
 
-                                    {{ $review->kamar->nama_kamar }}
+                                </span>
 
-                                </td>
+                            </td>
 
-                                <!-- RATING -->
+                            <!-- KOMENTAR -->
+                            <td class="p-4 text-gray-600 max-w-md">
 
-                                <td class="p-4">
+                                <div class="line-clamp-3">
+                                    {{ $review->komentar }}
+                                </div>
 
-                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-bold">
+                            </td>
 
-                                        {{ $review->rating }} ⭐
+                            <!-- REPORT -->
+                            <td class="p-4">
+
+                                @if($review->reports_count > 0)
+
+                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">
+
+                                        {{ $review->reports_count }} Report
 
                                     </span>
 
-                                </td>
+                                @else
 
-                                <!-- KOMENTAR -->
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
 
-                                <td class="p-4 text-gray-600 max-w-md">
+                                        Aman
 
-                                    {{ $review->komentar }}
+                                    </span>
 
-                                </td>
+                                @endif
 
-                                <!-- REPORT -->
+                            </td>
 
-                                <td class="p-4">
+                            <!-- AKSI -->
+                            <td class="p-4">
 
-                                    @if($review->reports_count > 0)
+                                <form
+                                    action="{{ route('admin.review.delete', $review->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus review ini?')"
+                                >
 
-                                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
+                                    @csrf
+                                    @method('DELETE')
 
-                                            {{ $review->reports_count }} Report
-
-                                        </span>
-
-                                    @else
-
-                                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
-
-                                            Aman
-
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-                                <!-- AKSI -->
-
-                                <td class="p-4">
-
-                                    <form
-                                        action="{{ route('admin.review.delete', $review->id) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Hapus review ini?')"
+                                    <button
+                                        type="submit"
+                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition"
                                     >
-                                        @csrf
-                                        @method('DELETE')
+                                        Hapus
+                                    </button>
 
-                                        <button
-                                            type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
-                                        >
-                                            Hapus
-                                        </button>
+                                </form>
 
-                                    </form>
+                            </td>
 
-                                </td>
+                        </tr>
 
-                            </tr>
+                    @empty
 
-                        @empty
+                        <tr>
 
-                            <tr>
+                            <td colspan="6" class="p-10 text-center text-gray-500">
 
-                                <td colspan="6" class="p-8 text-center text-gray-500">
+                                Belum ada review
 
-                                    Belum ada review
+                            </td>
 
-                                </td>
+                        </tr>
 
-                            </tr>
+                    @endforelse
 
-                        @endforelse
+                </tbody>
 
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
-    </main>
+    </div>
 
 </div>
-
 
 @endsection

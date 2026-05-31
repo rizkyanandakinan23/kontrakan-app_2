@@ -6,6 +6,11 @@
 
 <div class="max-w-7xl mx-auto">
 
+    <!-- BACK BUTTON -->
+    <div class="mb-6">
+        @include('components.backtoadminpanel')
+    </div>
+    
     <!-- HEADER -->
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
@@ -15,6 +20,7 @@
             Manajemen akun pengguna aplikasi
         </p>
     </div>
+
 
     <!-- TABLE -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
@@ -126,6 +132,6 @@
 
 </div>
 
-    @include('components.back')
+
 
 @endsection

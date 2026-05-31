@@ -51,7 +51,7 @@
                             Terisi
                         </span>
 
-                    @else
+                    @elseif(($kamar->status ?? '') == 'kosong')
 
                         <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">
                             Tersedia
@@ -121,7 +121,6 @@
                     <!-- BUTTON -->
 @if(($kamar->status ?? '') == 'terisi')
 
-    <!-- BUTTON DISABLED -->
     <button
         disabled
         class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold cursor-not-allowed opacity-80"
@@ -129,9 +128,8 @@
         Sudah Terisi
     </button>
 
-@else
+@elseif(($kamar->status ?? '') == 'kosong')
 
-    <!-- BUTTON AKTIF -->
     <a
         href="{{ route('kamar.show', $kamar->id) }}"
         class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition inline-block"

@@ -4,9 +4,13 @@
 
 @section('content')
 
-   @include('components.back')
+
    
 <div class="max-w-7xl mx-auto">
+       
+    <div class="mb-6">
+        @include('components.backtoadminpanel')
+    </div>
 
     <!-- HEADER -->
     <div class="flex items-center justify-between mb-8">

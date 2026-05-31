@@ -6,23 +6,24 @@
 
 <div class="max-w-7xl mx-auto">
 
+    <div class="mb-6">
+        @include('components.backtoadminpanel')
+    </div>
+    
     <!-- HEADER -->
     <div class="mb-8">
-
         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
             Kelola Booking
         </h1>
 
         <p class="text-white/80 mt-2">
-            Manajemen booking dan verifikasi pembayaran
+            Monitoring pembayaran Midtrans & booking user
         </p>
-
     </div>
 
     <!-- TABLE -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-        <!-- TITLE -->
         <div class="p-6 border-b">
             <h2 class="text-xl font-bold text-gray-800">
                 Daftar Booking
@@ -50,6 +51,10 @@
                 <tbody>
 
                     @forelse($bookings as $booking)
+
+                    @php
+                        $status = $booking->status_pembayaran;
+                    @endphp
 
                     <tr class="border-b hover:bg-gray-50">
 
@@ -91,25 +96,26 @@
                         <!-- STATUS -->
                         <td class="p-4">
 
-                            @if($booking->status_pembayaran == 'pending')
+                            @if($status == 'pending')
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
+                                    Pending
+                                </span>
 
-    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
-        Pending
-    </span>
+                            @elseif($status == 'dibayar' || $status == 'settlement')
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+                                    Paid
+                                </span>
 
-@elseif($booking->status_pembayaran == 'dibayar')
+                            @elseif($status == 'expired')
+                                <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs">
+                                    Expired
+                                </span>
 
-    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
-        Dibayar
-    </span>
-
-@else
-
-    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
-        Ditolak
-    </span>
-
-@endif
+                            @else
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
+                                    Failed
+                                </span>
+                            @endif
 
                         </td>
 
@@ -117,47 +123,30 @@
                         <td class="p-4">
 
                             @if($booking->bukti_pembayaran)
-
-    <img src="{{ asset('storage/'.$booking->bukti_pembayaran) }}"
-         class="w-20 h-20 object-cover rounded-lg border">
-
-@else
-    <span class="text-gray-400 text-sm">Belum upload</span>
-@endif
+                                <img src="{{ asset('storage/'.$booking->bukti_pembayaran) }}"
+                                     class="w-16 h-16 object-cover rounded-lg border">
+                            @else
+                                <span class="text-gray-400 text-sm">-</span>
+                            @endif
 
                         </td>
 
                         <!-- ACTION -->
                         <td class="p-4 flex gap-2">
 
-                            <!-- APPROVE -->
-<form action="{{ route('admin.booking.approve', $booking->id) }}" method="POST">
-    @csrf
-    @method('PATCH')
-
-    <button
-        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs"
-    >
-        Approve
-    </button>
-</form>
-
-                            <!-- REJECT -->
-                            <form action="{{ route('admin.booking.reject', $booking->id) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-
-                                <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs">
-                                    Reject
-                                </button>
-                            </form>
+                            <!-- DETAIL -->
+                            <a href="{{ route('admin.booking.detail', $booking->id) }}"
+   class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-xs">
+    Detail
+</a>
 
                             <!-- DELETE -->
                             <form action="{{ route('admin.booking.delete', $booking->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
 
-                                <button class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-lg text-xs">
+                                <button onclick="return confirm('Yakin ingin menghapus booking ini?')"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-lg text-xs">
                                     Delete
                                 </button>
                             </form>
@@ -185,17 +174,5 @@
     </div>
 
 </div>
-
-@if(session('wa_link'))
-
-<script>
-
-    window.open("{{ session('wa_link') }}", "_blank");
-
-</script>
-
-@endif
-
-    @include('components.back')
 
 @endsection

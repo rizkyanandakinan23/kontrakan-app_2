@@ -6,6 +6,10 @@
 
 <div class="max-w-6xl mx-auto">
 
+    <div class="mb-6">
+        @include('components.back')
+    </div>
+
     <h1 class="text-3xl font-bold text-white mb-6 drop-shadow">
         Riwayat Booking
     </h1>
@@ -15,98 +19,144 @@
         <table class="w-full">
 
             <thead class="bg-amber-600 text-white">
-
                 <tr>
                     <th class="p-4 text-left">Kamar</th>
                     <th class="p-4 text-left">Durasi</th>
                     <th class="p-4 text-left">Total</th>
                     <th class="p-4 text-left">Status</th>
-                    <th class="p-4 text-left">Bukti</th>
+                    <th class="p-4 text-left">Metode</th>
                     <th class="p-4 text-left">Tanggal</th>
                 </tr>
-
             </thead>
 
             <tbody>
 
-                @forelse($bookings as $booking)
+            @forelse($bookings as $booking)
 
-                    <tr class="border-b hover:bg-gray-50 transition">
+            @php
+                $status = $booking->status_pembayaran;
+            @endphp
 
-                        <!-- KAMAR -->
-                        <td class="p-4 font-semibold text-gray-700">
-                            {{ $booking->kamar->nama_kamar ?? '-' }}
-                        </td>
+            <!-- MAIN ROW -->
+            <tr class="border-b hover:bg-gray-50">
 
-                        <!-- DURASI -->
-                        <td class="p-4">
-                            {{ $booking->durasi }} bulan
-                        </td>
+                <td class="p-4 font-semibold text-gray-700">
+                    {{ $booking->kamar->nama_kamar ?? '-' }}
+                </td>
 
-                        <!-- TOTAL -->
-                        <td class="p-4 text-amber-700 font-bold">
-                            Rp {{ number_format($booking->total_harga, 0, ',', '.') }}
-                        </td>
+                <td class="p-4">
+                    {{ $booking->durasi }} bulan
+                </td>
 
-                        <!-- STATUS -->
-                        <td class="p-4">
+                <td class="p-4 text-amber-700 font-bold">
+                    Rp {{ number_format($booking->total_harga, 0, ',', '.') }}
+                </td>
 
-                            @if($booking->status_pembayaran == 'pending')
-                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm font-semibold">
-                                    Pending
-                                </span>
+                <td class="p-4">
+                    @if($status == 'pending')
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
+                            Pending
+                        </span>
 
-                            @elseif($booking->status_pembayaran == 'dibayar')
-                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-semibold">
-                                    Dibayar
-                                </span>
+                    @elseif($status == 'dibayar' || $status == 'settlement')
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                            Lunas
+                        </span>
 
-                            @elseif($booking->status_pembayaran == 'ditolak')
-                                <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm font-semibold">
-                                    Ditolak
-                                </span>
+                    @elseif($status == 'expired')
+                        <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">
+                            Expired
+                        </span>
 
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
+                    @elseif($status == 'cancel')
+                        <span class="px-3 py-1 bg-gray-300 text-gray-800 rounded-full text-sm">
+                            Dibatalkan
+                        </span>
 
-                        </td>
+                    @elseif($status == 'gagal')
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                            Gagal
+                        </span>
 
-                        <!-- BUKTI PEMBAYARAN -->
-                        <td class="p-4">
+                    @elseif($status == 'ditolak')
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                            Ditolak
+                        </span>
+                    @endif
+                </td>
 
-                            @if($booking->bukti_pembayaran)
+                <td class="p-4 text-sm text-gray-600">
+                    {{ $booking->payment_type ?? 'Midtrans' }}
+                </td>
 
-                                <img
-                                    src="{{ asset('storage/' . $booking->bukti_pembayaran) }}"
-                                    class="w-20 h-20 object-cover rounded-lg border cursor-pointer hover:scale-105 transition"
-                                    onclick="window.open(this.src)"
-                                >
+                <td class="p-4 text-gray-500 text-sm">
+                    {{ $booking->created_at->format('d M Y') }}
+                </td>
 
-                            @else
-                                <span class="text-gray-400 text-sm">
-                                    Belum upload
-                                </span>
-                            @endif
+            </tr>
 
-                        </td>
+            <!-- ACTION -->
+            @if($status == 'pending')
+            <tr class="bg-gray-50 border-b">
+                <td colspan="6" class="px-4 py-3">
 
-                        <!-- TANGGAL -->
-                        <td class="p-4 text-gray-500 text-sm">
-                            {{ $booking->created_at->format('d M Y') }}
-                        </td>
+                    <div class="flex gap-2 flex-wrap">
 
-                    </tr>
+                        <!-- BAYAR -->
+                        @if($booking->snap_token)
+                            <button
+                                onclick="payAgain('{{ $booking->snap_token }}')"
+                                class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Bayar
+                            </button>
+                        @endif
 
-                @empty
+                        <!-- CANCEL -->
+                        <form action="{{ route('booking.cancel', $booking->id) }}"
+                              method="POST">
+                            @csrf
+                            @method('PATCH')
 
-                    <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
-                            Belum ada booking
-                        </td>
-                    </tr>
+                            <button
+                                onclick="return confirm('Yakin batalkan booking?')"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Batalkan
+                            </button>
+                        </form>
 
-                @endforelse
+                        <!-- UPLOAD -->
+                        @if(!$booking->bukti_pembayaran)
+                            <form action="{{ route('booking.uploadBukti', $booking->id) }}"
+                                  method="POST"
+                                  enctype="multipart/form-data"
+                                  class="flex gap-2 items-center">
+                                @csrf
+
+                                <input type="file" name="bukti_pembayaran" required
+                                       class="text-sm border rounded px-2 py-1">
+
+                                <button type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
+                                    Upload
+                                </button>
+                            </form>
+                        @endif
+
+                    </div>
+
+                </td>
+            </tr>
+            @endif
+
+            @empty
+
+            <tr>
+                <td colspan="6" class="p-8 text-center text-gray-500">
+                    Belum ada booking
+                </td>
+            </tr>
+
+            @endforelse
 
             </tbody>
 
@@ -115,5 +165,31 @@
     </div>
 
 </div>
+
+<!-- MIDTRANS -->
+<script src="https://app.sandbox.midtrans.com/snap/snap.js"
+data-client-key="{{ config('midtrans.client_key') }}"></script>
+
+<script>
+function payAgain(token){
+
+    snap.pay(token, {
+
+        onSuccess: function(){
+            location.reload();
+        },
+
+        onPending: function(){
+            location.reload();
+        },
+
+        onError: function(){
+            alert('Gagal');
+        }
+
+    });
+
+}
+</script>
 
 @endsection

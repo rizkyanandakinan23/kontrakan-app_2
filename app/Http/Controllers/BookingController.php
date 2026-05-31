@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Notification;
 
 class BookingController extends Controller
 {
@@ -26,6 +27,14 @@ class BookingController extends Controller
     public function store(Request $request, $id)
     {
         $kamar = Kamar::findOrFail($id);
+
+        if ($kamar->status == 'terisi') {
+
+    return back()->with(
+        'error',
+        'Kamar sudah terisi'
+    );
+}
 
         $request->validate([
             'whatsapp' => 'required',
@@ -110,42 +119,105 @@ class BookingController extends Controller
     // CALLBACK MIDTRANS (WAJIB)
     // ======================
     public function callback(Request $request)
-    {
-        $serverKey = config('midtrans.server_key');
+{
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
 
-        $hashed = hash(
-            "sha512",
-            $request->order_id .
-            $request->status_code .
-            $request->gross_amount .
-            $serverKey
-        );
+    $notification = new Notification();
 
-        if ($hashed == $request->signature_key) {
+    $orderId = $notification->order_id;
+    $status  = $notification->transaction_status;
+    $paymentType = $notification->payment_type;
 
-            $booking = Booking::where('order_id', $request->order_id)->first();
+    $booking = Booking::where('order_id', $orderId)->first();
 
-            if (!$booking) {
-                return response()->json(['message' => 'Booking not found'], 404);
-            }
-
-            if ($request->transaction_status == 'settlement') {
-                $booking->update([
-                    'status_pembayaran' => 'dibayar'
-                ]);
-            } elseif ($request->transaction_status == 'pending') {
-                $booking->update([
-                    'status_pembayaran' => 'pending'
-                ]);
-            } elseif (in_array($request->transaction_status, ['cancel', 'expire', 'deny'])) {
-                $booking->update([
-                    'status_pembayaran' => 'ditolak'
-                ]);
-            }
-        }
-
-        return response()->json(['message' => 'callback processed']);
+    if (!$booking) {
+        return response()->json([
+            'message' => 'booking not found'
+        ], 404);
     }
+
+    switch ($status) {
+
+        case 'capture':
+        case 'settlement':
+
+            $booking->update([
+                'status_pembayaran' => 'dibayar',
+                'transaction_status' => $status,
+                'payment_type' => $paymentType,
+                'paid_at' => now()
+            ]);
+
+            $booking->kamar->update([
+                'status' => 'terisi'
+            ]);
+
+            break;
+
+        case 'pending':
+
+            $booking->update([
+                'status_pembayaran' => 'pending',
+                'transaction_status' => $status,
+                'payment_type' => $paymentType
+            ]);
+
+            break;
+
+        case 'expire':
+
+            $booking->update([
+                'status_pembayaran' => 'expired',
+                'transaction_status' => $status
+            ]);
+
+            break;
+
+        case 'deny':
+        case 'cancel':
+
+            $booking->update([
+                'status_pembayaran' => 'gagal',
+                'transaction_status' => $status
+            ]);
+
+            break;
+    }
+
+    return response()->json([
+        'message' => 'ok'
+    ]);
+}
+
+public function fakeSuccess($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    $booking->update([
+        'status_pembayaran' => 'dibayar',
+        'transaction_status' => 'settlement',
+        'payment_type' => 'qris',
+        'paid_at' => now()
+    ]);
+
+    return "SUCCESS SIMULATED";
+}
+
+public function cancel($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    if ($booking->status_pembayaran !== 'pending') {
+        return back()->with('error', 'Tidak bisa membatalkan');
+    }
+
+    $booking->update([
+        'status_pembayaran' => 'cancel'
+    ]);
+
+    return back()->with('success', 'Booking dibatalkan');
+}
 
     // ======================
     // UPLOAD BUKTI (OPTIONAL fallback)

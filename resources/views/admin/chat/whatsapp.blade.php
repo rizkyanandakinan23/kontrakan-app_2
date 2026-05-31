@@ -4,6 +4,11 @@
 
 @section('content')
 
+<!-- BACK BUTTON -->
+    <div class="mb-6">
+        @include('components.backtoadminpanel')
+    </div>
+
 <div class="h-screen flex bg-gray-100 overflow-hidden">
 
     {{-- ========================= --}}
@@ -659,8 +664,8 @@ form.addEventListener('submit', async function (e) {
 
 </script>
 
-<div class="mb-5">
-    @include('components.back')
-</div>
+
+
+
 
 @endsection

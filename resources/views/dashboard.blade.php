@@ -148,11 +148,11 @@
             </div>
 
             <a
-                href="{{ route('kamar.index') }}"
-                class="bg-white/20 backdrop-blur text-white px-5 py-3 rounded-2xl hover:bg-white/30 transition font-semibold"
-            >
-                Lihat Semua
-            </a>
+    href="{{ route('kamar.index') }}"
+    class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl transition font-semibold shadow-lg"
+>
+    Lihat Semua
+</a>
 
         </div>
 

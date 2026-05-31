@@ -142,6 +142,13 @@ public function deleteBooking($id)
     return back()->with('success', 'Booking dihapus');
 }
 
+public function bookingDetail($id)
+{
+    $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
+
+    return view('admin.booking.adminbookingdetail', compact('booking'));
+}
+
     /*
     |--------------------------------------------------------------------------
     | ================= KAMAR MANAGEMENT =================

@@ -1,4 +1,4 @@
-<a href="{{ url()->previous() }}"
+<a href="{{ route('admin.panel') }}"
    class="
         inline-flex items-center gap-2
         bg-amber-700 hover:bg-amber-800
@@ -12,7 +12,6 @@
    ">
 
     <span class="text-base">←</span>
-
-    <span>Kembali</span>
+    <span>Kembali Ke Dashboard Admin</span>
 
 </a>
