@@ -204,16 +204,18 @@ public function fakeSuccess($id)
     return "SUCCESS SIMULATED";
 }
 
+
 public function cancel($id)
 {
     $booking = Booking::findOrFail($id);
 
-    if ($booking->status_pembayaran !== 'pending') {
-        return back()->with('error', 'Tidak bisa membatalkan');
+    // hanya boleh cancel kalau masih pending Midtrans
+    if (!in_array($booking->transaction_status, ['pending'])) {
+        return back()->with('error', 'Booking tidak bisa dibatalkan');
     }
 
     $booking->update([
-        'status_pembayaran' => 'cancel'
+        'transaction_status' => 'cancel'
     ]);
 
     return back()->with('success', 'Booking dibatalkan');

@@ -39,11 +39,32 @@
             </div>
         </a>
 
-        <!-- MENU BUTTON -->
-        <button onclick="toggleSidebar()"
-                class="text-gray-700 text-3xl font-bold">
-            ☰
-        </button>
+        <!-- RIGHT SIDE -->
+<div class="flex items-center gap-4">
+
+    @auth
+        <div class="text-right leading-tight">
+            
+            <!-- NAMA LENGKAP -->
+            <p class="text-sm font-bold text-gray-800">
+                {{ auth()->user()->nama_lengkap }}
+            </p>
+
+            <!-- USERNAME -->
+            <p class="text-xs text-gray-500">
+                {{ auth()->user()->username }}
+            </p>
+
+        </div>
+    @endauth
+
+    <!-- MENU BUTTON -->
+    <button onclick="toggleSidebar()"
+            class="text-gray-700 text-3xl font-bold">
+        ☰
+    </button>
+
+</div>
 
     </div>
 </nav>
@@ -204,7 +225,7 @@
         <!-- EMAIL -->
         <div class="flex items-center gap-2">
             <img src="{{ asset('images/Gmail_icon_(2020).svg.png') }}" class="w-5 h-5" alt="Email">
-            <span>rizkyanandasmancis@gmail.com</span>
+            <span>kontrakanRDP@gmail.com</span>
         </div>
 
         <!-- ALAMAT -->

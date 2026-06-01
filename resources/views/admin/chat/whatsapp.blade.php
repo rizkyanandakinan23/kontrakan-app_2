@@ -1,13 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.adminlayouts')
 
 @section('title', 'Admin Chat')
 
 @section('content')
 
-<!-- BACK BUTTON -->
-    <div class="mb-6">
-        @include('components.backtoadminpanel')
-    </div>
+
 
 <div class="h-screen flex bg-gray-100 overflow-hidden">
 

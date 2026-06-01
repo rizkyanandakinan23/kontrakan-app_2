@@ -6,6 +6,11 @@
 
 <div class="max-w-5xl mx-auto">
 
+    <!-- BACK -->
+    <div class="mb-6">
+        @include('components.back')
+    </div>
+
     <!-- HEADER -->
     <div class="text-center mb-10">
 

@@ -4,6 +4,10 @@
 
 @section('content')
 
+@php
+    $status = $booking->transaction_status ?? 'pending';
+@endphp
+
 <div class="max-w-6xl mx-auto">
 
     <div class="mb-6">
@@ -34,7 +38,7 @@
             @forelse($bookings as $booking)
 
             @php
-                $status = $booking->status_pembayaran;
+                $status = $booking->transaction_status ?? 'pending';
             @endphp
 
             <!-- MAIN ROW -->
@@ -53,36 +57,33 @@
                 </td>
 
                 <td class="p-4">
+
                     @if($status == 'pending')
                         <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
                             Pending
                         </span>
 
-                    @elseif($status == 'dibayar' || $status == 'settlement')
+                    @elseif($status == 'settlement' || $status == 'capture')
                         <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
                             Lunas
                         </span>
 
-                    @elseif($status == 'expired')
+                    @elseif($status == 'expire')
                         <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">
                             Expired
                         </span>
 
-                    @elseif($status == 'cancel')
-                        <span class="px-3 py-1 bg-gray-300 text-gray-800 rounded-full text-sm">
+                    @elseif($status == 'cancel' || $status == 'deny')
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
                             Dibatalkan
                         </span>
 
-                    @elseif($status == 'gagal')
-                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
-                            Gagal
-                        </span>
-
-                    @elseif($status == 'ditolak')
-                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
-                            Ditolak
+                    @else
+                        <span class="px-3 py-1 bg-black text-white rounded-full text-sm">
+                            Unknown
                         </span>
                     @endif
+
                 </td>
 
                 <td class="p-4 text-sm text-gray-600">
@@ -102,7 +103,7 @@
 
                     <div class="flex gap-2 flex-wrap">
 
-                        <!-- BAYAR -->
+                        <!-- BAYAR ULANG -->
                         @if($booking->snap_token)
                             <button
                                 onclick="payAgain('{{ $booking->snap_token }}')"
@@ -118,29 +119,13 @@
                             @method('PATCH')
 
                             <button
-                                onclick="return confirm('Yakin batalkan booking?')"
-                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
-                                Batalkan
-                            </button>
+    type="submit"
+    onclick="return confirm('Yakin batalkan booking?')"
+    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+    Batalkan
+</button>
+
                         </form>
-
-                        <!-- UPLOAD -->
-                        @if(!$booking->bukti_pembayaran)
-                            <form action="{{ route('booking.uploadBukti', $booking->id) }}"
-                                  method="POST"
-                                  enctype="multipart/form-data"
-                                  class="flex gap-2 items-center">
-                                @csrf
-
-                                <input type="file" name="bukti_pembayaran" required
-                                       class="text-sm border rounded px-2 py-1">
-
-                                <button type="submit"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
-                                    Upload
-                                </button>
-                            </form>
-                        @endif
 
                     </div>
 
@@ -184,7 +169,7 @@ function payAgain(token){
         },
 
         onError: function(){
-            alert('Gagal');
+            alert('Pembayaran gagal');
         }
 
     });

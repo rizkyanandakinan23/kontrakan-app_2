@@ -34,7 +34,7 @@
                     Kontrakan Raden Panghulu Djaja
                 </span>
                 <p class="text-xs text-gray-500">
-                    Jl. Raden Panghulu Djaja no.23 Cimahpar, Bogor
+                    Jl. Raden Panghulu Djaja no.23 Cimahpar, Bogor Utara
                 </p>
             </div>
         </a>

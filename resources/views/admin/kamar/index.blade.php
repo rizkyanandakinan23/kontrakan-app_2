@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.adminlayouts')
 
 @section('title', 'Kelola Kamar')
 
@@ -8,9 +8,6 @@
    
 <div class="max-w-7xl mx-auto">
        
-    <div class="mb-6">
-        @include('components.backtoadminpanel')
-    </div>
 
     <!-- HEADER -->
     <div class="flex items-center justify-between mb-8">

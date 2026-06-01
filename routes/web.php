@@ -112,6 +112,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
         ->name('booking.riwayat');
 
+          Route::patch('/booking/{id}/cancel', [BookingController::class, 'cancel'])
+    ->name('booking.cancel');
+
 });
 
 /*
@@ -191,6 +194,8 @@ Route::middleware(['auth', 'is_admin'])
             Route::get('/booking/{id}', [AdminController::class, 'bookingDetail'])
     ->name('booking.detail');
 
+  
+
         /*
         |--------------------------------------------------------------------------
         | REVIEW MANAGEMENT
@@ -264,7 +269,6 @@ Route::post(
 )->name('midtrans.callback');
 
 Route::get('/fake-success/{id}', [BookingController::class, 'fakeSuccess']);
-Route::patch('/booking/{id}/cancel', [BookingController::class, 'cancel'])
-    ->name('booking.cancel');
+
 
 require __DIR__.'/auth.php';

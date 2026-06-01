@@ -21,10 +21,7 @@ class Booking extends Model
         'metode_pembayaran',
         'total_harga',
 
-        // STATUS
-        'status_pembayaran',
-        'bukti_pembayaran',
-
+ 
         // MIDTRANS
         'snap_token',
         'order_id',

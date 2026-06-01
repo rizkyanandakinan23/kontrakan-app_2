@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.adminlayouts')
 
 @section('title', 'Kelola User')
 
@@ -6,10 +6,6 @@
 
 <div class="max-w-7xl mx-auto">
 
-    <!-- BACK BUTTON -->
-    <div class="mb-6">
-        @include('components.backtoadminpanel')
-    </div>
     
     <!-- HEADER -->
     <div class="mb-8">

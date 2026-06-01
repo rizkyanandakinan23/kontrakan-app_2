@@ -61,7 +61,7 @@
             <div>
 
                 <img
-                    src="{{ asset('images/kamar1.jpg') }}"
+                    src="{{ asset('images/kontrakan_kamar/nine-steps-to-turn-your-home-into-a-rental-property_hero.jpg') }}"
                     alt="Kamar"
                     class="rounded-3xl shadow-xl w-full h-[420px] object-cover"
                 >

@@ -62,6 +62,11 @@
 
 <div class="max-w-7xl mx-auto">
 
+    <!-- BACK -->
+    <div class="mb-6">
+        @include('components.back')
+    </div>
+
     <div class="grid lg:grid-cols-2 gap-8 items-start">
 
         <!-- ========================= -->

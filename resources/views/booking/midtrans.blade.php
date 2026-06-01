@@ -6,6 +6,22 @@
 
 <div class="max-w-4xl mx-auto">
 
+
+    <div class="mb-6 flex justify-between items-center">
+
+    <!-- KIRI: BACK -->
+    <div>
+        @include('components.back')
+    </div>
+
+    <!-- KANAN: KE BERANDA -->
+    <a href="{{ route('home') }}"
+       class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow">
+        Kembali ke Halaman Utama
+    </a>
+
+</div>
+
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
         <!-- HEADER -->
@@ -88,11 +104,11 @@
                 <ul class="space-y-2 text-sm text-gray-700">
 
                     <li>
-                        ✓ Pembayaran diproses aman melalui Midtrans
+                        ✓ Pembayaran diproses aman
                     </li>
 
                     <li>
-                        ✓ Mendukung QRIS, GoPay, ShopeePay, Transfer Bank, dan E-Wallet
+                        ✓ Mendukung QRIS, GoPay, ShopeePay, Transfer Bank, dan E-Wallet lainnya
                     </li>
 
                     <li>

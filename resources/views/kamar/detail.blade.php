@@ -5,222 +5,177 @@
 @section('content')
 
 @php
-
-    /*
-    |--------------------------------------------------------------------------
-    | FOTO
-    |--------------------------------------------------------------------------
-    */
-
+    // ======================
+    // FOTO SAFE
+    // ======================
     $foto = $kamar->foto_kamar ?? [];
 
     if (is_string($foto)) {
-
         $decoded = json_decode($foto, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-
-            $foto = $decoded;
-
-        } else {
-
-            $foto = [];
-        }
+        $foto = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
     }
 
     if (!is_array($foto)) {
         $foto = [];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FASILITAS
-    |--------------------------------------------------------------------------
-    */
+    $foto = array_values($foto); // reset index
+    $mainImage = $foto[0] ?? 'default.jpg';
 
+    // ======================
+    // FASILITAS SAFE
+    // ======================
     $fasilitas = $kamar->fasilitas ?? [];
 
     if (is_string($fasilitas)) {
-
         $decoded = json_decode($fasilitas, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-
-            $fasilitas = $decoded;
-
-        } else {
-
-            $fasilitas = [];
-        }
+        $fasilitas = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
     }
 
     if (!is_array($fasilitas)) {
         $fasilitas = [];
     }
-
 @endphp
 
 <div class="max-w-7xl mx-auto">
 
-    <!-- ================================= -->
-    <!-- DETAIL KAMAR -->
-    <!-- ================================= -->
+    <!-- BACK -->
+    <div class="mb-6">
+        @include('components.back')
+    </div>
 
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
         <div class="grid lg:grid-cols-2 gap-10">
 
-            <!-- ================================= -->
-            <!-- SLIDER FOTO -->
-            <!-- ================================= -->
-
+            <!-- =========================
+                 IMAGE SECTION
+            ========================== -->
             <div class="p-6">
 
-                <!-- FOTO UTAMA -->
+                <!-- MAIN IMAGE + ARROW -->
+                <div class="relative">
 
-                <div class="mb-4">
+                    <button
+                        type="button"
+                        onclick="prevImage()"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white shadow-lg w-10 h-10 rounded-full flex items-center justify-center z-10"
+                    >
+                        ◀
+                    </button>
 
                     <img
                         id="mainImage"
-                        src="{{ asset('storage/' . ($foto[0] ?? 'default.jpg')) }}"
+                        src="{{ asset('storage/' . $mainImage) }}"
                         class="w-full h-[450px] object-cover rounded-3xl shadow-lg transition duration-300"
                     >
+
+                    <button
+                        type="button"
+                        onclick="nextImage()"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white shadow-lg w-10 h-10 rounded-full flex items-center justify-center z-10"
+                    >
+                        ▶
+                    </button>
 
                 </div>
 
                 <!-- THUMBNAIL -->
+                @if(count($foto) > 1)
+                <div class="mt-4 flex gap-4 overflow-x-auto px-2 pb-2">
 
-                <div class="flex gap-4 overflow-x-auto pb-2">
-
-                    @foreach($foto as $img)
+                    @foreach($foto as $index => $img)
 
                         <img
                             src="{{ asset('storage/' . $img) }}"
-                            onclick="changeImage(this)"
-                            class="w-28 h-28 object-cover rounded-2xl cursor-pointer border-4 border-transparent hover:border-amber-500 transition"
+                            onclick="setImage({{ $index }})"
+                            class="thumb w-24 h-24 object-cover rounded-xl cursor-pointer border-4 border-transparent hover:border-amber-500 transition flex-shrink-0"
                         >
 
                     @endforeach
 
                 </div>
+                @endif
 
             </div>
 
-            <!-- ================================= -->
-            <!-- DETAIL -->
-            <!-- ================================= -->
-
+            <!-- =========================
+                 DETAIL SECTION
+            ========================== -->
             <div class="p-8">
 
                 <!-- STATUS -->
-
                 <div class="mb-4">
 
                     @if($kamar->status == 'terisi')
-
-    <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
-        Sudah Disewa
-    </span>
-
-@elseif($kamar->status == 'kosong')
-
-    <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
-        Masih Tersedia
-    </span>
-
-@endif
+                        <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
+                            Sudah Disewa
+                        </span>
+                    @else
+                        <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
+                            Masih Tersedia
+                        </span>
+                    @endif
 
                 </div>
 
                 <!-- NAMA -->
-
                 <h1 class="text-5xl font-bold text-gray-800 mb-4">
-
                     {{ $kamar->nama_kamar }}
-
                 </h1>
 
                 <!-- HARGA -->
-
                 <div class="mb-8">
-
-                    <p class="text-gray-500 text-lg">
-                        Harga Sewa
-                    </p>
-
+                    <p class="text-gray-500 text-lg">Harga Sewa</p>
                     <h2 class="text-5xl font-extrabold text-amber-700 mt-2">
-
                         Rp {{ number_format($kamar->harga, 0, ',', '.') }}
-
                     </h2>
-
-                    <p class="text-gray-400 mt-1">
-                        / bulan
-                    </p>
-
+                    <p class="text-gray-400 mt-1">/ bulan</p>
                 </div>
 
                 <!-- DESKRIPSI -->
-
                 <div class="mb-8">
-
                     <h3 class="text-2xl font-bold text-gray-800 mb-3">
                         Deskripsi
                     </h3>
-
                     <p class="text-gray-600 leading-relaxed text-lg">
-
                         {{ $kamar->deskripsi }}
-
                     </p>
-
                 </div>
 
                 <!-- FASILITAS -->
-
                 <div class="mb-10">
-
                     <h3 class="text-2xl font-bold text-gray-800 mb-4">
                         Fasilitas
                     </h3>
 
                     <div class="flex flex-wrap gap-3">
 
-                        @foreach($fasilitas as $item)
-
+                        @forelse($fasilitas as $item)
                             <div class="bg-gray-100 px-5 py-3 rounded-2xl text-gray-700 font-medium shadow-sm">
-
                                 ✔ {{ $item }}
-
                             </div>
-
-                        @endforeach
+                        @empty
+                            <p class="text-gray-400">Belum ada fasilitas</p>
+                        @endforelse
 
                     </div>
-
                 </div>
 
                 <!-- BUTTON -->
+                <div class="flex gap-4 flex-wrap">
 
-                <div class="flex flex-wrap gap-4">
-
-                    <a
-                        href="{{ route('kamar.index') }}"
-                        class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-semibold transition"
-                    >
+                    <a href="{{ route('kamar.index') }}"
+                       class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-semibold transition">
                         Kembali
                     </a>
 
                     @if($kamar->status == 'kosong')
-
-    <a
-        href="{{ route('booking.index', $kamar->id) }}"
-        class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition"
-    >
-        Sewa Sekarang
-    </a>
-
-@endif
+                        <a href="{{ route('booking.index', $kamar->id) }}"
+                           class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition">
+                            Sewa Sekarang
+                        </a>
+                    @endif
 
                 </div>
 
@@ -231,11 +186,47 @@
     </div>
 
     @include('components.maps')
-
     @include('components.review', ['kamar' => $kamar])
-
     @include('components.floating-chat')
 
+</div>
 
+<!-- ======================
+     IMAGE GALLERY SCRIPT
+====================== -->
+<script>
+let images = @json($foto);
+let currentIndex = 0;
+
+function updateImage() {
+    if (!images.length) return;
+
+    document.getElementById('mainImage').src = '/storage/' + images[currentIndex];
+
+    document.querySelectorAll('.thumb').forEach((el, i) => {
+        el.classList.remove('border-amber-500');
+        if (i === currentIndex) {
+            el.classList.add('border-amber-500');
+        }
+    });
+}
+
+function nextImage() {
+    if (!images.length) return;
+    currentIndex = (currentIndex + 1) % images.length;
+    updateImage();
+}
+
+function prevImage() {
+    if (!images.length) return;
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateImage();
+}
+
+function setImage(index) {
+    currentIndex = index;
+    updateImage();
+}
+</script>
 
 @endsection
