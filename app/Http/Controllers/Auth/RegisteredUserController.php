@@ -30,14 +30,54 @@ class RegisteredUserController extends Controller
     {
         // VALIDASI
         $request->validate([
-            'nama_lengkap' => ['required', 'string', 'max:255'],
-            'username'     => ['required', 'string', 'max:255', 'unique:users'],
-            'email'        => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'no_telp'      => ['nullable', 'string', 'max:20'],
-            'alamat'       => ['nullable', 'string'],
-            'foto'         => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'password'     => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+
+    'nama_lengkap' => ['required', 'string', 'max:255'],
+
+    'username' => [
+        'required',
+        'string',
+        'max:255',
+        'unique:users'
+    ],
+
+    'email' => [
+        'required',
+        'string',
+        'email',
+        'max:255',
+        'unique:users'
+    ],
+
+    'no_telp' => [
+        'required',
+        'string',
+        'regex:/^08[0-9]{8,13}$/',
+    ],
+
+    'alamat' => [
+        'required',
+        'string'
+    ],
+
+    'foto' => [
+        'nullable',
+        'image',
+        'mimes:jpg,jpeg,png',
+        'max:2048'
+    ],
+
+    'password' => [
+        'required',
+        'confirmed',
+        Rules\Password::defaults()
+    ],
+
+], [
+
+    'no_telp.regex' =>
+        'Nomor telepon harus diawali 08 dan hanya berisi angka.',
+
+]);
 
         // BUAT USER
         $user = User::create([
@@ -50,21 +90,18 @@ class RegisteredUserController extends Controller
         ]);
 
         // UPLOAD FOTO (JIKA ADA)
-        if ($request->hasFile('foto')) {
+if ($request->hasFile('foto')) {
 
-            $file = $request->file('foto');
-            $filename = time().'_'.$file->getClientOriginalName();
+    $user->foto = $request->file('foto')
+        ->store('profile', 'public');
 
-            $file->move(public_path('images/user'), $filename);
+    $user->save();
+}
 
-            $user->foto = $filename;
-            $user->save();
-        }
+       event(new Registered($user));
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect()->route('dashboard');
+return redirect()
+    ->route('login')
+    ->with('success', 'Registrasi berhasil. Silakan login menggunakan akun Anda.');
     }
 }

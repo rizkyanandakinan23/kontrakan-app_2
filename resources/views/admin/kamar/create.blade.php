@@ -9,7 +9,7 @@
     <div class="bg-white rounded-3xl shadow-2xl p-8">
 
         <h1 class="text-3xl font-bold mb-8 text-gray-800">
-            Tambah Kamar
+            Tambah Kontrakan
         </h1>
 
         <form
@@ -24,7 +24,7 @@
             <div class="mb-5">
 
                 <label class="block mb-2 font-semibold">
-                    Nama / Nomor Kamar
+                    Nama / Nomor Kontrakan
                 </label>
 
                 <input
@@ -35,47 +35,6 @@
                 >
 
             </div>
-
-            <!-- FASILITAS -->
-<div>
-    <label class="block font-semibold mb-3">
-        Fasilitas
-    </label>
-
-    <div class="grid grid-cols-2 gap-3">
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="WiFi">
-            WiFi
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="Kasur">
-            Kasur
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="AC">
-            AC
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="Kamar Mandi">
-            Kamar Mandi
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="Lemari">
-            Lemari
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" name="fasilitas[]" value="Dapur & Wastafel">
-            Dapur & Wastafel
-        </label>
-
-    </div>
-</div>
 
             <!-- DESKRIPSI -->
             <div class="mb-5">
@@ -112,7 +71,7 @@
             <div class="mb-8">
 
                 <label class="block mb-2 font-semibold">
-                    Foto Kamar
+                    Foto Kontrakan
                 </label>
 
                 <input    type="file"    name="foto_kamar[]"    multiple    class="w-full border rounded-lg p-3">
@@ -124,7 +83,7 @@
                 type="submit"
                 class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-xl font-semibold"
             >
-                Simpan Kamar
+                Simpan Kontrakan
             </button>
 
         </form>

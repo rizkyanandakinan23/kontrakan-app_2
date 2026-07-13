@@ -26,52 +26,22 @@ class ProfileController extends Controller
      */
 public function update(ProfileUpdateRequest $request): RedirectResponse
 {
-    $validated = $request->validate([
-
-        'nama_lengkap' => [
-            'required',
-            'string',
-            'max:255',
-        ],
-
-        'username' => [
-            'required',
-            'string',
-            'max:255',
-            'unique:users,username,' . auth()->id(),
-        ],
-
-        'foto' => [
-            'nullable',
-            'image',
-            'mimes:jpg,jpeg,png',
-            'max:2048',
-        ],
-
-    ]);
+    $validated = $request->validated();
 
     $user = $request->user();
 
     $data = [
         'nama_lengkap' => $validated['nama_lengkap'],
-        'username' => $validated['username'],
+        'username'     => $validated['username'],
+        'no_telp'      => $validated['no_telp'],
     ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPLOAD FOTO PROFILE
-    |--------------------------------------------------------------------------
-    */
 
     if ($request->hasFile('foto')) {
 
-        // hapus foto lama
         if ($user->foto) {
-
             \Storage::disk('public')->delete($user->foto);
         }
 
-        // upload foto baru
         $data['foto'] = $request->file('foto')
             ->store('profile', 'public');
     }

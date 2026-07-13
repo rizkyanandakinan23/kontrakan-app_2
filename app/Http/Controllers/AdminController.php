@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Kamar;
 use App\Models\User;
-use App\Models\Booking;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\Booking;
+use App\Models\Payment;
+use Carbon\Carbon; // ✅ FIX (huruf besar)
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\SystemNotification;
 
 class AdminController extends Controller
 {
@@ -20,147 +24,366 @@ class AdminController extends Controller
     |--------------------------------------------------------------------------
     */
     public function index()
-    {
-        $totalUser = User::count();
-        $totalKamar = Kamar::count();
-        $kamarTerisi = Kamar::where('status', 'terisi')->count();
+{
+    // ======================
+    // BASIC
+    // ======================
+    $totalUser = User::count();
 
-        $users = User::latest()->take(5)->get();
+    $kamars = Kamar::with([
+        'bookings.payment'
+    ])->get();
 
-        return view('admin.adminpanel', compact(
-            'totalUser',
-            'totalKamar',
-            'kamarTerisi',
-            'users'
-        ));
+    $tanggal = Carbon::parse(
+    request('tanggal', now()->toDateString())
+);
+
+    $totalKamar = $kamars->count();
+
+    $today = Carbon::today();
+
+    foreach ($kamars as $kamar) {
+
+    $status = 'tersedia';
+    $bookingAktif = null;
+
+    foreach ($kamar->bookings as $booking) {
+
+        if ($booking->status == 'cancel') {
+            continue;
+        }
+
+        if (
+            !$booking->payment ||
+            $booking->payment->transaction_status != 'settlement'
+        ) {
+            continue;
+        }
+
+        $mulai = Carbon::parse($booking->tanggal_masuk);
+
+        $selesai = Carbon::parse($booking->tanggal_selesai)
+            ->addDays(2);
+
+        if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
+
+            $status = $tanggal->lt($mulai)
+                ? 'booking'
+                : 'terisi';
+
+            // <<< INI YANG KURANG
+            $bookingAktif = $booking;
+
+            break;
+        }
     }
 
+    $kamar->status_booking = $status;
+
+    // <<< SIMPAN KE OBJECT
+    $kamar->booking_aktif = $bookingAktif;
+}
+
+    $kamarTersedia = $kamars->where('status_booking', 'tersedia')->count();
+    $kamarBooking  = $kamars->where('status_booking', 'booking')->count();
+    $kamarTerisi   = $kamars->where('status_booking', 'terisi')->count();
+
+    $users = User::latest()->take(10)->get();
+
+    // ======================
+    // TRANSAKSI
+    // ======================
+    $transaksiQuery = Payment::where('transaction_status', 'settlement');
+
+    $totalTransaksi = (clone $transaksiQuery)->count();
+
+    $totalPendapatan = (clone $transaksiQuery)->sum('jumlah');
+
+    // ======================
+    // RATA-RATA PENDAPATAN
+    // ======================
+    $pendapatanPerBulan = (clone $transaksiQuery)
+        ->whereNotNull('paid_at')
+        ->selectRaw('YEAR(paid_at) as tahun, MONTH(paid_at) as bulan, SUM(jumlah) as total')
+        ->groupBy('tahun', 'bulan')
+        ->pluck('total');
+
+    $rataPendapatan = $pendapatanPerBulan->isNotEmpty()
+        ? round($pendapatanPerBulan->avg())
+        : 0;
+
+    // ======================
+    // RATA-RATA TRANSAKSI
+    // ======================
+    $transaksiPerBulan = (clone $transaksiQuery)
+        ->whereNotNull('paid_at')
+        ->selectRaw('YEAR(paid_at) as tahun, MONTH(paid_at) as bulan, COUNT(*) as total')
+        ->groupBy('tahun', 'bulan')
+        ->pluck('total');
+
+    $rataTransaksi = $transaksiPerBulan->isNotEmpty()
+        ? round($transaksiPerBulan->avg(), 1)
+        : 0;
+
+    // ======================
+    // GRAFIK PENDAPATAN
+    // ======================
+    $grafikPendapatan = Payment::select(
+            DB::raw('YEAR(paid_at) as tahun'),
+            DB::raw('MONTH(paid_at) as bulan'),
+            DB::raw('SUM(jumlah) as total')
+        )
+        ->where('transaction_status', 'settlement')
+        ->whereNotNull('paid_at')
+        ->groupBy('tahun', 'bulan')
+        ->orderBy('tahun')
+        ->orderBy('bulan')
+        ->get();
+
+    $labelGrafik = [];
+    $dataGrafik = [];
+
+    foreach ($grafikPendapatan as $item) {
+
+        $labelGrafik[] = Carbon::create()
+            ->month($item->bulan)
+            ->translatedFormat('F') . ' ' . $item->tahun;
+
+        $dataGrafik[] = $item->total;
+    }
+
+    // ======================
+    // BOOKING TERBARU
+    // ======================
+    $bookingTerbaru = Booking::with([
+            'user',
+            'kamar'
+        ])
+        ->latest()
+        ->take(6)
+        ->get();
+
+    return view('admin.adminpanel', compact(
+        'totalUser',
+        'totalKamar',
+        'kamarTersedia',
+        'kamarBooking',
+        'kamarTerisi',
+        'users',
+        'totalTransaksi',
+        'totalPendapatan',
+        'rataPendapatan',
+        'rataTransaksi',
+        'labelGrafik',
+        'dataGrafik',
+        'bookingTerbaru'
+    ));
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
     public function userIndex()
-{
-    $users = User::latest()->get();
-
-    return view('admin.user.adminuser', compact('users'));
-}
-
-public function deleteUser($id)
-{
-    $user = User::findOrFail($id);
-
-    // ❌ blok admin
-    if ($user->is_admin == 1) {
-        return back()->with('error', 'Akun admin tidak dapat dihapus.');
-    }
-
-    $user->delete();
-
-    return back()->with('success', 'Akun user berhasil dihapus');
-}
-
-    /*
-    |--------------------------------------------------------------------------
-    | ================= BOOKING MANAGEMENT =================
-    |--------------------------------------------------------------------------
-    */
-
-    // LIST BOOKING
-    public function bookingIndex()
     {
-        $bookings = Booking::with(['user', 'kamar'])
-            ->latest()
-            ->get();
+        $users = User::latest()->get();
+        return view('admin.user.adminuser', compact('users'));
+    }
 
-        return view('admin.booking.adminbooking', compact('bookings'));
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->is_admin) {
+            return back()->with('error', 'Akun admin tidak dapat dihapus.');
+        }
+
+        $user->delete();
+
+
+        $user->notify(new SystemNotification(
+    'Akun Dihapus',
+    'Akun Anda telah dihapus oleh admin'
+));
+
+        return back()->with('success', 'Akun user berhasil dihapus');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | APPROVE BOOKING
+    | BOOKING MANAGEMENT
     |--------------------------------------------------------------------------
     */
-   public function approveBooking($id)
+    public function bookingIndex()
 {
-    $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
+    $bookings = Booking::with([
+        'user',
+        'kamar',
+        'payment'
+    ])
+    ->latest()
+    ->get();
 
-    // UPDATE STATUS BOOKING
-    $booking->update([
-        'status_pembayaran' => 'dibayar'
-    ]);
-
-    // UPDATE STATUS KAMAR
-    if ($booking->kamar) {
-
-        $booking->kamar->update([
-            'status' => 'terisi'
-        ]);
-
-    }
-
-    // FORMAT NOMOR
-    $nomor = preg_replace('/[^0-9]/', '', $booking->whatsapp);
-
-    if (substr($nomor, 0, 1) == '0') {
-        $nomor = '62' . substr($nomor, 1);
-    }
-
-    // PESAN WA
-    $pesan = urlencode(
-        "Halo {$booking->user->nama_lengkap}, "
-        . "booking kamar '{$booking->kamar->nama_kamar}' "
-        . "telah DISETUJUI dan pembayaran berhasil diverifikasi. "
-        . "Silakan datang ke kontrakan sesuai jadwal. Terima kasih."
-    );
-
-    $waLink = "https://wa.me/{$nomor}?text={$pesan}";
-
-    return redirect()
-        ->back()
-        ->with('success', 'Booking berhasil diapprove')
-        ->with('wa_link', $waLink);
+    return view('admin.booking.adminbooking', compact('bookings'));
 }
+
+    public function approveBooking($id)
+    {
+        $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
+
+        $booking->update([
+    'status_pembayaran' => 'dibayar'
+]);
+
+$booking->payment()->update([
+    'transaction_status' => 'settlement',
+    'paid_at' => now()
+]);
+        // notif ke admin
+$admins = User::where('is_admin', 1)->get();
+
+foreach ($admins as $admin) {
+    $admin->notify(new SystemNotification(
+        'Booking Dibayar',
+        'User ' . $booking->user->nama_lengkap .
+        ' membayar kamar ' . $booking->kamar->nama_kamar
+    ));
+}
+
+
+        // FORMAT NOMOR WA
+        $nomor = preg_replace('/[^0-9]/', '', $booking->whatsapp);
+
+        if (substr($nomor, 0, 1) == '0') {
+            $nomor = '62' . substr($nomor, 1);
+        }
+
+        // PESAN WA
+        $pesan = urlencode(
+            "Halo {$booking->user->nama_lengkap}, "
+            . "booking kamar '{$booking->kamar->nama_kamar}' telah DISETUJUI. "
+            . "Silakan datang sesuai jadwal. Terima kasih."
+        );
+
+        $waLink = "https://wa.me/{$nomor}?text={$pesan}";
+
+        return back()
+            ->with('success', 'Booking berhasil diapprove')
+            ->with('wa_link', $waLink);
+    }
 
 public function rejectBooking($id)
 {
-    $booking = Booking::findOrFail($id);
+    $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
 
-    $booking->update([
-        'status_pembayaran' => 'ditolak'
+   $booking->update([
+    'status_pembayaran'=>'ditolak'
+]);
+
+if ($booking->payment) {
+
+    $booking->payment->update([
+        'transaction_status'=>'deny'
     ]);
+
+}
 
     return back()->with('success', 'Pembayaran ditolak');
 }
 
-public function deleteBooking($id)
-{
-    $booking = Booking::findOrFail($id);
+    public function deleteBooking($id)
+    {
+        $booking = Booking::findOrFail($id);
 
-    if ($booking->bukti_pembayaran) {
-        \Storage::disk('public')->delete($booking->bukti_pembayaran);
+        if ($booking->bukti_pembayaran) {
+            Storage::disk('public')->delete($booking->bukti_pembayaran);
+        }
+
+        $booking->delete();
+
+        return back()->with('success', 'Booking dihapus');
     }
 
-    $booking->delete();
-
-    return back()->with('success', 'Booking dihapus');
-}
-
-public function bookingDetail($id)
+ public function bookingDetail($id)
 {
     $booking = Booking::with(['user', 'kamar'])->findOrFail($id);
 
-    return view('admin.booking.adminbookingdetail', compact('booking'));
+    return view(
+        'admin.booking.adminbookingdetail',
+        compact('booking')
+    );
 }
 
     /*
     |--------------------------------------------------------------------------
-    | ================= KAMAR MANAGEMENT =================
+    | KAMAR MANAGEMENT
     |--------------------------------------------------------------------------
     */
+    public function kamarIndex(Request $request)
+{
+    $tanggal = Carbon::parse(
+        $request->tanggal ?? now()->toDateString()
+    );
 
-    public function kamarIndex()
-    {
-        $kamars = Kamar::latest()->get();
+    $kamars = Kamar::with([
+        'bookings.payment',
+        'bookings.user'
+    ])->latest()->get();
 
-        return view('admin.kamar.index', compact('kamars'));
+    foreach ($kamars as $kamar) {
+
+        // Default
+        $status = 'tersedia';
+        $bookingAktif = null;
+
+        foreach ($kamar->bookings as $booking) {
+
+            // Lewati booking yang dibatalkan
+            if ($booking->status == 'cancel') {
+                continue;
+            }
+
+            // Hanya booking yang sudah lunas
+            if (
+                !$booking->payment ||
+                $booking->payment->transaction_status != 'settlement'
+            ) {
+                continue;
+            }
+
+            $mulai = Carbon::parse($booking->tanggal_masuk);
+
+            // Masa sewa + jeda 2 hari
+            $selesai = Carbon::parse($booking->tanggal_selesai)
+                ->addDays(2);
+
+            // Apakah tanggal yang dipilih berada pada periode booking?
+            if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
+
+                if ($tanggal->lt($mulai)) {
+                    $status = 'booking';
+                } else {
+                    $status = 'terisi';
+                }
+
+                // Simpan booking yang aktif pada tanggal tersebut
+                $bookingAktif = $booking;
+
+                break;
+            }
+        }
+
+        // Kirim ke Blade
+        $kamar->status_booking = $status;
+        $kamar->booking_aktif = $bookingAktif;
     }
+
+    return view('admin.kamar.index', compact(
+        'kamars',
+        'tanggal'
+    ));
+}
 
     public function kamarCreate()
     {
@@ -171,9 +394,7 @@ public function bookingDetail($id)
     {
         $request->validate([
             'nama_kamar' => 'required',
-            'deskripsi' => 'nullable',
             'harga' => 'required|numeric',
-            'fasilitas' => 'nullable|array',
             'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -189,10 +410,17 @@ public function bookingDetail($id)
             'nama_kamar' => $request->nama_kamar,
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
-            'status' => 'kosong',
-            'fasilitas' => $request->fasilitas ?? [],
             'foto_kamar' => $fotoPaths,
         ]);
+
+        $admins = User::where('is_admin', 1)->get();
+
+foreach ($admins as $admin) {
+    $admin->notify(new SystemNotification(
+        'Kamar Baru Ditambahkan',
+        'Kamar ' . $request->nama_kamar . ' berhasil dibuat'
+    ));
+}
 
         return redirect()->route('admin.kamar.index')
             ->with('success', 'Kamar berhasil ditambahkan');
@@ -204,55 +432,113 @@ public function bookingDetail($id)
     }
 
     public function kamarUpdate(Request $request, Kamar $kamar)
-    {
-        $request->validate([
-            'nama_kamar' => 'required',
-            'deskripsi' => 'nullable',
-            'harga' => 'required|numeric',
-            'fasilitas' => 'nullable|array',
-            'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+{
+    $request->validate([
+        'nama_kamar' => 'required',
+        'harga' => 'required|numeric',
+        'foto_kamar' => 'nullable|array|max:20',
+        'foto_kamar.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
 
-        $fotoLama = $kamar->foto_kamar ?? [];
+    $fotoLama = is_array($kamar->foto_kamar)
+        ? $kamar->foto_kamar
+        : [];
 
-        if (!is_array($fotoLama)) {
-            $fotoLama = [];
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS FOTO YANG DICENTANG
+    |--------------------------------------------------------------------------
+    */
+    if ($request->filled('hapus_foto')) {
+
+        foreach ($request->hapus_foto as $fotoHapus) {
+
+            Storage::disk('public')->delete($fotoHapus);
+
+            $fotoLama = array_filter(
+                $fotoLama,
+                fn($item) => $item != $fotoHapus
+            );
         }
-
-        $fotoBaru = $fotoLama;
-
-        if ($request->hasFile('foto_kamar')) {
-
-            foreach ($fotoLama as $foto) {
-                Storage::disk('public')->delete($foto);
-            }
-
-            $fotoBaru = [];
-
-            foreach ($request->file('foto_kamar') as $foto) {
-                $fotoBaru[] = $foto->store('kamar', 'public');
-            }
-        }
-
-        $kamar->update([
-            'nama_kamar' => $request->nama_kamar,
-            'deskripsi' => $request->deskripsi,
-            'harga' => $request->harga,
-            'status' => $request->status ?? $kamar->status,
-            'fasilitas' => $request->fasilitas ?? [],
-            'foto_kamar' => $fotoBaru,
-        ]);
-
-        return redirect()->route('admin.kamar.index')
-            ->with('success', 'Kamar berhasil diupdate');
     }
+
+    if ($request->filled('urutan_foto')) {
+
+    $urutan = json_decode($request->urutan_foto, true);
+
+    if (is_array($urutan)) {
+
+        $baru = [];
+
+        foreach ($urutan as $path) {
+
+            if (in_array($path, $fotoLama)) {
+
+                $baru[] = $path;
+
+            }
+
+        }
+
+        $fotoLama = $baru;
+
+    }
+
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | TAMBAH FOTO BARU
+    |--------------------------------------------------------------------------
+    */
+    if ($request->hasFile('foto_kamar')) {
+
+    foreach ($request->file('foto_kamar') as $foto) {
+
+        $fotoLama[] = $foto->store('kamar','public');
+
+    }
+
+}
+
+        if ($request->filled('urutan_foto')) {
+
+    $urutan = json_decode($request->urutan_foto, true);
+
+    $fotoUrut = [];
+
+    foreach ($urutan as $path) {
+        if (in_array($path, $fotoLama)) {
+            $fotoUrut[] = $path;
+        }
+    }
+
+    // tambahkan foto baru yang belum ada di urutan
+    foreach ($fotoLama as $path) {
+        if (!in_array($path, $fotoUrut)) {
+            $fotoUrut[] = $path;
+        }
+    }
+
+    $fotoLama = $fotoUrut;
+}
+
+    $kamar->update([
+    'nama_kamar'=>$request->nama_kamar,
+    'deskripsi'=>$request->deskripsi,
+    'harga'=>$request->harga,
+    'foto_kamar'=>array_values($fotoLama),
+]);
+
+    return redirect()
+        ->route('admin.kamar.index')
+        ->with('success', 'Kamar berhasil diupdate');
+}
 
     public function kamarDestroy(Kamar $kamar)
     {
-        $fotos = $kamar->foto_kamar ?? [];
-
-        if (is_array($fotos)) {
-            foreach ($fotos as $foto) {
+        if (is_array($kamar->foto_kamar)) {
+            foreach ($kamar->foto_kamar as $foto) {
                 Storage::disk('public')->delete($foto);
             }
         }
@@ -261,154 +547,182 @@ public function bookingDetail($id)
 
         return back()->with('success', 'Kamar berhasil dihapus');
     }
-
     /*
-|--------------------------------------------------------------------------
-| ================= REVIEW MANAGEMENT =================
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | REVIEW MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+    public function reviewIndex()
+    {
+        $reviews = Review::with(['user', 'kamar'])
+            ->withCount('reports')
+            ->latest()
+            ->get();
 
-public function reviewIndex()
-{
-    $reviews = Review::with([
-        'user',
-        'kamar'
-    ])
-    ->withCount('reports')
-    ->latest()
-    ->get();
+        return view('admin.review.adminreview', compact('reviews'));
+    }
 
-    return view('admin.review.adminreview', compact('reviews'));
-}
+    public function reviewDelete($id)
+    {
+        $review = Review::findOrFail($id);
 
-public function reviewDelete($id)
+        ReviewReport::where('review_id', $review->id)->delete();
+        $review->delete();
+
+        return back()->with('success', 'Review berhasil dihapus');
+    }
+
+    public function reviewIgnore($id)
 {
     $review = Review::findOrFail($id);
 
-    /*
-    |--------------------------------------------------------------------------
-    | HAPUS REPORT TERKAIT
-    |--------------------------------------------------------------------------
-    */
-
+    // Hapus seluruh laporan terhadap review
     ReviewReport::where('review_id', $review->id)->delete();
 
-    /*
-    |--------------------------------------------------------------------------
-    | HAPUS REVIEW
-    |--------------------------------------------------------------------------
-    */
-
-    $review->delete();
-
-    return back()->with('success', 'Review berhasil dihapus');
+    return back()->with(
+        'success',
+        'Laporan review berhasil diabaikan.'
+    );
 }
 
-/*
-|--------------------------------------------------------------------------
-| CHAT MANAGEMENT
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | CHAT MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+    public function chatIndex()
+    {
+        $conversations = Conversation::with(['user', 'messages'])
+            ->latest()
+            ->get();
 
-public function chatIndex()
+        return view('admin.chat.whatsapp', compact('conversations'));
+    }
+
+    public function chatOpen(Conversation $conversation)
+    {
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->orderBy('created_at')
+            ->get();
+
+        return response()->json([
+            'user' => [
+                'nama' => $conversation->user->nama_lengkap
+            ],
+            'messages' => $messages->map(function ($msg) {
+                return [
+                    'sender_id' => $msg->sender_id,
+                    'message' => $msg->message,
+                    'image' => $msg->image,
+                    'time' => $msg->created_at->format('H:i'),
+                    'is_admin' => $msg->sender_id == auth()->id()
+                ];
+            })
+        ]);
+    }
+
+    public function chatSend(Request $request, Conversation $conversation)
+    {
+        $request->validate([
+            'message' => 'nullable|string',
+            'image' => 'nullable|image|max:2048'
+        ]);
+
+        if (!$request->message && !$request->hasFile('image')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Pesan kosong'
+            ]);
+        }
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('chat', 'public');
+        }
+
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'sender_id' => auth()->id(),
+            'message' => $request->message ?? '',
+            'image' => $imagePath,
+        ]);
+
+        $conversation->user->notify(
+    new SystemNotification(
+        'Balasan Chat',
+        'Admin membalas pesan chat Anda.'
+    )
+);
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'message' => $message->message,
+                'image' => $message->image,
+                'created_at' => $message->created_at->format('H:i')
+            ]
+        ]);
+    }
+
+    
+public function pembayaranIndex()
 {
-    $conversations = Conversation::with([
-            'user',
-            'messages'
-        ])
+    $totalPendapatan = Payment::where(
+    'transaction_status',
+    'settlement'
+)->sum('jumlah');
+
+    $totalTransaksi = Payment::where(
+    'transaction_status',
+    'settlement'
+)->count();
+
+    $laporanBulanan = Payment::select(
+            DB::raw('YEAR(paid_at) as tahun'),
+            DB::raw('MONTH(paid_at) as bulan'),
+            DB::raw('COUNT(*) as jumlah_transaksi'),
+            DB::raw('SUM(jumlah) as total_pendapatan')
+        )
+        ->where('transaction_status', 'settlement')
+        ->whereNotNull('paid_at')
+        ->groupBy('tahun', 'bulan')
+        ->orderBy('tahun', 'desc')
+        ->orderBy('bulan', 'desc')
+        ->get();
+
+
+    $detailPembayaran = Payment::with([
+    'booking.user',
+    'booking.kamar'
+])
+->where('transaction_status','settlement')
+->orderBy('paid_at','desc')
+->get();
+
+
+    return view('admin.kelolapembayaran', compact(
+        'totalPendapatan',
+        'totalTransaksi',
+        'laporanBulanan',
+        'detailPembayaran'
+    ));
+}
+
+public function notificationIndex()
+{
+    $admin = auth()->user();
+
+    $notifications = $admin->notifications()
         ->latest()
         ->get();
 
-    return view('admin.chat.whatsapp', compact('conversations'));
-}
+    // mark all as read (simple & clean)
+    $admin->unreadNotifications()
+        ->update(['read_at' => now()]);
 
-public function chatOpen(Conversation $conversation)
-{
-    $messages = $conversation->messages()
-        ->with('sender')
-        ->orderBy('created_at')
-        ->get();
-
-    return response()->json([
-
-        'user' => [
-            'nama' => $conversation->user->nama_lengkap
-        ],
-
-        'messages' => $messages->map(function($msg){
-
-            return [
-
-                'sender_id' => $msg->sender_id,
-
-                'message' => $msg->message,
-
-                'image' => $msg->image,
-
-                'time' => $msg->created_at->format('H:i'),
-
-                'is_admin' =>
-                    $msg->sender_id == auth()->id()
-
-            ];
-
-        })
-
-    ]);
-}
-
-public function chatSend(Request $request, Conversation $conversation)
-{
-    $request->validate([
-        'message' => 'nullable|string',
-        'image' => 'nullable|image|max:2048'
-    ]);
-
-    if (!$request->message && !$request->hasFile('image')) {
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Pesan kosong'
-        ]);
-
-    }
-
-    $imagePath = null;
-
-    if ($request->hasFile('image')) {
-
-        $imagePath = $request->file('image')
-            ->store('chat', 'public');
-
-    }
-
-    $message = Message::create([
-
-        'conversation_id' => $conversation->id,
-
-        'sender_id' => auth()->id(),
-
-        'message' => $request->message ?? '',
-
-        'image' => $imagePath,
-
-    ]);
-
-    return response()->json([
-
-        'status' => true,
-
-        'data' => [
-
-            'message' => $message->message,
-
-            'image' => $message->image,
-
-            'created_at' => $message->created_at->format('H:i')
-
-        ]
-
-    ]);
+    return view('admin.notifications.index', compact('notifications'));
 }
 
 }

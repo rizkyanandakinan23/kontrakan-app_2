@@ -7,33 +7,57 @@
 
     <title>@yield('title', 'Kontrakan Raden Panghulu Djaja')</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: '#8B5E3C',
+                secondary: '#EAD7B7',
+                accent: '#F4C95D',
+                cream: '#FAF8F5'
+            }
+        }
+    }
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="font-['Plus_Jakarta_Sans']">
+<body class="font-['Plus Jakarta Sans'] bg-cream text-gray-800 antialiased">
 
 <!-- BACKGROUND -->
 <div class="fixed inset-0 -z-10">
-    <img src="https://wallpapercave.com/wp/wp12225686.jpg" class="w-full h-full object-cover">
+    <img
+        src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
+        class="w-full h-full object-cover"
+        alt="Background">
 </div>
-<div class="fixed inset-0 bg-black/30 backdrop-blur-[2px] -z-10"></div>
+
+<div class="fixed inset-0 bg-[#2D2018]/55 backdrop-blur-sm -z-10"></div>
 
 <!-- ===================== NAVBAR ===================== -->
-<nav class="bg-gray-100 shadow-sm border-b border-gray-200">
+<nav class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-[#E8DDD1] shadow-lg">
 
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
 
         <!-- LOGO -->
         <a href="{{ route('home') }}" class="flex items-center gap-3">
-            <img src="{{ asset('images/logo project.png') }}" class="w-10 h-10 rounded-full object-cover">
+            <img
+    src="{{ asset('images/logo project.png') }}"
+    class="w-12 h-12 rounded-2xl object-cover shadow-lg border border-amber-200"
+    alt="Logo">
 
             <div>
-                <span class="text-2xl font-bold text-amber-700 block">
-                    Kontrakan Raden Panghulu Djaja
-                </span>
-                <p class="text-xs text-gray-500">
+                <span class="block text-xl lg:text-2xl font-extrabold tracking-wide text-amber-700">
+    Kontrakan Raden Panghulu Djaja
+</span>
+                <p class="text-xs text-gray-500 mt-1">
                     Jl. Raden Panghulu Djaja no.23 Cimahpar, Bogor
                 </p>
             </div>
@@ -43,19 +67,53 @@
 <div class="flex items-center gap-4">
 
     @auth
-        <div class="text-right leading-tight">
-            
-            <!-- NAMA LENGKAP -->
-            <p class="text-sm font-bold text-gray-800">
-                {{ auth()->user()->nama_lengkap }}
-            </p>
+        <div class="flex items-center gap-3">
 
-            <!-- USERNAME -->
-            <p class="text-xs text-gray-500">
-                {{ auth()->user()->username }}
-            </p>
+ <img
+    src="{{ Auth::user()->foto ? asset('storage/' . Auth::user()->foto) : asset('images/default-avatar.png') }}"
+    alt="Avatar"
+    class="w-12 h-12 rounded-full object-cover border-2 border-secondary shadow-md"
+>
 
-        </div>
+    <div class="text-right leading-tight">
+
+        <p class="text-sm font-semibold text-gray-800">
+            {{ auth()->user()->nama_lengkap }}
+        </p>
+
+        <p class="text-xs text-gray-500">
+            {{ auth()->user()->username }}
+        </p>
+
+    </div>
+
+</div>
+
+        <!-- NOTIFICATION -->
+        <a href="{{ route('notifications.user') }}"
+           class="relative text-2xl">
+
+            🔔
+
+            @if(auth()->user()->unreadNotifications->count() > 0)
+
+                <span
+                    class="absolute -top-2 -right-2
+                           bg-red-500 text-white
+                           text-[10px]
+                           min-w-[18px]
+                           h-[18px]
+                           flex items-center justify-center
+                           rounded-full">
+
+                    {{ auth()->user()->unreadNotifications->count() }}
+
+                </span>
+
+            @endif
+
+        </a>
+
     @endauth
 
     <!-- MENU BUTTON -->
@@ -68,6 +126,7 @@
 
     </div>
 </nav>
+
 
 <!-- ===================== OVERLAY ===================== -->
 <div id="overlay"
@@ -103,19 +162,34 @@
             <!-- USER BOX -->
             <div class="bg-gray-100 rounded-xl p-4 border">
 
-                <p class="text-xs text-gray-500 mb-1">
-                    Login sebagai:
-                </p>
+    <div class="flex items-center gap-4">
 
-                <p class="font-semibold text-gray-800">
-                    {{ auth()->user()->username }}
-                </p>
+        <!-- AVATAR -->
+        <img
+            src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('images/default-avatar.png') }}"
+            alt="Avatar"
+            class="w-14 h-14 rounded-full object-cover border-2 border-amber-500 shadow">
 
-                <p class="text-xs text-gray-500 mt-1">
-                    {{ auth()->user()->email }}
-                </p>
+        <!-- USER INFO -->
+        <div>
 
-            </div>
+            <p class="font-semibold text-gray-800">
+                {{ auth()->user()->nama_lengkap }}
+            </p>
+
+            <p class="text-sm text-gray-500">
+                {{ auth()->user()->username }}
+            </p>
+
+            <p class="text-xs text-gray-400">
+                {{ auth()->user()->email }}
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
 
             <!-- ADMIN PANEL -->
             @if(auth()->user()->is_admin)

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Kamar')
+@section('title', 'Daftar Kontrakan')
 
 @section('content')
 
@@ -10,14 +10,57 @@
     <div class="text-center mb-10">
 
         <h1 class="text-4xl font-bold text-white mb-3">
-            Daftar Kamar
+            Daftar Kontrakan
         </h1>
 
         <p class="text-white/90">
-            Pilih kamar kontrakan yang nyaman dan sesuai kebutuhan Anda.
+            Pilih kontrakan yang nyaman dan sesuai kebutuhan Anda.
         </p>
 
     </div>
+
+      <!-- SEARCH -->
+    @include('components.search-filter')
+
+    <div class="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+
+    <form method="GET" action="{{ route('kamar.index') }}">
+
+        <!-- Pertahankan search & sort -->
+        <input type="hidden" name="search" value="{{ request('search') }}">
+        <input type="hidden" name="sort" value="{{ request('sort') }}">
+
+        <div class="flex flex-wrap items-end gap-4">
+
+            <div>
+                <label class="block text-sm font-semibold mb-2">
+                    Tanggal Check-in
+                </label>
+
+                <input
+                    type="date"
+                    name="tanggal"
+                    value="{{ request('tanggal', date('Y-m-d')) }}"
+                    min="{{ date('Y-m-d') }}"
+                    class="border rounded-xl px-4 py-3"
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 rounded-xl"
+            >
+                Cek Ketersediaan
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+    <!-- STATISTIK -->
+    @include('components.statistik-kamar')
 
     <!-- CARD KAMAR -->
     <div class="grid md:grid-cols-3 gap-8">
@@ -40,24 +83,30 @@
 
                 <img
     src="{{ asset('storage/' . ($foto[0] ?? 'default.jpg')) }}"
-    class="w-full h-64 object-cover object-center hover:scale-110 transition duration-500"
+    class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto"
 >
 
                 <div class="absolute top-4 right-4">
 
-                    @if(($kamar->status ?? '') == 'terisi')
+                   @if($kamar->status_booking == 'tersedia')
 
-                        <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full">
-                            Terisi
-                        </span>
+    <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">
+        Tersedia
+    </span>
 
-                    @elseif(($kamar->status ?? '') == 'kosong')
+@elseif($kamar->status_booking == 'booking')
 
-                        <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">
-                            Tersedia
-                        </span>
+    <span class="bg-yellow-500 text-white text-xs px-3 py-1 rounded-full">
+        Sudah Dibooking
+    </span>
 
-                    @endif
+@else
+
+    <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full">
+        Sedang Ditempati
+    </span>
+
+@endif
 
                 </div>
 
@@ -74,30 +123,6 @@
                     {{ $kamar->deskripsi }}
                 </p>
 
-                <!-- FACILITY -->
-                <div class="space-y-2 text-sm text-gray-600 mb-5">
-
-                    @php
-                        $fasilitas = $kamar->fasilitas;
-
-                        if (is_string($fasilitas)) {
-                            $decoded = json_decode($fasilitas, true);
-                            $fasilitas = is_array($decoded)
-                                ? $decoded
-                                : [$fasilitas];
-                        }
-                    @endphp
-
-                    @foreach($fasilitas ?? [] as $item)
-
-                        <div class="flex items-center gap-2">
-                            <span>✔️</span>
-                            <span>{{ $item }}</span>
-                        </div>
-
-                    @endforeach
-
-                </div>
 
                 <!-- PRICE -->
                 <div class="flex items-center justify-between">
@@ -118,26 +143,11 @@
 
                     </div>
 
-                    <!-- BUTTON -->
-@if(($kamar->status ?? '') == 'terisi')
-
-    <button
-        disabled
-        class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold cursor-not-allowed opacity-80"
-    >
-        Sudah Terisi
-    </button>
-
-@elseif(($kamar->status ?? '') == 'kosong')
-
-    <a
-        href="{{ route('kamar.show', $kamar->id) }}"
-        class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition inline-block"
-    >
-        Lihat Detail
-    </a>
-
-@endif
+                 <a href="{{ route('kamar.show', [
+                    'id' => $kamar->id,
+                   'tanggal' => request('tanggal')    ]) }}"
+                 class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-xl font-semibold transition inline-block">
+                Lihat Detail </a>
 
                 </div>
 
@@ -152,11 +162,11 @@
             <div class="bg-white rounded-3xl p-10 text-center shadow-xl">
 
                 <h2 class="text-2xl font-bold text-gray-700 mb-2">
-                    Belum Ada Kamar
+                    Belum Ada Kontrakan
                 </h2>
 
                 <p class="text-gray-500">
-                    Saat ini belum ada kamar yang tersedia.
+                    Saat ini belum ada Kontrakan yang tersedia.
                 </p>
 
             </div>

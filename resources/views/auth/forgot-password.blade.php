@@ -7,13 +7,12 @@
 <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow mt-10">
 
     <h2 class="text-2xl font-bold text-center text-amber-700 mb-6">
-        Forgot Password
+        Lupa kata sandi
     </h2>
 
     <div class="mb-4 text-sm text-gray-600">
-        Forgot your password? No problem. Just let us know your email
-        address and we will email you a password reset link that will
-        allow you to choose a new one.
+        Lupa kata sandi? Masukkan alamat email yang terdaftar pada akun Anda.
+         Kami akan mengirimkan tautan untuk mengatur ulang kata sandi agar Anda dapat kembali mengakses akun.
     </div>
 
     <!-- Session Status -->
@@ -44,6 +43,7 @@
                 value="{{ old('email') }}"
                 required
                 autofocus
+                placeholder="Masukkan email Anda"
             >
 
             <x-input-error

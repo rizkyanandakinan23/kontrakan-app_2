@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Notifications\SystemNotification;
 
 class ChatController extends Controller
 {
@@ -82,6 +83,14 @@ class ChatController extends Controller
             'message' => $request->message ?? '',
             'image' => $imagePath,
         ]);
+
+        $admin->notify(
+    new SystemNotification(
+        'Pesan Chat Baru',
+        $user->nama_lengkap .
+        ' mengirim pesan pada layanan chat.'
+    )
+);
 
         // =========================
         // RESPONSE JSON (FRONTEND FRIENDLY)

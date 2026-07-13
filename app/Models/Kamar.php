@@ -10,20 +10,22 @@ class Kamar extends Model
         'nama_kamar',
         'deskripsi',
         'harga',
-        'fasilitas',
         'foto_kamar',
-        'status',
     ];
 
     protected $casts = [
         'foto_kamar' => 'array',
-        'fasilitas' => 'array',
     ];
 
     public function reviews()
 {
     return $this->hasMany(Review::class);
 }
+
+public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
     
 }
 

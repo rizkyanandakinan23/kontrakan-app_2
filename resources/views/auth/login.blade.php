@@ -9,8 +9,14 @@
     <div class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
 
         <h2 class="text-3xl font-bold text-center text-amber-700 mb-6">
-            Login
+            Login Penyewa
         </h2>
+
+        @if(session('success'))
+    <div class="mb-4 rounded-lg border border-green-200 bg-green-100 px-4 py-3 text-green-700">
+        {{ session('success') }}
+    </div>
+@endif
 
         <!-- Session Status -->
         <x-auth-session-status
@@ -35,6 +41,7 @@
                     value="{{ old('email') }}"
                     required
                     autofocus
+                    placeholder="Masukkan email Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -49,13 +56,14 @@
             <div class="mb-4">
 
                 <label class="block text-gray-700 mb-2">
-                    Password
+                    Kata Sandi
                 </label>
 
                 <input
                     type="password"
                     name="password"
                     required
+                    placeholder="Masukkan kata sandi Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -80,7 +88,7 @@
                     for="remember_me"
                     class="ml-2 text-sm text-gray-600"
                 >
-                    Remember me
+                    ingat saya
                 </label>
 
             </div>
@@ -94,7 +102,7 @@
                         href="{{ route('password.request') }}"
                         class="text-sm text-amber-700 hover:underline"
                     >
-                        Forgot your password?
+                        Lupa Kata sandi
                     </a>
 
                 @endif

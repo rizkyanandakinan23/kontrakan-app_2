@@ -12,11 +12,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="font-['Plus_Jakarta_Sans']">
-
+<body class="font-['Plus Jakarta Sans'] bg-cream text-gray-800 antialiased">
+    
 <!-- ================= BACKGROUND ================= -->
 <div class="fixed inset-0 -z-10">
-    <img src="https://wallpapercave.com/wp/wp12225686.jpg" class="w-full h-full object-cover">
+    <img
+        src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
+        class="w-full h-full object-cover"
+        alt="Background">
 </div>
 <div class="fixed inset-0 bg-black/30 backdrop-blur-[2px] -z-10"></div>
 
@@ -43,6 +46,28 @@
 
         <!-- USER ACTION -->
         <div class="flex items-center gap-4">
+
+            <!-- 🔔 NOTIFICATION -->
+<div class="relative">
+
+    <a href="{{ route('admin.notifications') }}"
+       class="text-xl relative">
+
+        🔔
+
+        @php
+            $unread = auth()->user()->unreadNotifications->count();
+        @endphp
+
+        @if($unread > 0)
+            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+                {{ $unread }}
+            </span>
+        @endif
+
+    </a>
+
+</div>
 
             <span class="text-sm text-gray-700">
                 {{ Auth::user()->nama_lengkap ?? 'Admin' }}
@@ -93,47 +118,73 @@
     <div class="max-w-7xl mx-auto flex gap-6">
 
         <!-- SIDEBAR -->
-        <aside class="w-72 bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-6 h-fit">
+<aside id="sidebar"
+    class="w-72 bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-6 h-fit transition-all duration-300">
 
-            <h2 class="text-xl font-bold text-amber-700 mb-6">
-                Admin Menu
-            </h2>
+    <!-- HEADER SIDEBAR -->
+    <div class="flex items-center justify-between mb-6">
 
-            <nav class="space-y-3 text-sm font-medium">
+        <h2 id="menuTitle"
+            class="text-xl font-bold text-amber-700 whitespace-nowrap">
+            Admin Menu
+        </h2>
 
-                <a href="{{ route('admin.panel') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    📊 Dashboard
-                </a>
+        <button onclick="toggleSidebar()"
+            class="bg-amber-600 hover:bg-amber-700 text-white w-9 h-9 rounded-xl flex items-center justify-center">
+            ☰
+        </button>
 
-                <a href="{{ route('admin.kamar.index') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    🏠 Kelola Kamar
-                </a>
+    </div>
 
-                <a href="{{ route('admin.booking.index') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    📑 Kelola Booking
-                </a>
+    <nav class="space-y-3 text-sm font-medium">
 
-                <a href="{{ route('admin.user.index') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    👤 Kelola User
-                </a>
+        <a href="{{ route('admin.panel') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">📊</span>
+            <span class="menu-text">Dashboard</span>
+        </a>
 
-                <a href="{{ route('admin.review.index') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    ⭐ Review
-                </a>
+        <a href="{{ route('admin.kamar.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">🏠</span>
+            <span class="menu-text">Kelola Kontrakan</span>
+        </a>
 
-                <a href="{{ route('admin.chat.index') }}" class="block px-4 py-3 rounded-xl hover:bg-amber-100">
-                    💬 Chat User
-                </a>
+        <a href="{{ route('admin.booking.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">📑</span>
+            <span class="menu-text">Kelola Booking</span>
+        </a>
 
-                <hr class="my-4">
+        <a href="{{ route('admin.pembayaran.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">💰</span>
+            <span class="menu-text">Kelola Pembayaran</span>
+        </a>
 
-                <a href="{{ route('home') }}" class="block px-4 py-3 rounded-xl hover:bg-gray-100">
-                    ↩ Kembali ke Website
-                </a>
+        <a href="{{ route('admin.user.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">👤</span>
+            <span class="menu-text">Kelola User</span>
+        </a>
 
-            </nav>
+        <a href="{{ route('admin.review.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">⭐</span>
+            <span class="menu-text">Review</span>
+        </a>
 
-        </aside>
+        <a href="{{ route('admin.chat.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
+            <span class="text-lg">💬</span>
+            <span class="menu-text">Chat User</span>
+        </a>
+
+        <hr class="my-4">
+
+    </nav>
+
+</aside>
 
         <!-- PAGE CONTENT -->
         <div class="flex-1">
@@ -197,6 +248,42 @@
     </div>
 
 </footer>
+
+<script>
+
+function toggleSidebar() {
+
+    const sidebar = document.getElementById('sidebar');
+    const menuTitle = document.getElementById('menuTitle');
+    const menuTexts = document.querySelectorAll('.menu-text');
+
+    if (sidebar.classList.contains('w-72')) {
+
+        sidebar.classList.remove('w-72');
+        sidebar.classList.add('w-20');
+
+        menuTitle.classList.add('hidden');
+
+        menuTexts.forEach(item => {
+            item.classList.add('hidden');
+        });
+
+    } else {
+
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-72');
+
+        menuTitle.classList.remove('hidden');
+
+        menuTexts.forEach(item => {
+            item.classList.remove('hidden');
+        });
+
+    }
+
+}
+
+</script>
 
 </body>
 </html>

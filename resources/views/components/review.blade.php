@@ -2,152 +2,120 @@
     $reviews = $kamar->reviews ?? collect();
 @endphp
 
-<!-- ================================= -->
-<!-- REVIEW SECTION -->
-<!-- ================================= -->
+<div id="review"></div>
 
+<!-- REVIEW SECTION -->
 <div class="bg-white rounded-3xl shadow-2xl mt-10 p-8">
 
-    <div class="flex items-center justify-between mb-8">
+    <!-- HEADER -->
+    <div class="flex items-center justify-between mb-6">
 
-        <h2 class="text-3xl font-bold text-gray-800">
+        <h2 class="text-2xl font-bold text-gray-800">
             Review Penghuni
         </h2>
 
         <div class="text-right">
-
-            <p class="text-gray-500 text-sm">
-                Total Review
-            </p>
-
-            <h3 class="text-2xl font-bold text-amber-700">
+            <p class="text-gray-500 text-sm">Total Review</p>
+            <h3 class="text-xl font-bold text-amber-700">
                 {{ $reviews->count() }}
             </h3>
-
         </div>
 
     </div>
 
-    <!-- SUCCESS -->
+    <!-- ALERT -->
     @if(session('success'))
-        <div class="bg-green-100 border border-green-200 text-green-700 px-5 py-4 rounded-2xl mb-8">
+        <div class="bg-green-100 text-green-700 px-4 py-3 rounded-xl mb-4">
             {{ session('success') }}
         </div>
     @endif
 
-    <!-- ERROR -->
     @if(session('error'))
-        <div class="bg-red-100 border border-red-200 text-red-700 px-5 py-4 rounded-2xl mb-8">
+        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">
             {{ session('error') }}
         </div>
     @endif
 
-    <!-- VALIDATION -->
-    @if ($errors->any())
-        <div class="bg-red-100 border border-red-200 text-red-700 px-5 py-4 rounded-2xl mb-8">
-            <ul class="list-disc ml-5">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- ================================= -->
-    <!-- FORM REVIEW -->
-    <!-- ================================= -->
-
+    <!-- FORM REVIEW (ONLY IF AUTH) -->
     @auth
-        <form action="{{ route('review.store', $kamar->id) }}" method="POST" class="mb-12">
+
+        <form action="{{ route('review.store', $kamar->id) }}" method="POST" class="mb-8">
             @csrf
 
-            <div class="mb-6">
-                <label class="block font-semibold text-gray-700 mb-3">
-                    Rating
-                </label>
+            <div class="mb-3">
+                <label class="text-sm font-semibold">Rating</label>
 
                 <select name="rating"
-                    class="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-amber-500"
-                >
-                    <option value="5">⭐⭐⭐⭐⭐ (5)</option>
-                    <option value="4">⭐⭐⭐⭐ (4)</option>
-                    <option value="3">⭐⭐⭐ (3)</option>
-                    <option value="2">⭐⭐ (2)</option>
-                    <option value="1">⭐ (1)</option>
+                    class="w-full border rounded-xl px-3 py-2 mt-1">
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="1">⭐</option>
                 </select>
             </div>
 
-            <div class="mb-6">
-                <label class="block font-semibold text-gray-700 mb-3">
-                    Komentar
-                </label>
+            <div class="mb-3">
+                <label class="text-sm font-semibold">Komentar</label>
 
-                <textarea
-                    name="komentar"
-                    rows="5"
-                    required
-                    class="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-amber-500"
-                    placeholder="Bagikan pengalaman Anda..."
-                ></textarea>
+                <textarea name="komentar"
+                    rows="4"
+                    class="w-full border rounded-xl px-3 py-2 mt-1"
+                    placeholder="Tulis pengalaman Anda..."></textarea>
             </div>
 
-            <button type="submit"
-                class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold"
-            >
+            <button class="bg-amber-700 text-white px-5 py-2 rounded-xl">
                 Kirim Review
             </button>
         </form>
+
     @else
-        <div class="bg-yellow-100 border border-yellow-200 text-yellow-700 px-5 py-4 rounded-2xl mb-10">
-            Silakan login terlebih dahulu untuk memberikan review.
+        <div class="bg-yellow-100 text-yellow-700 px-4 py-3 rounded-xl mb-6">
+            Login untuk memberikan review.
         </div>
     @endauth
 
-    <!-- ================================= -->
     <!-- LIST REVIEW -->
-    <!-- ================================= -->
-
-    <div class="space-y-6">
+    <div class="space-y-4">
 
         @forelse($reviews->sortByDesc('created_at') as $review)
 
-            <div class="border border-gray-200 rounded-3xl p-6 hover:shadow-lg transition">
+            <div class="border rounded-2xl p-5">
 
-                <div class="flex justify-between mb-4">
+                <div class="flex justify-between">
 
                     <div>
-                        <h4 class="font-bold text-lg">
-                            {{ $review->user->name }}
+
+                        <h4 class="font-bold">
+                            {{ $review->user->nama_lengkap ?? 'User' }}
                         </h4>
 
-                        <div class="text-yellow-500">
-                            @for($i = 1; $i <= $review->rating; $i++)
-                                ⭐
-                            @endfor
+                        <div class="text-yellow-500 text-sm">
+                            {{ str_repeat('⭐', $review->rating) }}
                         </div>
+
                     </div>
 
-                    <span class="text-sm text-gray-400">
+                    <span class="text-xs text-gray-400">
                         {{ $review->created_at->format('d M Y') }}
                     </span>
 
                 </div>
 
-                <p class="text-gray-600 mb-5">
+                <p class="mt-2 text-gray-600">
                     {{ $review->komentar }}
                 </p>
 
                 @auth
-                    <div class="flex gap-3">
+                    <div class="mt-3 flex gap-2">
 
                         @if(auth()->id() == $review->user_id)
 
-                            <form action="{{ route('admin.review.delete', $review->id) }}" method="POST"
-                                  onsubmit="return confirm('Hapus review ini?')">
+                            <form action="{{ route('review.destroy', $review->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
 
-                                <button class="bg-red-100 text-red-700 px-4 py-2 rounded-xl">
+                                <button class="text-red-600 text-sm">
                                     Hapus
                                 </button>
                             </form>
@@ -157,8 +125,7 @@
                             <button
                                 type="button"
                                 onclick="openReportModal({{ $review->id }})"
-                                class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-xl"
-                            >
+                                class="text-yellow-600 text-sm">
                                 Report
                             </button>
 
@@ -171,10 +138,8 @@
 
         @empty
 
-            <div class="text-center py-16">
-                <div class="text-6xl mb-4">⭐</div>
-                <h3 class="text-2xl font-bold">Belum Ada Review</h3>
-                <p class="text-gray-500">Jadilah yang pertama memberi review.</p>
+            <div class="text-center text-gray-500 py-10">
+                Belum ada review
             </div>
 
         @endforelse
@@ -182,78 +147,51 @@
     </div>
 </div>
 
-<!-- ================================= -->
 <!-- MODAL REPORT -->
-<!-- ================================= -->
+<div id="reportModal"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 
-<div id="reportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-
-    <div class="bg-white rounded-3xl w-full max-w-md p-8 relative">
+    <div class="bg-white w-full max-w-md p-6 rounded-2xl relative">
 
         <button onclick="closeReportModal()"
-            class="absolute top-4 right-4 text-gray-400 text-2xl"
-        >
+            class="absolute top-3 right-3 text-gray-500 text-xl">
             &times;
         </button>
 
-        <h2 class="text-2xl font-bold mb-6">Report Review</h2>
+        <h2 class="text-xl font-bold mb-4">Report Review</h2>
 
         <form id="reportForm" method="POST">
             @csrf
             @method('PATCH')
 
-            <select name="alasan" class="w-full border rounded-2xl p-3 mb-6">
-                <option value="">Pilih Alasan</option>
+            <select name="alasan" class="w-full border rounded-xl p-2 mb-4">
+                <option value="">Pilih alasan</option>
                 <option value="Spam">Spam</option>
-                <option value="Bahasa Kasar">Bahasa Kasar</option>
-                <option value="Informasi Palsu">Informasi Palsu</option>
+                <option value="Kasar">Kasar</option>
+                <option value="Hoax">Hoax</option>
                 <option value="Promosi">Promosi</option>
-                <option value="Tidak Pantas">Tidak Pantas</option>
             </select>
 
-            <div class="flex justify-end gap-3">
-
-                <button type="button"
-                    onclick="closeReportModal()"
-                    class="bg-gray-200 px-4 py-2 rounded-xl"
-                >
-                    Batal
-                </button>
-
-                <button class="bg-yellow-500 text-white px-4 py-2 rounded-xl">
-                    Kirim
-                </button>
-
-            </div>
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-xl w-full">
+                Kirim
+            </button>
 
         </form>
 
     </div>
 </div>
 
-<!-- ================================= -->
-<!-- SCRIPT -->
-<!-- ================================= -->
-
 <script>
-
-function openReportModal(reviewId)
+function openReportModal(id)
 {
-    const modal = document.getElementById('reportModal');
-    const form = document.getElementById('reportForm');
-
-    form.action = `/review/${reviewId}/report`;
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    document.getElementById('reportForm').action = `/review/${id}/report`;
+    document.getElementById('reportModal').classList.remove('hidden');
+    document.getElementById('reportModal').classList.add('flex');
 }
 
 function closeReportModal()
 {
-    const modal = document.getElementById('reportModal');
-
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+    document.getElementById('reportModal').classList.add('hidden');
+    document.getElementById('reportModal').classList.remove('flex');
 }
-
 </script>

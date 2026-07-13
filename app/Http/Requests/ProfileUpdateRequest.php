@@ -33,7 +33,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 'unique:users,username,' . $this->user()->id,
             ],
-
+            'no_telp' => ['required', 'string', 'max:20'],
             'foto' => [
     'nullable',
     'image',

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\SystemNotification;
 
 use App\Models\Review;
 use App\Models\Kamar;
 use App\Models\ReviewReport;
+use App\Models\User;
+use App\Models\Booking;
 
 class ReviewController extends Controller
 {
@@ -18,23 +21,53 @@ class ReviewController extends Controller
     */
 
     public function store(Request $request, $id)
-    {
-        $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'komentar' => 'required'
-        ]);
+{
+    $request->validate([
+        'rating' => 'required|integer|min:1|max:5',
+        'komentar' => 'required'
+    ]);
 
-        $kamar = Kamar::findOrFail($id);
+    $kamar = Kamar::findOrFail($id);
 
-        Review::create([
-            'user_id' => Auth::id(),
-            'kamar_id' => $kamar->id,
-            'rating' => $request->rating,
-            'komentar' => $request->komentar
-        ]);
+    $userId = Auth::id();
 
-        return back()->with('success', 'Review berhasil dikirim.');
+    // =====================================
+    // CEK USER SUDAH BOOKING & LUNAS
+    // =====================================
+    $hasBooking = Booking::where('user_id', $userId)
+    ->where('kamar_id', $kamar->id)
+    ->whereHas('payment', function ($q) {
+        $q->where('status', 'success');
+    })
+    ->exists();
+
+    if (!$hasBooking) {
+        return back()->with('error', 'Anda hanya bisa memberi review setelah menyewa kamar ini.');
     }
+
+    // =====================================
+    // CEK REVIEW DUPLIKAT (OPTIONAL TAPI DISARANKAN)
+    // =====================================
+    $alreadyReview = Review::where('user_id', $userId)
+        ->where('kamar_id', $kamar->id)
+        ->exists();
+
+    if ($alreadyReview) {
+        return back()->with('error', 'Anda sudah memberikan review untuk kamar ini.');
+    }
+
+    // =====================================
+    // SIMPAN REVIEW
+    // =====================================
+    Review::create([
+        'user_id' => $userId,
+        'kamar_id' => $kamar->id,
+        'rating' => $request->rating,
+        'komentar' => $request->komentar
+    ]);
+
+    return back()->with('success', 'Review berhasil dikirim.');
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -123,6 +156,21 @@ class ReviewController extends Controller
             'user_id' => Auth::id(),
             'alasan' => $request->alasan
         ]);
+
+        /*
+    |----------------------------------------
+    | 🔥 KIRIM NOTIF KE ADMIN
+    |----------------------------------------
+    */
+    User::where('is_admin', true)->get()
+        ->each(function ($admin) use ($review, $request) {
+            $admin->notify(new SystemNotification(
+                'Review Dilaporkan',
+                'Review dari user ID ' . $review->user_id .
+                ' dilaporkan dengan alasan: ' . $request->alasan,
+                'review-report'
+            ));
+        });
 
         return back()->with('success', 'Review berhasil direport.');
     }

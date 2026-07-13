@@ -5,7 +5,7 @@
 @section('content')
 
 @php
-    $status = $booking->transaction_status ?? 'pending';
+    $status = $booking->payment->transaction_status ?? 'pending';
 @endphp
 
 <div class="max-w-5xl mx-auto">
@@ -76,7 +76,7 @@
 
                         <div>
                             <p class="text-sm text-gray-500">WhatsApp</p>
-                            <p class="font-semibold">{{ $booking->whatsapp }}</p>
+                            <p class="font-semibold"> {{ $booking->user->no_telp }}</p>
                         </div>
 
                     </div>
@@ -99,15 +99,27 @@
 
                         <div>
                             <p class="text-sm text-gray-500">Harga per Bulan</p>
-                            <p class="font-semibold text-amber-700">
-                                Rp {{ number_format($booking->kamar->harga ?? 0, 0, ',', '.') }}
-                            </p>
+                            <p class="text-3xl font-extrabold text-amber-700">
+    Rp {{ number_format($booking->payment->jumlah ?? 0, 0, ',', '.') }}
+</p>
                         </div>
 
                         <div>
                             <p class="text-sm text-gray-500">Durasi Sewa</p>
                             <p class="font-semibold">{{ $booking->durasi }} bulan</p>
                         </div>
+
+                        <!-- Tanggal_masuk -->
+                        <p class="text-sm text-gray-500">Tanggal masuk</p>
+                        <td class="p-4 text-gray-500 text-sm">
+    {{ \Carbon\Carbon::parse($booking->tanggal_masuk)->format('d M Y') }}
+</td>
+
+                        <!-- Tanggal_selesai -->
+                        <p class="text-sm text-gray-500">Tanggal Selesai</p>
+                        <td class="p-4 text-gray-500 text-sm">
+    {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->format('d M Y') }}
+</td>
 
                     </div>
 
@@ -130,7 +142,7 @@
                         <div>
                             <p class="text-sm text-gray-500">Metode Pembayaran</p>
                             <p class="font-semibold">
-                                {{ $booking->payment_type ?? $booking->metode_pembayaran }}
+                                {{ $booking->payment->payment_type ?? '-' }}
                             </p>
                         </div>
 
@@ -192,13 +204,15 @@
 
                         <div>
                             <p class="text-sm text-gray-500">Transaction Status</p>
-                            <p class="font-semibold">{{ $booking->transaction_status }}</p>
+                            <p class="font-semibold">
+    {{ $booking->payment->transaction_status ?? '-' }}
+</p>
                         </div>
 
                         <div>
                             <p class="text-sm text-gray-500">Paid At</p>
                             <p class="font-semibold">
-                                {{ $booking->paid_at ?? '-' }}
+                                {{ $booking->payment->paid_at ?? '-' }}
                             </p>
                         </div>
 

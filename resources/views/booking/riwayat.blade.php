@@ -4,17 +4,13 @@
 
 @section('content')
 
-@php
-    $status = $booking->transaction_status ?? 'pending';
-@endphp
-
 <div class="max-w-6xl mx-auto">
 
     <div class="mb-6">
         @include('components.back')
     </div>
 
-    <h1 class="text-3xl font-bold text-white mb-6 drop-shadow">
+    <h1 class="text-3xl font-bold text-white mb-6">
         Riwayat Booking
     </h1>
 
@@ -29,7 +25,9 @@
                     <th class="p-4 text-left">Total</th>
                     <th class="p-4 text-left">Status</th>
                     <th class="p-4 text-left">Metode</th>
-                    <th class="p-4 text-left">Tanggal</th>
+                    <th class="p-4 text-left">Mulai</th>
+                    <th class="p-4 text-left">Selesai</th>
+                    <th class="p-4 text-left">Keterangan</th>
                 </tr>
             </thead>
 
@@ -37,109 +35,269 @@
 
             @forelse($bookings as $booking)
 
-            @php
-                $status = $booking->transaction_status ?? 'pending';
-            @endphp
+@php
 
-            <!-- MAIN ROW -->
-            <tr class="border-b hover:bg-gray-50">
+    $status = $booking->status == 'cancel'
+        ? 'cancel'
+        : ($booking->payment?->status ?? 'pending');
 
-                <td class="p-4 font-semibold text-gray-700">
-                    {{ $booking->kamar->nama_kamar ?? '-' }}
-                </td>
+    $tanggalMasuk = \Carbon\Carbon::parse(
+        $booking->tanggal_masuk
+    );
 
-                <td class="p-4">
-                    {{ $booking->durasi }} bulan
-                </td>
+    $keterangan = $booking->keterangan;
 
-                <td class="p-4 text-amber-700 font-bold">
-                    Rp {{ number_format($booking->total_harga, 0, ',', '.') }}
-                </td>
+@endphp
 
-                <td class="p-4">
 
-                    @if($status == 'pending')
-                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
-                            Pending
-                        </span>
+<tr class="border-b hover:bg-gray-50">
 
-                    @elseif($status == 'settlement' || $status == 'capture')
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-                            Lunas
-                        </span>
 
-                    @elseif($status == 'expire')
-                        <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">
-                            Expired
-                        </span>
+    <!-- KAMAR -->
+    <td class="p-4">
 
-                    @elseif($status == 'cancel' || $status == 'deny')
-                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
-                            Dibatalkan
-                        </span>
+        <a href="{{ route('kamar.show', $booking->kamar->id) }}"
+           class="text-blue-600 font-semibold hover:underline">
 
-                    @else
-                        <span class="px-3 py-1 bg-black text-white rounded-full text-sm">
-                            Unknown
-                        </span>
-                    @endif
+            {{ $booking->kamar->nama_kamar }}
 
-                </td>
+        </a>
 
-                <td class="p-4 text-sm text-gray-600">
-                    {{ $booking->payment_type ?? 'Midtrans' }}
-                </td>
 
-                <td class="p-4 text-gray-500 text-sm">
-                    {{ $booking->created_at->format('d M Y') }}
-                </td>
+        @if($status === 'success')
 
-            </tr>
+        <div class="mt-2">
 
-            <!-- ACTION -->
-            @if($status == 'pending')
-            <tr class="bg-gray-50 border-b">
-                <td colspan="6" class="px-4 py-3">
+            <a href="{{ route('kamar.show',$booking->kamar->id) }}#review"
+               class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-xl">
 
-                    <div class="flex gap-2 flex-wrap">
+                ⭐ Beri ulasan
 
-                        <!-- BAYAR ULANG -->
-                        @if($booking->snap_token)
-                            <button
-                                onclick="payAgain('{{ $booking->snap_token }}')"
-                                class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm">
-                                Bayar
-                            </button>
-                        @endif
+            </a>
 
-                        <!-- CANCEL -->
-                        <form action="{{ route('booking.cancel', $booking->id) }}"
-                              method="POST">
-                            @csrf
-                            @method('PATCH')
+        </div>
 
-                            <button
-    type="submit"
-    onclick="return confirm('Yakin batalkan booking?')"
-    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
-    Batalkan
-</button>
+        @endif
 
-                        </form>
+    </td>
 
-                    </div>
 
-                </td>
-            </tr>
-            @endif
+
+    <!-- DURASI -->
+    <td class="p-4">
+        {{ $booking->durasi }} bulan
+    </td>
+
+
+
+    <!-- TOTAL -->
+    <td class="p-4 font-bold text-amber-700">
+
+        Rp {{ number_format($booking->total_harga,0,',','.') }}
+
+    </td>
+
+
+
+
+    <!-- STATUS -->
+    <td class="p-4">
+
+
+        @if($status == 'pending')
+
+            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
+                Pending
+            </span>
+
+
+        @elseif($status == 'success')
+
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                Lunas
+            </span>
+
+
+        @elseif($status == 'cancel')
+
+            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                Dibatalkan
+            </span>
+
+
+        @elseif($status == 'failed')
+
+            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                Gagal
+            </span>
+
+
+        @endif
+
+
+    </td>
+
+
+
+
+    <!-- METODE -->
+    <td class="p-4 text-sm text-gray-600">
+
+        {{ $booking->payment?->payment_type ?? 'Midtrans' }}
+
+    </td>
+
+
+
+
+    <!-- MULAI -->
+    <td class="p-4 text-sm">
+
+        {{ $tanggalMasuk->format('d M Y') }}
+
+    </td>
+
+
+
+
+    <!-- SELESAI -->
+    <td class="p-4 text-sm">
+
+        {{ \Carbon\Carbon::parse($booking->tanggal_selesai)
+            ->format('d M Y') }}
+
+    </td>
+
+
+
+
+    <!-- KETERANGAN -->
+    <td class="p-4">
+
+
+        @if($keterangan['color'] == 'yellow')
+
+            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
+
+                ⚠ {{ $keterangan['text'] }}
+
+            </span>
+
+
+        @elseif($keterangan['color'] == 'orange')
+
+
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm">
+
+                ⚠ {{ $keterangan['text'] }}
+
+            </span>
+
+
+
+        @elseif($keterangan['color'] == 'green')
+
+
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+
+                ✅ {{ $keterangan['text'] }}
+
+            </span>
+
+
+
+        @elseif($keterangan['color'] == 'red')
+
+
+            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+
+                ❌ {{ $keterangan['text'] }}
+
+            </span>
+
+
+
+        @else
+
+
+            <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">
+
+                {{ $keterangan['text'] }}
+
+            </span>
+
+
+        @endif
+
+
+    </td>
+
+
+</tr>
+
+
+
+<!-- ACTION -->
+
+<tr class="bg-gray-50 border-b">
+
+<td colspan="8" class="p-4">
+
+
+<div class="flex gap-2 flex-wrap">
+
+
+@if($status == 'pending')
+
+
+    @if($booking->payment?->snap_token)
+
+        <button onclick="payAgain('{{ $booking->payment->snap_token }}')"
+        class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm">
+
+            Bayar
+
+        </button>
+
+    @endif
+
+
+
+    <form action="{{ route('booking.cancel',$booking->id) }}"
+          method="POST">
+
+        @csrf
+        @method('PATCH')
+
+
+        <button
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+
+            Batalkan
+
+        </button>
+
+
+    </form>
+
+
+@endif
+
+
+</div>
+
+
+</td>
+
+</tr>
 
             @empty
 
-            <tr>
-                <td colspan="6" class="p-8 text-center text-gray-500">
-                    Belum ada booking
-                </td>
-            </tr>
+                <tr>
+                    <td colspan="8" class="p-8 text-center text-gray-500">
+                        Belum ada booking
+                    </td>
+                </tr>
 
             @endforelse
 
@@ -148,7 +306,6 @@
         </table>
 
     </div>
-
 </div>
 
 <!-- MIDTRANS -->
@@ -157,23 +314,11 @@ data-client-key="{{ config('midtrans.client_key') }}"></script>
 
 <script>
 function payAgain(token){
-
     snap.pay(token, {
-
-        onSuccess: function(){
-            location.reload();
-        },
-
-        onPending: function(){
-            location.reload();
-        },
-
-        onError: function(){
-            alert('Pembayaran gagal');
-        }
-
+        onSuccess: () => location.href='?success=1',
+        onPending: () => location.href='?pending=1',
+        onError: () => location.href='?error=1'
     });
-
 }
 </script>
 

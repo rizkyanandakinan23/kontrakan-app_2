@@ -91,7 +91,7 @@
                             <td class="p-4">
 
                                 <div class="font-semibold text-gray-800">
-                                    {{ $review->user->name ?? '-' }}
+                                    {{ $review->user->username ?? '-' }}
                                 </div>
 
                             </td>
@@ -149,25 +149,51 @@
                             <!-- AKSI -->
                             <td class="p-4">
 
-                                <form
-                                    action="{{ route('admin.review.delete', $review->id) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus review ini?')"
-                                >
+    <div class="flex gap-2">
 
-                                    @csrf
-                                    @method('DELETE')
+        {{-- Tombol Hapus --}}
+        <form
+            action="{{ route('admin.review.delete', $review->id) }}"
+            method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus review ini beserta seluruh laporannya?')"
+        >
+            @csrf
+            @method('DELETE')
 
-                                    <button
-                                        type="submit"
-                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition"
-                                    >
-                                        Hapus
-                                    </button>
+            <button
+                type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-semibold"
+            >
+                Hapus
+            </button>
 
-                                </form>
+        </form>
 
-                            </td>
+        {{-- Tombol Abaikan --}}
+        @if($review->reports_count > 0)
+
+        <form
+            action="{{ route('admin.review.ignore', $review->id) }}"
+            method="POST"
+            onsubmit="return confirm('Yakin ingin mengabaikan laporan pada review ini?')"
+        >
+            @csrf
+            @method('PATCH')
+
+            <button
+                type="submit"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-xl text-xs font-semibold"
+            >
+                Abaikan
+            </button>
+
+        </form>
+
+        @endif
+
+    </div>
+
+</td>
 
                         </tr>
 

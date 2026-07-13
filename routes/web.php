@@ -8,7 +8,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\DashboardController;
 use App\Models\Kamar;
+use App\Models\User;
+use App\Notifications\SystemNotification;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,33 +21,12 @@ use App\Models\Kamar;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
+Route::get('/', [DashboardController::class, 'index'])
+    ->name('home');
 
-    $kamars = Kamar::latest()->get();
-
-    return view('dashboard', compact('kamars'));
-
-})->name('home');
-
-/*
-|--------------------------------------------------------------------------
-| DASHBOARD
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/dashboard', function () {
-
-    $kamars = Kamar::where('status', '!=', 'terisi')
-        ->latest()
-        ->take(3)
-        ->get();
-
-    return view('dashboard', compact('kamars'));
-
-})
-->middleware(['auth'])
-->name('dashboard');
-
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
 /*
 |--------------------------------------------------------------------------
 | KAMAR USER
@@ -98,22 +82,52 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function(){
 
-    Route::get('/booking/{id}', [BookingController::class, 'index'])
-        ->name('booking.index');
+    Route::get('/booking/{id}',
+        [BookingController::class,'index']
+    )->name('booking.index');
 
-    Route::post('/booking/{id}', [BookingController::class, 'store'])
-        ->name('booking.store');
 
-    Route::post('/booking/{id}/upload-bukti', [BookingController::class, 'uploadBukti'])
-        ->name('booking.uploadBukti');
+    Route::post('/booking/{id}',
+        [BookingController::class,'store']
+    )->name('booking.store');
 
-    Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])
-        ->name('booking.riwayat');
 
-          Route::patch('/booking/{id}/cancel', [BookingController::class, 'cancel'])
-    ->name('booking.cancel');
+    Route::get('/riwayat-booking',
+        [BookingController::class,'riwayat']
+    )->name('booking.riwayat');
+
+
+    Route::patch('/booking/{id}/cancel',
+        [BookingController::class,'cancel']
+    )->name('booking.cancel');
+
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| PAYMENT
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function(){
+
+
+    Route::get('/payment/{id}',
+        [PaymentController::class,'create']
+    )->name('payment.create');
+
+
+    Route::post('/payment/callback',
+        [PaymentController::class,'callback']
+    )->name('payment.callback');
+
+
+    Route::get('/payment/success/{id}',
+        [PaymentController::class,'success']
+    )->name('payment.success');
 
 });
 
@@ -137,6 +151,13 @@ Route::middleware(['auth', 'is_admin'])
         Route::get('/', [AdminController::class, 'index'])
             ->name('panel');
 
+/*
+        |--------------------------------------------------------------------------
+        | Notification Admin
+        |--------------------------------------------------------------------------
+        */
+            Route::get('/notifications', [AdminController::class, 'notificationIndex'])
+    ->name('notifications');
         /*
         |--------------------------------------------------------------------------
         | USER MANAGEMENT
@@ -173,6 +194,9 @@ Route::middleware(['auth', 'is_admin'])
         Route::delete('/kamar/{kamar}', [AdminController::class, 'kamarDestroy'])
             ->name('kamar.destroy');
 
+        Route::post('/kamar/set-semua-kosong', [AdminController::class, 'setSemuaKosong'])
+    ->name('kamar.setSemuaKosong');
+
         /*
         |--------------------------------------------------------------------------
         | BOOKING MANAGEMENT
@@ -193,8 +217,15 @@ Route::middleware(['auth', 'is_admin'])
 
             Route::get('/booking/{id}', [AdminController::class, 'bookingDetail'])
     ->name('booking.detail');
-
   
+/*
+|--------------------------------------------------------------------------
+| PAYMENT MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/pembayaran', [AdminController::class, 'pembayaranIndex'])
+    ->name('pembayaran.index');
 
         /*
         |--------------------------------------------------------------------------
@@ -207,6 +238,9 @@ Route::middleware(['auth', 'is_admin'])
 
         Route::delete('/review/{id}', [AdminController::class, 'reviewDelete'])
             ->name('review.delete');
+
+        Route::patch('/review/{id}/ignore', [AdminController::class, 'reviewIgnore'])
+    ->name('review.ignore');
 
         /*
 |--------------------------------------------------------------------------
@@ -257,18 +291,52 @@ Route::view('/qna', 'qna')
 Route::view('/ketentuan', 'ketentuan')
     ->name('ketentuan');
 
+
+/*
+|--------------------------------------------------------------------------
+| NOTIFICATION
+|--------------------------------------------------------------------------
+*/
+
+// USER
+Route::get('/user/notifications', [NotificationController::class, 'index'])
+    ->name('notifications.user')
+    ->middleware('auth');
+
+
 /*
 |--------------------------------------------------------------------------
 | AUTH
 |--------------------------------------------------------------------------
 */
-
 Route::post(
     '/midtrans/callback',
-    [BookingController::class, 'callback']
+    [PaymentController::class, 'callback']
 )->name('midtrans.callback');
 
-Route::get('/fake-success/{id}', [BookingController::class, 'fakeSuccess']);
+Route::get('/fake-success/{id}',
+[PaymentController::class,'success']);
 
 
 require __DIR__.'/auth.php';
+
+
+/*
+|--------------------------------------------------------------------------
+| TEST NOTIFICATION
+|--------------------------------------------------------------------------
+*/
+Route::get('/test-notif', function () {
+
+    $user = User::first();
+
+    $user->notify(
+        new SystemNotification(
+            'Test Notifikasi',
+            'Notifikasi berhasil dibuat.'
+        )
+    );
+
+    return 'Notifikasi berhasil dikirim';
+});
+

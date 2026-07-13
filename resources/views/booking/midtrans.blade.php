@@ -39,6 +39,24 @@
 
         <div class="p-8">
 
+            <!-- NOTIFIKASI -->
+<div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-xl mb-6">
+    <div class="flex items-start gap-3">
+        <span class="text-xl">🔔</span>
+
+        <div>
+            <h3 class="font-semibold text-yellow-800">
+                Menunggu Pembayaran
+            </h3>
+
+            <p class="text-sm text-yellow-700 mt-1">
+                Silahkan lakukan pembayaran untuk menyelesaikan proses booking kamar.
+                Setelah pembayaran berhasil, status booking akan otomatis diperbarui oleh sistem.
+            </p>
+        </div>
+    </div>
+</div>
+
             <!-- INFO KAMAR -->
             <div class="grid md:grid-cols-2 gap-8 mb-8">
 
@@ -64,6 +82,13 @@
                             {{ $booking->durasi }} Bulan
                         </div>
 
+                         <div>
+        <span class="font-semibold">
+            Tanggal Selesai :
+        </span>
+        {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->format('d M Y') }}
+    </div>
+
                         <div>
                             <span class="font-semibold">
                                 WhatsApp :
@@ -85,7 +110,7 @@
                         </p>
 
                         <h2 class="text-4xl font-extrabold text-amber-700">
-                            Rp {{ number_format($booking->total_harga,0,',','.') }}
+                            Rp {{ number_format($payment->jumlah,0,',','.') }}
                         </h2>
 
                     </div>
@@ -145,20 +170,20 @@ data-client-key="{{ config('midtrans.client_key') }}">
 <script>
 
 const payButton = document.getElementById('pay-button');
+const snapToken = "{{ $payment->snap_token }}";
 
-// 🔒 Validasi token dulu
-const snapToken = "{{ $snapToken }}";
-
+// ❌ kalau token kosong
 if (!snapToken) {
-    alert('Token pembayaran tidak tersedia');
+    payButton.disabled = true;
+    payButton.innerText = "Token tidak tersedia";
 }
 
 payButton.addEventListener('click', function(){
 
     if (!snapToken) return;
 
+    // 🔒 disable button + loading
     payButton.disabled = true;
-
     payButton.innerHTML = `
         <span class="animate-pulse">
             Memproses Pembayaran...
@@ -167,28 +192,33 @@ payButton.addEventListener('click', function(){
 
     snap.pay(snapToken, {
 
-        // ✅ BERHASIL
+        // ✅ SUCCESS
         onSuccess: function(result){
 
-            console.log('SUCCESS:', result);
+    console.log(result);
 
-            alert('Pembayaran berhasil');
 
-            window.location.href =
-                "{{ route('booking.riwayat') }}";
+    payButton.innerHTML =
+    "Pembayaran berhasil, memproses...";
 
-        },
+
+    setTimeout(()=>{
+
+        window.location.href =
+        "{{ route('booking.riwayat') }}";
+
+    },2000);
+
+
+},
 
         // ⏳ PENDING
         onPending: function(result){
 
             console.log('PENDING:', result);
 
-            alert('Menunggu pembayaran');
-
             window.location.href =
-                "{{ route('booking.riwayat') }}";
-
+                "{{ route('booking.riwayat') }}?pending=1";
         },
 
         // ❌ ERROR
@@ -196,26 +226,18 @@ payButton.addEventListener('click', function(){
 
             console.error('ERROR:', result);
 
-            alert('Pembayaran gagal, silakan coba lagi');
-
-            payButton.disabled = false;
-
-            payButton.innerText = 'Bayar Sekarang';
-
+            window.location.href =
+                "{{ route('booking.riwayat') }}?error=1";
         },
 
-        // ❌ USER CLOSE (FIX UTAMA)
+        // ❌ USER CLOSE
         onClose: function(){
 
-            console.log('USER CLOSED POPUP');
+            console.log('USER CLOSED');
 
-            // ❗ TIDAK REDIRECT LAGI
-            alert('Kamu menutup pembayaran sebelum selesai');
-
+            // balikin button
             payButton.disabled = false;
-
             payButton.innerText = 'Bayar Sekarang';
-
         }
 
     });

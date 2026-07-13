@@ -9,35 +9,13 @@
     <div class="bg-white rounded-3xl shadow-2xl p-8">
 
         <h1 class="text-3xl font-bold mb-8 text-gray-800">
-            Edit Kamar
+            Edit Kontrakan
         </h1>
 
        
         @php
 
     $foto = $kamar->foto_kamar ?? [];
-
-    $fasilitas = $kamar->fasilitas ?? [];
-
-    // convert JSON string -> array
-    if (is_string($fasilitas)) {
-
-        $decoded = json_decode($fasilitas, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-
-            $fasilitas = $decoded;
-
-        } else {
-
-            $fasilitas = [];
-        }
-    }
-
-    // safety
-    if (!is_array($fasilitas)) {
-        $fasilitas = [];
-    }
 
     // foto juga diamankan
     if (is_string($foto)) {
@@ -74,7 +52,7 @@
             <div class="mb-5">
 
                 <label class="block mb-2 font-semibold">
-                    Nama / Nomor Kamar
+                    Nama / Nomor Kontrakan
                 </label>
 
                 <input
@@ -84,47 +62,6 @@
                     class="w-full border border-gray-300 rounded-xl px-4 py-3"
                     required
                 >
-
-            </div>
-
-            <!-- FASILITAS -->
-            <div class="mb-5">
-
-                <label class="block font-semibold mb-3">
-                    Fasilitas
-                </label>
-
-                <div class="grid grid-cols-2 gap-3">
-
-                    @php
-                        $listFasilitas = [
-                            'WiFi',
-                            'Kasur',
-                            'AC',
-                            'Kamar Mandi',
-                            'Lemari',
-                            'Dapur & Wastafel'
-                        ];
-                    @endphp
-
-                    @foreach($listFasilitas as $item)
-
-                        <label class="flex items-center gap-2">
-
-                            <input
-                                type="checkbox"
-                                name="fasilitas[]"
-                                value="{{ $item }}"
-                                {{ in_array($item, $fasilitas ?? []) ? 'checked' : '' }}
-                            >
-
-                            {{ $item }}
-
-                        </label>
-
-                    @endforeach
-
-                </div>
 
             </div>
 
@@ -160,36 +97,6 @@
 
             </div>
 
-            <!-- STATUS -->
-            <div class="mb-5">
-
-                <label class="block mb-2 font-semibold">
-                    Status Kamar
-                </label>
-
-                <select
-                    name="status"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3"
-                >
-
-                    <option
-                        value="kosong"
-                        {{ $kamar->status == 'kosong' ? 'selected' : '' }}
-                    >
-                        Tersedia
-                    </option>
-
-                    <option
-                        value="terisi"
-                        {{ $kamar->status == 'terisi' ? 'selected' : '' }}
-                    >
-                        Terisi
-                    </option>
-
-                </select>
-
-            </div>
-
             <!-- FOTO -->
             <div class="mb-6">
 
@@ -214,55 +121,79 @@
 <!-- PREVIEW FOTO -->
 @if(count($foto) > 0)
 
-    <div class="mb-8">
+<div class="mb-8">
 
-        <label class="block mb-3 font-semibold">
-            Foto Saat Ini
-        </label>
+    <label class="block mb-3 font-semibold">
+        Foto Saat Ini
+    </label>
 
-        <div class="flex flex-wrap gap-6">
+    <p class="text-sm text-gray-500 mb-4">
+        Geser foto menggunakan ikon ☰ untuk mengubah urutan.
+    </p>
 
-            @foreach($foto as $img)
+    <input
+        type="hidden"
+        name="urutan_foto"
+        id="urutan_foto"
+    >
 
-                <div class="w-40">
+    <div
+        id="gallery"
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    >
 
-                    <!-- FOTO -->
-                    <img
-                        src="{{ asset('storage/' . $img) }}"
-                        class="w-40 h-40 object-cover rounded-2xl border shadow"
-                    >
+        @foreach($foto as $img)
 
-                    <!-- HAPUS -->
-                    <label class="flex items-center gap-2 mt-2 text-sm text-red-600">
+        <div
+            class="bg-white rounded-xl border shadow p-2"
+            data-path="{{ $img }}"
+        >
 
-                        <input
-                            type="checkbox"
-                            name="hapus_foto[]"
-                            value="{{ $img }}"
-                        >
+            <div
+                class="drag-handle cursor-grab text-center text-2xl mb-2"
+            >
+                ☰
+            </div>
 
-                        Hapus Foto
+            <img
+                src="{{ asset('storage/'.$img) }}"
+                class="w-full h-40 object-cover rounded-lg"
+            >
 
-                    </label>
+            <label class="flex items-center gap-2 mt-3 text-red-600">
 
-                </div>
+                <input
+                    type="checkbox"
+                    name="hapus_foto[]"
+                    value="{{ $img }}"
+                >
 
-            @endforeach
+                Hapus Foto
+
+            </label>
 
         </div>
 
+        @endforeach
+
     </div>
+
+</div>
 
 @endif
 
-
-
             <!-- BUTTON -->
+              <input
+    type="hidden"
+    name="urutan_foto"
+    id="urutan_foto"
+>
+
             <button
                 type="submit"
                 class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-xl font-semibold"
             >
-                Update Kamar
+                Update Kontrakan
             </button>
 
         </form>
@@ -270,5 +201,43 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded',function(){
+
+    const gallery=document.getElementById('gallery');
+
+    if(!gallery) return;
+
+    const urutan=document.getElementById('urutan_foto');
+
+    function simpanUrutan(){
+
+        let data=[];
+
+        gallery.querySelectorAll('[data-path]').forEach(function(item){
+
+            data.push(item.dataset.path);
+
+        });
+
+        urutan.value=JSON.stringify(data);
+
+    }
+
+    new Sortable(gallery,{
+    animation:300,
+handle:'.drag-handle',
+    onEnd:simpanUrutan
+});
+
+});
+
+</script>
 
 @endsection

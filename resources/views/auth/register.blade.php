@@ -9,7 +9,7 @@
     <div class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
 
         <h2 class="text-3xl font-bold text-center text-amber-700 mb-6">
-            Register
+            Daftarkan akun anda
         </h2>
 
         <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
@@ -28,6 +28,7 @@
                     name="nama_lengkap"
                     value="{{ old('nama_lengkap') }}"
                     required
+                    placeholder="Masukkan nama lengkap Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -47,6 +48,7 @@
                     name="username"
                     value="{{ old('username') }}"
                     required
+                    placeholder="Masukkan username Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -66,6 +68,7 @@
                     name="email"
                     value="{{ old('email') }}"
                     required
+                    placeholder="Masukkan email Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -81,12 +84,16 @@
                 </label>
 
                 <input
-                    type="text"
-                    name="no_telp"
-                    value="{{ old('no_telp') }}"
-                    required
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
-                >
+    type="tel"
+    name="no_telp"
+    value="{{ old('no_telp') }}"
+    required
+    maxlength="15"
+    inputmode="numeric"
+    pattern="^(08[0-9]{8,13}|\+628[0-9]{8,13})$"
+    placeholder="Contoh: 081234567890"
+    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
+>
 
                 <x-input-error :messages="$errors->get('no_telp')" class="mt-2" />
 
@@ -103,6 +110,7 @@
                     name="alamat"
                     rows="3"
                     required
+                    placeholder="Masukkan alamat Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >{{ old('alamat') }}</textarea>
 
@@ -132,13 +140,14 @@
             <div class="mb-4">
 
                 <label class="block text-gray-700 mb-2">
-                    Password
+                    kata sandi
                 </label>
 
                 <input
                     type="password"
                     name="password"
                     required
+                    placeholder="Minimal 8 karakter"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -150,13 +159,14 @@
             <div class="mb-6">
 
                 <label class="block text-gray-700 mb-2">
-                    Konfirmasi Password
+                    Konfirmasi kata sandi
                 </label>
 
                 <input
                     type="password"
                     name="password_confirmation"
                     required
+                    placeholder="ulangi kata sandi Anda"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
                 >
 
@@ -169,7 +179,7 @@
                 type="submit"
                 class="w-full bg-amber-700 hover:bg-amber-800 text-white py-3 rounded-lg font-semibold"
             >
-                Register
+                Daftarkan
             </button>
 
         </form>

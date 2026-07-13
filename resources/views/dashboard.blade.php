@@ -4,6 +4,7 @@
 
 @section('content')
 
+
 <div class="max-w-7xl mx-auto">
 
     <!-- HERO -->
@@ -61,7 +62,7 @@
             <div>
 
                 <img
-                    src="{{ asset('images/kontrakan_kamar/nine-steps-to-turn-your-home-into-a-rental-property_hero.jpg') }}"
+                    src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
                     alt="Kamar"
                     class="rounded-3xl shadow-xl w-full h-[420px] object-cover"
                 >
@@ -128,15 +129,112 @@
 
     </div>
 
+<!-- FASILITAS UMUM -->
+<div class="mb-14">
 
-    <!-- KAMAR TERSEDIA -->
+    <div class="bg-white/95 rounded-3xl shadow-2xl p-8">
+
+        <div class="text-center mb-8">
+
+            <h2 class="text-4xl font-bold text-gray-800">
+                Fasilitas Umum
+            </h2>
+
+            <p class="text-gray-500 mt-2">
+                Seluruh unit kontrakan mendapatkan akses fasilitas berikut.
+            </p>
+
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-6">
+
+            <!-- WIFI -->
+            <div class="text-center bg-gray-50 rounded-2xl p-6">
+
+                <div class="text-5xl mb-3">
+                    📶
+                </div>
+
+                <h3 class="font-bold text-lg">
+                    WiFi
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Akses internet untuk seluruh penghuni.
+                </p>
+
+            </div>
+
+            <!-- PARKIR -->
+            <div class="text-center bg-gray-50 rounded-2xl p-6">
+
+                <div class="text-5xl mb-3">
+                    🛵
+                </div>
+
+                <h3 class="font-bold text-lg">
+                    Parkir Luar
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Area parkir kendaraan yang cukup luas.
+                </p>
+
+            </div>
+
+            <!-- MUSHOLLA -->
+            <div class="text-center bg-gray-50 rounded-2xl p-6">
+
+                <div class="text-5xl mb-3">
+                    🕌
+                </div>
+
+                <h3 class="font-bold text-lg">
+                    Dekat Musholla
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Musholla dapat dijangkau dengan berjalan kaki.
+                </p>
+
+            </div>
+
+            <!-- CCTV -->
+            <div class="text-center bg-gray-50 rounded-2xl p-6">
+
+                <div class="text-5xl mb-3">
+                    📹
+                </div>
+
+                <h3 class="font-bold text-lg">
+                    CCTV 24 Jam
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Area kontrakan dipantau CCTV selama 24 jam.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@php
+    $tanggal = $tanggal ?? now()->toDateString();
+@endphp
+
+
+<!-- KAMAR TERSEDIA -->
     <div class="mb-10">
 
         <!-- HEADER -->
         <div class="flex items-center justify-between mb-7">
 
             <div>
-
+                
                 <h2 class="text-4xl font-bold text-white">
                     Rekomendasi kamar
                 </h2>
@@ -159,7 +257,7 @@
         <!-- CARD -->
         <div class="grid md:grid-cols-3 gap-8">
 
-            @forelse ($kamars->where('status', '!=', 'terisi')->take(3) as $kamar)
+            @forelse ($kamars as $kamar)
 
             <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
 
@@ -177,26 +275,32 @@
 
                     <img
                         src="{{ asset('storage/' . ($foto[0] ?? 'default.jpg')) }}"
-                        class="w-full h-64 object-cover hover:scale-110 transition duration-500"
+                        class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto"
                         alt="{{ $kamar->nama_kamar }}"
                     >
 
                     <!-- STATUS -->
                     <div class="absolute top-4 right-4">
 
-                        @if(($kamar->status ?? '') == 'terisi')
+                        @if($kamar->status_booking == 'terisi')
 
-                            <span class="bg-red-500 text-white text-xs px-4 py-2 rounded-full shadow">
-                                Terisi
-                            </span>
+<span class="bg-red-500 text-white text-xs px-4 py-2 rounded-full shadow">
+    Sedang Ditempati
+</span>
 
-                        @else
+@elseif($kamar->status_booking == 'booking')
 
-                            <span class="bg-green-500 text-white text-xs px-4 py-2 rounded-full shadow">
-                                Tersedia
-                            </span>
+<span class="bg-yellow-500 text-white text-xs px-4 py-2 rounded-full shadow">
+    Sudah Dibooking
+</span>
 
-                        @endif
+@else
+
+<span class="bg-green-500 text-white text-xs px-4 py-2 rounded-full shadow">
+    Tersedia
+</span>
+
+@endif
 
                     </div>
 
@@ -212,34 +316,6 @@
                     <p class="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-3">
                         {{ $kamar->deskripsi }}
                     </p>
-
-                    <!-- FASILITAS -->
-                    <div class="space-y-2 mb-6">
-
-                        @php
-                            $fasilitas = $kamar->fasilitas;
-
-                            if (is_string($fasilitas)) {
-                                $decoded = json_decode($fasilitas, true);
-                                $fasilitas = is_array($decoded)
-                                    ? $decoded
-                                    : [$fasilitas];
-                            }
-                        @endphp
-
-                        @foreach(array_slice($fasilitas ?? [], 0, 3) as $item)
-
-                            <div class="flex items-center gap-2 text-sm text-gray-600">
-
-                                <span>✔️</span>
-
-                                <span>{{ $item }}</span>
-
-                            </div>
-
-                        @endforeach
-
-                    </div>
 
                     <!-- FOOTER -->
                     <div class="flex items-center justify-between">
@@ -260,22 +336,22 @@
 
                         </div>
 
-                        @if(($kamar->status ?? '') == 'terisi')
+                        @if($kamar->status_booking == 'terisi')
 
-                            <div class="bg-gray-400 text-white px-5 py-3 rounded-2xl font-semibold cursor-not-allowed text-sm">
-                                Tidak Tersedia
-                            </div>
+<div class="bg-gray-400 text-white px-5 py-3 rounded-2xl font-semibold cursor-not-allowed text-sm">
+    Tidak Tersedia
+</div>
 
-                        @else
+@else
 
-                            <a
-                                href="{{ route('kamar.show', $kamar->id) }}"
-                                class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg transition"
-                            >
-                                Detail
-                            </a>
+<a
+    href="{{ route('kamar.show', $kamar->id) }}"
+    class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg transition"
+>
+    Detail
+</a>
 
-                        @endif
+@endif
 
                     </div>
 

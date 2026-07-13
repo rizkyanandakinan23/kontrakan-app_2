@@ -170,6 +170,32 @@
 
                         </div>
 
+                        <!-- WHATSAPP -->
+<div>
+
+    <label class="block text-sm font-semibold text-gray-700 mb-2">
+        Nomor Telepon
+    </label>
+
+    <input
+        type="text"
+        name="no_telp"
+        value="{{ old('whatsapp', auth()->user()->no_telp) }}"
+        required
+        class="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        placeholder="Contoh: 081234567890"
+    >
+
+    @error('no_telp')
+
+        <p class="text-red-500 text-sm mt-2">
+            {{ $message }}
+        </p>
+
+    @enderror
+
+</div>
+
                         <!-- EMAIL -->
 
                         <div>

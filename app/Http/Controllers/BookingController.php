@@ -5,255 +5,169 @@ namespace App\Http\Controllers;
 use App\Models\Kamar;
 use App\Models\Booking;
 use Illuminate\Http\Request;
-
-use Midtrans\Config;
-use Midtrans\Snap;
-use Midtrans\Notification;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    // ======================
-    // FORM BOOKING
-    // ======================
-    public function index($id)
-    {
-        $kamar = Kamar::findOrFail($id);
-        return view('booking.booking', compact('kamar'));
+
+    public function index(Request $request, $id)
+{
+    $kamar = Kamar::findOrFail($id);
+
+    // ==========================================
+    // TANGGAL MASUK
+    // ==========================================
+
+    $tanggalMasuk = $request->query('tanggal');
+
+    // kalau tidak ada parameter ?tanggal=
+    // gunakan hari ini
+    if (empty($tanggalMasuk)) {
+        $tanggalMasuk = Carbon::today()->format('Y-m-d');
     }
 
-    // ======================
-    // PROSES BOOKING + MIDTRANS
-    // ======================
+    // ==========================================
+    // BOOKING AKTIF
+    // ==========================================
+
+    $bookingAktif = Booking::where('kamar_id', $kamar->id)
+        ->where('status', '!=', 'cancel')
+        ->orderBy('tanggal_masuk')
+        ->get([
+            'tanggal_masuk',
+            'tanggal_selesai'
+        ]);
+
+    return view(
+        'booking.booking',
+        compact(
+            'kamar',
+            'tanggalMasuk',
+            'bookingAktif'
+        )
+    );
+}
+
+
     public function store(Request $request, $id)
     {
         $kamar = Kamar::findOrFail($id);
 
-        if ($kamar->status == 'terisi') {
+       $maxTanggal = Carbon::today()->addMonths(6)->format('Y-m-d');
 
-    return back()->with(
-        'error',
-        'Kamar sudah terisi'
-    );
+$request->validate([
+    'tanggal_masuk' => [
+        'required',
+        'date',
+        'after_or_equal:today',
+        'before_or_equal:' . $maxTanggal,
+    ],
+    'durasi' => 'required|integer|min:1|max:24',
+]);
+
+
+        $durasi = (int)$request->durasi;
+
+
+        $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
+
+$tanggalSelesai = $tanggalMasuk
+    ->copy()
+    ->addMonthsNoOverflow($durasi);
+
+// ==========================================
+// CEK APAKAH ADA BOOKING LAIN
+// ==========================================
+
+$bookingLain = Booking::where('kamar_id', $kamar->id)
+    ->where('status', '!=', 'cancel')
+    ->orderBy('tanggal_masuk')
+    ->get();
+
+foreach ($bookingLain as $booking) {
+
+    $mulai = Carbon::parse($booking->tanggal_masuk);
+
+    $selesai = Carbon::parse($booking->tanggal_selesai);
+
+    // jeda 2 hari setelah checkout
+    $bolehMasuk = $selesai->copy()->addDays(2);
+
+    if (
+        $tanggalMasuk < $bolehMasuk &&
+        $tanggalSelesai > $mulai
+    ) {
+        return back()->with(
+            'error',
+            'Tanggal booking bertabrakan dengan jadwal penyewa lain.'
+        );
+    }
 }
 
-        $request->validate([
-            'whatsapp' => 'required',
-            'tanggal_masuk' => 'required|date',
-            'durasi' => 'required|integer|min:1',
+// ==========================================
+// BARU SIMPAN
+// ==========================================
+
+$booking = Booking::create([
+
+            'user_id'=>auth()->id(),
+
+            'kamar_id'=>$kamar->id,
+
+             'whatsapp' => auth()->user()->no_telp,
+
+            'tanggal_masuk'=>$tanggalMasuk,
+
+            'tanggal_selesai'=>$tanggalSelesai,
+
+            'durasi'=>$durasi,
+
+            'total_harga'=>$kamar->harga * $durasi,
+
+            'status'=>'pending'
+
         ]);
 
-        // ======================
-        // TOTAL HARGA
-        // ======================
-        $totalHarga = $kamar->harga * $request->durasi;
-
-        // ======================
-        // SIMPAN BOOKING (AWAL)
-        // ======================
-        $booking = Booking::create([
-            'user_id' => auth()->id(),
-            'kamar_id' => $kamar->id,
-            'whatsapp' => $request->whatsapp,
-            'tanggal_masuk' => $request->tanggal_masuk,
-            'durasi' => $request->durasi,
-            'total_harga' => $totalHarga,
-
-            // penting: jangan pakai manual lagi
-            'metode_pembayaran' => 'midtrans',
-
-            'status_pembayaran' => 'pending',
-        ]);
-
-        // ======================
-        // MIDTRANS CONFIG
-        // ======================
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production', false);
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
-
-        // ======================
-        // ORDER ID UNIQUE
-        // ======================
-        $orderId = 'BOOK-' . $booking->id . '-' . time();
-
-        // ======================
-        // SNAP PARAMS
-        // ======================
-        $params = [
-            'transaction_details' => [
-                'order_id' => $orderId,
-                'gross_amount' => (int) $totalHarga,
-            ],
-            'customer_details' => [
-                'first_name' => auth()->user()->nama_lengkap,
-                'email' => auth()->user()->email,
-                'phone' => $request->whatsapp,
-            ]
-        ];
-
-        // ======================
-        // SNAP TOKEN
-        // ======================
-        $snapToken = Snap::getSnapToken($params);
-
-        // ======================
-        // UPDATE BOOKING
-        // ======================
-        $booking->update([
-            'snap_token' => $snapToken,
-            'order_id' => $orderId,
-        ]);
-
-        // ======================
-        // VIEW MIDTRANS
-        // ======================
-        return view('booking.midtrans', [
-            'booking' => $booking,
-            'kamar' => $kamar,
-            'snapToken' => $snapToken
-        ]);
-    }
-
-    // ======================
-    // CALLBACK MIDTRANS (WAJIB)
-    // ======================
-    public function callback(Request $request)
-{
-    Config::$serverKey = config('midtrans.server_key');
-    Config::$isProduction = config('midtrans.is_production');
-
-    $notification = new Notification();
-
-    $orderId = $notification->order_id;
-    $status  = $notification->transaction_status;
-    $paymentType = $notification->payment_type;
-
-    $booking = Booking::where('order_id', $orderId)->first();
-
-    if (!$booking) {
-        return response()->json([
-            'message' => 'booking not found'
-        ], 404);
-    }
-
-    switch ($status) {
-
-        case 'capture':
-        case 'settlement':
-
-            $booking->update([
-                'status_pembayaran' => 'dibayar',
-                'transaction_status' => $status,
-                'payment_type' => $paymentType,
-                'paid_at' => now()
-            ]);
-
-            $booking->kamar->update([
-                'status' => 'terisi'
-            ]);
-
-            break;
-
-        case 'pending':
-
-            $booking->update([
-                'status_pembayaran' => 'pending',
-                'transaction_status' => $status,
-                'payment_type' => $paymentType
-            ]);
-
-            break;
-
-        case 'expire':
-
-            $booking->update([
-                'status_pembayaran' => 'expired',
-                'transaction_status' => $status
-            ]);
-
-            break;
-
-        case 'deny':
-        case 'cancel':
-
-            $booking->update([
-                'status_pembayaran' => 'gagal',
-                'transaction_status' => $status
-            ]);
-
-            break;
-    }
-
-    return response()->json([
-        'message' => 'ok'
-    ]);
-}
-
-public function fakeSuccess($id)
-{
-    $booking = Booking::findOrFail($id);
-
-    $booking->update([
-        'status_pembayaran' => 'dibayar',
-        'transaction_status' => 'settlement',
-        'payment_type' => 'qris',
-        'paid_at' => now()
-    ]);
-
-    return "SUCCESS SIMULATED";
-}
-
-
-public function cancel($id)
-{
-    $booking = Booking::findOrFail($id);
-
-    // hanya boleh cancel kalau masih pending Midtrans
-    if (!in_array($booking->transaction_status, ['pending'])) {
-        return back()->with('error', 'Booking tidak bisa dibatalkan');
-    }
-
-    $booking->update([
-        'transaction_status' => 'cancel'
-    ]);
-
-    return back()->with('success', 'Booking dibatalkan');
-}
-
-    // ======================
-    // UPLOAD BUKTI (OPTIONAL fallback)
-    // ======================
-    public function uploadBukti(Request $request, $id)
-    {
-        $request->validate([
-            'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        $booking = Booking::findOrFail($id);
-
-        $path = $request->file('bukti_pembayaran')->store('bukti', 'public');
-
-        $booking->update([
-            'bukti_pembayaran' => $path,
-            'status_pembayaran' => 'pending',
-        ]);
 
         return redirect()
-            ->route('booking.riwayat')
-            ->with('success', 'Bukti pembayaran berhasil diupload');
+            ->route('payment.create',$booking->id);
     }
 
-    // ======================
-    // RIWAYAT
-    // ======================
+
+
+    public function cancel($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    if ($booking->user_id != auth()->id()) {
+        return back()->with('error', 'Akses ditolak');
+    }
+
+    $booking->status = 'cancel';
+    $booking->save();
+
+    return back()->with('success', 'Status booking: ' . $booking->fresh()->status);
+}
+
+
+
     public function riwayat()
     {
-        $bookings = Booking::with('kamar')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->get();
 
-        return view('booking.riwayat', compact('bookings'));
+        $bookings = Booking::with([
+            'kamar',
+            'payment'
+        ])
+        ->where('user_id',auth()->id())
+        ->latest()
+        ->get();
+
+
+        return view(
+            'booking.riwayat',
+            compact('bookings')
+        );
+
     }
+
 }

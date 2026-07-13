@@ -22,19 +22,6 @@
     $foto = array_values($foto); // reset index
     $mainImage = $foto[0] ?? 'default.jpg';
 
-    // ======================
-    // FASILITAS SAFE
-    // ======================
-    $fasilitas = $kamar->fasilitas ?? [];
-
-    if (is_string($fasilitas)) {
-        $decoded = json_decode($fasilitas, true);
-        $fasilitas = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
-    }
-
-    if (!is_array($fasilitas)) {
-        $fasilitas = [];
-    }
 @endphp
 
 <div class="max-w-7xl mx-auto">
@@ -65,10 +52,10 @@
                     </button>
 
                     <img
-                        id="mainImage"
-                        src="{{ asset('storage/' . $mainImage) }}"
-                        class="w-full h-[450px] object-cover rounded-3xl shadow-lg transition duration-300"
-                    >
+    id="mainImage"
+    src="{{ asset('storage/' . $mainImage) }}"
+    class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto"
+>
 
                     <button
                         type="button"
@@ -107,15 +94,25 @@
                 <!-- STATUS -->
                 <div class="mb-4">
 
-                    @if($kamar->status == 'terisi')
-                        <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
-                            Sudah Disewa
-                        </span>
-                    @else
-                        <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
-                            Masih Tersedia
-                        </span>
-                    @endif
+                    @if($statusBooking == 'tersedia')
+
+    <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">
+        Tersedia
+    </span>
+
+@elseif($statusBooking == 'booking')
+
+    <span class="bg-yellow-100 text-yellow-700 px-5 py-2 rounded-full text-sm font-bold">
+        Sudah Dibooking
+    </span>
+
+@else
+
+    <span class="bg-red-100 text-red-700 px-5 py-2 rounded-full text-sm font-bold">
+        Sedang Ditempati
+    </span>
+
+@endif
 
                 </div>
 
@@ -139,27 +136,8 @@
                         Deskripsi
                     </h3>
                     <p class="text-gray-600 leading-relaxed text-lg">
-                        {{ $kamar->deskripsi }}
+                        {!! nl2br(e($kamar->deskripsi)) !!}
                     </p>
-                </div>
-
-                <!-- FASILITAS -->
-                <div class="mb-10">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">
-                        Fasilitas
-                    </h3>
-
-                    <div class="flex flex-wrap gap-3">
-
-                        @forelse($fasilitas as $item)
-                            <div class="bg-gray-100 px-5 py-3 rounded-2xl text-gray-700 font-medium shadow-sm">
-                                ✔ {{ $item }}
-                            </div>
-                        @empty
-                            <p class="text-gray-400">Belum ada fasilitas</p>
-                        @endforelse
-
-                    </div>
                 </div>
 
                 <!-- BUTTON -->
@@ -170,12 +148,28 @@
                         Kembali
                     </a>
 
-                    @if($kamar->status == 'kosong')
-                        <a href="{{ route('booking.index', $kamar->id) }}"
-                           class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition">
-                            Sewa Sekarang
-                        </a>
-                    @endif
+                    @if($statusBooking != 'terisi')
+
+<a
+    href="{{ route('booking.index', [
+        'id' => $kamar->id,
+        'tanggal' => $tanggal
+    ]) }}"
+    class="bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition"
+>
+    Sewa Sekarang
+</a>
+
+@else
+
+<button
+    disabled
+    class="bg-gray-400 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
+>
+    Tidak Tersedia
+</button>
+
+@endif
 
                 </div>
 
