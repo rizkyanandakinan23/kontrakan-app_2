@@ -68,10 +68,11 @@
                         <th class="p-4 text-left">Nomor Kontrakan</th>
                         <th class="p-4 text-left">Harga</th>
                         <th class="p-4 text-left">Status</th>
-                        <th class="p-4 text-left">Penghuni</th>
+                        <th class="p-4 text-left">Penyewa</th>
                         <th class="p-4 text-left">Booking ID</th>
                         <th class="p-4 text-left">Mulai</th>
                         <th class="p-4 text-left">Selesai</th>
+                        <th class="p-4 text-left">Foto identitas penyewa</th>
                         <th class="p-4 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -137,8 +138,8 @@ $bookingAktif = $kamar->booking_aktif;
                             @elseif($kamar->status_booking == 'booking')
 
                                 <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-semibold">
-                                    Sudah Dibooking
-                                </span>
+    Akan Dibooking
+</span>
 
                             @else
 
@@ -153,8 +154,9 @@ $bookingAktif = $kamar->booking_aktif;
                         <td class="p-4">
 
     @if($bookingAktif)
+    <a href="{{ route('admin.user.index') }}">
 
-{{ $bookingAktif->user->nama_lengkap }}
+{{ $bookingAktif->user->nama_lengkap }}</a>
 
 @else
 
@@ -167,12 +169,14 @@ Belum ada penghuni
                         <!-- ID booking -->
                         <td class="p-4">
     @if($bookingAktif)
-#{{ $bookingAktif->id }}
-@else
--
-@endif
+        <a href="{{ route('admin.booking.index') }}"
+           class="text-blue-600 hover:underline">
+            #{{ $bookingAktif->id }}
+        </a>
+    @else
+        -
+    @endif
 </td>
-
 
 
 <td class="p-4">
@@ -191,6 +195,26 @@ Belum ada penghuni
     @else
         -
     @endif
+</td>
+
+<td class="p-4">
+
+@if($bookingAktif && $bookingAktif->foto_identitas)
+
+    <img
+        src="{{ asset('storage/'.$bookingAktif->foto_identitas) }}"
+        data-image="{{ asset('storage/'.$bookingAktif->foto_identitas) }}"
+        class="w-16 h-16 object-cover rounded-lg border cursor-pointer preview-identitas"
+    >
+
+@else
+
+    <span class="text-gray-500 text-xs">
+        Belum Upload
+    </span>
+
+@endif
+
 </td>
 
                         <!-- AKSI -->

@@ -6,10 +6,6 @@
 
 <div class="max-w-6xl mx-auto">
 
-    <div class="mb-6">
-        @include('components.back')
-    </div>
-
     <h1 class="text-3xl font-bold text-white mb-6">
         Riwayat Booking
     </h1>
@@ -20,6 +16,7 @@
 
             <thead class="bg-amber-600 text-white">
                 <tr>
+                    <th class="p-4 text-left">Tanggal Pembayaran</th>
                     <th class="p-4 text-left">Kamar</th>
                     <th class="p-4 text-left">Durasi</th>
                     <th class="p-4 text-left">Total</th>
@@ -52,6 +49,12 @@
 
 <tr class="border-b hover:bg-gray-50">
 
+<!-- TANGGAL PEMBAYARAN -->
+<td class="p-4 text-sm">
+
+    {{ $booking->payment?->created_at?->setTimezone('Asia/Jakarta')->format('d M Y H:i') ?? '-' }}
+
+</td>
 
     <!-- KAMAR -->
     <td class="p-4">

@@ -131,12 +131,6 @@
         Geser foto menggunakan ikon ☰ untuk mengubah urutan.
     </p>
 
-    <input
-        type="hidden"
-        name="urutan_foto"
-        id="urutan_foto"
-    >
-
     <div
         id="gallery"
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
@@ -204,8 +198,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
-
 <script>
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -232,9 +224,11 @@ document.addEventListener('DOMContentLoaded',function(){
 
     new Sortable(gallery,{
     animation:300,
-handle:'.drag-handle',
+    handle:'.drag-handle',
     onEnd:simpanUrutan
 });
+
+simpanUrutan();
 
 });
 

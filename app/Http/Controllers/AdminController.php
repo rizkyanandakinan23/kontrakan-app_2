@@ -329,55 +329,57 @@ if ($booking->payment) {
     $kamars = Kamar::with([
         'bookings.payment',
         'bookings.user'
-    ])->latest()->get();
+    ])
+    ->orderBy('nama_kamar', 'asc')
+    ->get();
 
-    foreach ($kamars as $kamar) {
+   foreach ($kamars as $kamar) {
 
-        // Default
-        $status = 'tersedia';
-        $bookingAktif = null;
+    $status = 'tersedia';
+    $bookingAktif = null;
 
-        foreach ($kamar->bookings as $booking) {
+    foreach ($kamar->bookings as $booking) {
 
-            // Lewati booking yang dibatalkan
-            if ($booking->status == 'cancel') {
-                continue;
-            }
-
-            // Hanya booking yang sudah lunas
-            if (
-                !$booking->payment ||
-                $booking->payment->transaction_status != 'settlement'
-            ) {
-                continue;
-            }
-
-            $mulai = Carbon::parse($booking->tanggal_masuk);
-
-            // Masa sewa + jeda 2 hari
-            $selesai = Carbon::parse($booking->tanggal_selesai)
-                ->addDays(2);
-
-            // Apakah tanggal yang dipilih berada pada periode booking?
-            if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
-
-                if ($tanggal->lt($mulai)) {
-                    $status = 'booking';
-                } else {
-                    $status = 'terisi';
-                }
-
-                // Simpan booking yang aktif pada tanggal tersebut
-                $bookingAktif = $booking;
-
-                break;
-            }
+        if ($booking->status == 'cancel') {
+            continue;
         }
 
-        // Kirim ke Blade
-        $kamar->status_booking = $status;
-        $kamar->booking_aktif = $bookingAktif;
+        if (
+            !$booking->payment ||
+            $booking->payment->transaction_status != 'settlement'
+        ) {
+            continue;
+        }
+
+        $mulai = Carbon::parse($booking->tanggal_masuk);
+        $selesai = Carbon::parse($booking->tanggal_selesai)->addDays(2);
+
+        // =============================
+        // Sedang ditempati
+        // =============================
+        if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
+
+            $status = 'terisi';
+            $bookingAktif = $booking;
+            break;
+        }
+
+        // =============================
+        // Akan dibooking (< 1 bulan)
+        // =============================
+        $selisihHari = $tanggal->diffInDays($mulai, false);
+
+        if ($selisihHari > 0 && $selisihHari <= 30) {
+
+            $status = 'booking';
+            $bookingAktif = $booking;
+            break;
+        }
     }
+
+    $kamar->status_booking = $status;
+    $kamar->booking_aktif = $bookingAktif;
+}
 
     return view('admin.kamar.index', compact(
         'kamars',
@@ -461,31 +463,6 @@ foreach ($admins as $admin) {
             );
         }
     }
-
-    if ($request->filled('urutan_foto')) {
-
-    $urutan = json_decode($request->urutan_foto, true);
-
-    if (is_array($urutan)) {
-
-        $baru = [];
-
-        foreach ($urutan as $path) {
-
-            if (in_array($path, $fotoLama)) {
-
-                $baru[] = $path;
-
-            }
-
-        }
-
-        $fotoLama = $baru;
-
-    }
-
-}
-
     /*
     |--------------------------------------------------------------------------
     | TAMBAH FOTO BARU
@@ -701,13 +678,47 @@ public function pembayaranIndex()
 ->orderBy('paid_at','desc')
 ->get();
 
+$pendapatanPerBulan = Payment::whereIn('transaction_status', ['settlement', 'capture'])
+    ->whereNotNull('paid_at')
+    ->selectRaw('YEAR(paid_at) as tahun, MONTH(paid_at) as bulan, SUM(jumlah) as total')
+    ->groupBy('tahun', 'bulan')
+    ->pluck('total');
+
+$rataPendapatan = $pendapatanPerBulan->isNotEmpty()
+    ? round($pendapatanPerBulan->avg())
+    : 0;
 
     return view('admin.kelolapembayaran', compact(
         'totalPendapatan',
         'totalTransaksi',
+        'rataPendapatan',
         'laporanBulanan',
         'detailPembayaran'
     ));
+}
+
+public function pembayaranDetail($tahun, $bulan)
+{
+    $detail = Payment::with([
+        'booking.user',
+        'booking.kamar'
+    ])
+    ->where('status', 'success')
+    ->whereYear('paid_at', $tahun)
+    ->whereMonth('paid_at', $bulan)
+    ->orderBy('paid_at', 'desc')
+    ->get();
+
+    // Nama bulan (Januari, Februari, dst.)
+    $namaBulan = \Carbon\Carbon::createFromDate($tahun, (int) $bulan, 1)
+        ->translatedFormat('F');
+
+    return view('admin.pembayarandetail', [
+        'detail' => $detail,
+        'tahun' => $tahun,
+        'bulan' => $bulan,
+        'namaBulan' => $namaBulan,
+    ]);
 }
 
 public function notificationIndex()

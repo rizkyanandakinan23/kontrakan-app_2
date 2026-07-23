@@ -4,9 +4,9 @@
 
 <div class="max-w-4xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">
-        Notifikasi
-    </h1>
+    <h1 class="text-2xl font-bold mb-6 text-white">
+    Notifikasi
+</h1>
 
     @forelse($notifications as $notif)
 

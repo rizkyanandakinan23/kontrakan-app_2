@@ -157,7 +157,7 @@
             <div>
                 <h2 class="font-bold text-2xl mb-2">Kontrakan Raden Panghulu Djaja</h2>
                 <p class="text-sm text-amber-100">
-                    Platform penyewaan kamar yang mudah, cepat, dan terpercaya.
+                    Platform penyewaan kontrakan yang mudah, cepat, dan terpercaya.
                 </p>
             </div>
 
@@ -165,7 +165,7 @@
                 <h3 class="font-semibold text-lg mb-3">Menu</h3>
                 <ul class="space-y-2 text-sm">
                     <li><a href="{{ route('home') }}">Beranda</a></li>
-                    <li><a href="{{ route('kamar.index') }}">Kamar</a></li>
+                    <li><a href="{{ route('kamar.index') }}">Kontrakan</a></li>
                     <li><a href="{{ route('ketentuan') }}">Ketentuan</a></li>
                     <li><a href="{{ route('qna') }}">QnA</a></li>
                 </ul>

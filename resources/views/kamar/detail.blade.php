@@ -54,7 +54,8 @@
                     <img
     id="mainImage"
     src="{{ asset('storage/' . $mainImage) }}"
-    class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto"
+    class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto cursor-zoom-in"
+    onclick="openPreview()"
 >
 
                     <button
@@ -148,7 +149,7 @@
                         Kembali
                     </a>
 
-                    @if($statusBooking != 'terisi')
+                    @if($statusBooking == 'tersedia')
 
 <a
     href="{{ route('booking.index', [
@@ -160,13 +161,22 @@
     Sewa Sekarang
 </a>
 
+@elseif($statusBooking == 'booking')
+
+<button
+    disabled
+    class="bg-yellow-500 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
+>
+    Sudah Dibooking
+</button>
+
 @else
 
 <button
     disabled
-    class="bg-gray-400 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
+    class="bg-red-500 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
 >
-    Tidak Tersedia
+    Sedang Ditempati
 </button>
 
 @endif
@@ -182,6 +192,29 @@
     @include('components.maps')
     @include('components.review', ['kamar' => $kamar])
     @include('components.floating-chat')
+
+    <!-- ======================
+     IMAGE PREVIEW
+====================== -->
+<div
+    id="imagePreview"
+    class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[9999]"
+>
+
+    <button
+        onclick="closePreview()"
+        class="absolute top-5 right-8 text-white text-5xl z-20"
+    >
+        &times;
+    </button>
+
+    <img
+        id="previewImage"
+        src=""
+        class="max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-in transition duration-300"
+    >
+
+</div>
 
 </div>
 
@@ -221,6 +254,52 @@ function setImage(index) {
     currentIndex = index;
     updateImage();
 }
+</script>
+
+<script>
+    let zoom = 1;
+
+function openPreview(){
+
+    const modal = document.getElementById('imagePreview');
+    const img = document.getElementById('previewImage');
+
+    img.src = document.getElementById('mainImage').src;
+
+    zoom = 1;
+
+    img.style.transform = 'scale(1)';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closePreview(){
+
+    document.getElementById('imagePreview').classList.remove('flex');
+    document.getElementById('imagePreview').classList.add('hidden');
+
+}
+
+document.getElementById('previewImage').addEventListener('wheel',function(e){
+
+    e.preventDefault();
+
+    if(e.deltaY < 0){
+
+        zoom += 0.2;
+
+    }else{
+
+        zoom -= 0.2;
+
+    }
+
+    zoom = Math.max(1,Math.min(5,zoom));
+
+    this.style.transform='scale('+zoom+')';
+
+});
 </script>
 
 @endsection

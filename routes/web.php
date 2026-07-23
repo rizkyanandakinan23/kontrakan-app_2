@@ -112,22 +112,32 @@ Route::middleware('auth')->group(function(){
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function(){
+/*
+|--------------------------------------------------------------------------
+| PAYMENT
+|--------------------------------------------------------------------------
+*/
+
+// ==========================
+// MIDTRANS CALLBACK
+// (TIDAK BOLEH pakai auth)
+// ==========================
+Route::post('/payment/callback', [PaymentController::class, 'callback'])
+    ->name('payment.callback');
 
 
-    Route::get('/payment/{id}',
-        [PaymentController::class,'create']
-    )->name('payment.create');
+// ==========================
+// USER PAYMENT
+// ==========================
+Route::middleware('auth')->group(function () {
 
+    Route::get('/payment/{id}', [PaymentController::class, 'create'])
+        ->whereNumber('id')
+        ->name('payment.create');
 
-    Route::post('/payment/callback',
-        [PaymentController::class,'callback']
-    )->name('payment.callback');
-
-
-    Route::get('/payment/success/{id}',
-        [PaymentController::class,'success']
-    )->name('payment.success');
+    Route::get('/payment/success/{id}', [PaymentController::class, 'success'])
+        ->whereNumber('id')
+        ->name('payment.success');
 
 });
 
@@ -226,6 +236,8 @@ Route::middleware(['auth', 'is_admin'])
 
 Route::get('/pembayaran', [AdminController::class, 'pembayaranIndex'])
     ->name('pembayaran.index');
+Route::get('/pembayaran/{tahun}/{bulan}', [AdminController::class, 'pembayaranDetail'])
+    ->name('pembayaran.detail');
 
         /*
         |--------------------------------------------------------------------------
@@ -309,15 +321,6 @@ Route::get('/user/notifications', [NotificationController::class, 'index'])
 | AUTH
 |--------------------------------------------------------------------------
 */
-Route::post(
-    '/midtrans/callback',
-    [PaymentController::class, 'callback']
-)->name('midtrans.callback');
-
-Route::get('/fake-success/{id}',
-[PaymentController::class,'success']);
-
-
 require __DIR__.'/auth.php';
 
 

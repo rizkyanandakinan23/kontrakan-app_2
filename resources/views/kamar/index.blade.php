@@ -22,42 +22,7 @@
       <!-- SEARCH -->
     @include('components.search-filter')
 
-    <div class="bg-white rounded-2xl p-6 mb-8 shadow-lg">
-
-    <form method="GET" action="{{ route('kamar.index') }}">
-
-        <!-- Pertahankan search & sort -->
-        <input type="hidden" name="search" value="{{ request('search') }}">
-        <input type="hidden" name="sort" value="{{ request('sort') }}">
-
-        <div class="flex flex-wrap items-end gap-4">
-
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    Tanggal Check-in
-                </label>
-
-                <input
-                    type="date"
-                    name="tanggal"
-                    value="{{ request('tanggal', date('Y-m-d')) }}"
-                    min="{{ date('Y-m-d') }}"
-                    class="border rounded-xl px-4 py-3"
-                >
-            </div>
-
-            <button
-                type="submit"
-                class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 rounded-xl"
-            >
-                Cek Ketersediaan
-            </button>
-
-        </div>
-
-    </form>
-
-</div>
+@if(request()->filled('tanggal'))
 
     <!-- STATISTIK -->
     @include('components.statistik-kamar')
@@ -119,11 +84,6 @@
                     {{ $kamar->nama_kamar }}
                 </h2>
 
-                <p class="text-gray-500 text-sm mb-4 line-clamp-3">
-                    {{ $kamar->deskripsi }}
-                </p>
-
-
                 <!-- PRICE -->
                 <div class="flex items-center justify-between">
 
@@ -178,6 +138,27 @@
     </div>
 
 </div>
+
+@else
+
+<div class="bg-white rounded-3xl shadow-lg p-10 text-center mt-8">
+
+    <div class="text-6xl mb-5">
+        📅
+    </div>
+
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">
+        Pilih Tanggal Check-in Terlebih Dahulu
+    </h2>
+
+    <p class="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+        Untuk melihat daftar kontrakan beserta status ketersediaannya,
+        silakan pilih tanggal check-in kemudian klik
+        <strong>"Cek Ketersediaan"</strong>.
+    </p>
+
+</div>
+@endforelse
 
 @include('components.maps')
 

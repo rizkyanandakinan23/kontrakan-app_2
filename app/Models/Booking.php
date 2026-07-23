@@ -19,6 +19,7 @@ class Booking extends Model
     'tanggal_masuk',
     'durasi',
     'tanggal_selesai',
+    'foto_identitas',
 
     'metode_pembayaran',
     'total_harga',
@@ -135,7 +136,7 @@ if ($this->status == 'cancel') {
 
 
         return [
-            'text'=>'Kontrakan sedang aktif',
+            'text'=>'Kontrakan terisi',
             'color'=>'green'
         ];
 

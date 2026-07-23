@@ -9,7 +9,7 @@
     <div class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
 
         <h2 class="text-3xl font-bold text-center text-amber-700 mb-6">
-            Login Penyewa
+            Login
         </h2>
 
         @if(session('success'))

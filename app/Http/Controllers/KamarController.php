@@ -30,7 +30,7 @@ class KamarController extends Controller
     } elseif ($request->sort == 'mahal') {
         $query->orderBy('harga', 'desc');
     } else {
-        $query->latest();
+        $query->orderBy('nama_kamar', 'asc');
     }
 
     $tanggal = $request->tanggal ?? Carbon::today()->toDateString();
@@ -49,38 +49,49 @@ class KamarController extends Controller
 
     $status = 'tersedia';
 
-    foreach ($booking as $item) {
+foreach ($booking as $item) {
 
-        $mulai = Carbon::parse($item->tanggal_masuk);
+    $mulai = Carbon::parse($item->tanggal_masuk);
 
-        // checkout + jeda 2 hari
-        $selesai = Carbon::parse($item->tanggal_selesai)
-            ->addDays(2);
+    $selesai = Carbon::parse($item->tanggal_selesai)
+        ->addDays(2);
 
-        if (
-            Carbon::parse($tanggal)->between(
-                $mulai,
-                $selesai->copy()->subDay()
-            )
-        ) {
+    // =============================
+    // Sedang ditempati
+    // =============================
+    if (
+        Carbon::parse($tanggal)
+            ->between($mulai, $selesai->copy()->subDay())
+    ) {
 
-            if (Carbon::parse($tanggal)->lt($mulai)) {
-
-    $status = 'booking';
-
-} else {
-
-    $status = 'terisi';
-
-}
-
-            break;
-        }
+        $status = 'terisi';
+        break;
     }
+
+    // =============================
+    // Akan dibooking (<30 hari)
+    // =============================
+    $selisihHari = Carbon::parse($tanggal)
+        ->diffInDays($mulai, false);
+
+    if ($selisihHari > 0 && $selisihHari <= 30) {
+
+        $status = 'booking';
+        break;
+    }
+}
 
     $kamar->status_booking = $status;
     $kamar->tersedia = $status != 'terisi';
 }
+
+// FILTER STATUS
+if ($request->status == 'tersedia') {
+    $kamars = $kamars->filter(function ($kamar) {
+        return $kamar->status_booking == 'tersedia';
+    })->values();
+}
+
 
 $totalKamar = $kamars->count();
 
@@ -156,28 +167,23 @@ $kamarTerisi = $kamars
         $selesai = Carbon::parse($booking->tanggal_selesai)
             ->addDays(2);
 
-        if (
-            $tanggal->between(
-                $mulai,
-                $selesai->copy()->subDay()
-            )
-        ) {
+        // Sedang ditempati
+        if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
+            $statusBooking = 'terisi';
+            break;
+        }
 
-            if ($tanggal->lt($mulai)) {
+        // Akan dibooking (< 30 hari)
+        $selisihHari = $tanggal->diffInDays($mulai, false);
 
-    $statusBooking = 'booking';
-
-} else {
-
-    $statusBooking = 'terisi';
-
-}
-
+        if ($selisihHari > 0 && $selisihHari <= 30) {
+            $statusBooking = 'booking';
             break;
         }
     }
-    
-$tanggal = $tanggal->format('Y-m-d');
+
+    $tanggal = $tanggal->format('Y-m-d');
+
     return view(
         'kamar.detail',
         compact(

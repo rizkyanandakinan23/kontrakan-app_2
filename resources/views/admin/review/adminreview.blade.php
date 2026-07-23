@@ -51,31 +51,12 @@
                 <thead class="bg-amber-600 text-white">
 
                     <tr>
-
-                        <th class="p-4 text-left">
-                            User
-                        </th>
-
-                        <th class="p-4 text-left">
-                            Kamar
-                        </th>
-
-                        <th class="p-4 text-left">
-                            Rating
-                        </th>
-
-                        <th class="p-4 text-left">
-                            Komentar
-                        </th>
-
-                        <th class="p-4 text-left">
-                            Report
-                        </th>
-
-                        <th class="p-4 text-left">
-                            Aksi
-                        </th>
-
+                        <th class="p-4 text-left">User</th>
+                        <th class="p-4 text-left">Kamar</th>
+                        <th class="p-4 text-left">Rating</th>
+                        <th class="p-4 text-left">Komentar</th>
+                        <th class="p-4 text-left">Report</th>
+                        <th class="p-4 text-left">Aksi</th>
                     </tr>
 
                 </thead>
@@ -89,11 +70,10 @@
 
                             <!-- USER -->
                             <td class="p-4">
-
+                                <a href="{{ route('admin.user.index', $review->user->id) }}">
                                 <div class="font-semibold text-gray-800">
                                     {{ $review->user->username ?? '-' }}
-                                </div>
-
+                                </div></a>
                             </td>
 
                             <!-- KAMAR -->

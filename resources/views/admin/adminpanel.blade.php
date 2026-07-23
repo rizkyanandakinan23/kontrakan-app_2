@@ -7,61 +7,36 @@
     <div class="space-y-10">
 
         <!-- STATISTICS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            
+            <a href="{{ route('admin.user.index') }}">
             <div class="bg-white rounded-2xl shadow-sm p-5">
                 <p class="text-gray-500 text-sm">Total User</p>
                 <h2 class="text-2xl font-bold text-blue-600 mt-1">
                     {{ $totalUser ?? 0 }}
                 </h2>
-            </div>
+            </div> </a>
 
+            <a href="{{ route('admin.kamar.index') }}">
             <div class="bg-white rounded-2xl shadow-sm p-5">
                 <p class="text-gray-500 text-sm">Total Kontrakan</p>
                 <h2 class="text-2xl font-bold text-green-600 mt-1">
                     {{ $totalKamar ?? 0 }}
                 </h2>
-            </div>
+            </div> </a>
 
-            <div class="bg-white rounded-2xl shadow-sm p-5">
-                <p class="text-gray-500 text-sm">Kontrakan Terisi</p>
-                <h2 class="text-2xl font-bold text-red-600 mt-1">
-                    {{ $kamarTerisi ?? 0 }}
-                </h2>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm p-5">
-    <p class="text-gray-500 text-sm">
-        Kontrakan Tersedia
-    </p>
-
-    <h2 class="text-2xl font-bold text-cyan-600 mt-1">
-        {{ $kamarTersedia ?? 0 }}
-    </h2>
-</div>
-
+<a href="{{ route('admin.pembayaran.index') }}">
 <div class="bg-white rounded-2xl shadow-sm p-5">
     <p class="text-gray-500 text-sm">
-        Kontrakan Dibooking
+        Total Transaksi Berhasil
     </p>
-
-    <h2 class="text-2xl font-bold text-yellow-600 mt-1">
-        {{ $kamarBooking ?? 0 }}
-    </h2>
-</div>
-
-            <div class="bg-white rounded-2xl shadow-sm p-5">
-    <p class="text-gray-500 text-sm">
-        Total Pembayaran Berhasil
-    </p>
-
     <h2 class="text-2xl font-bold text-purple-600 mt-1">
         {{ $totalTransaksi ?? 0 }}
     </h2>
-</div>
+</div></a>
 
             <div class="bg-white rounded-2xl shadow-sm p-5">
-                <p class="text-gray-500 text-sm">Rata-rata Pembayaran / Bulan</p>
+                <p class="text-gray-500 text-sm">Rata-rata Transaksi / Bulan</p>
                 <h2 class="text-2xl font-bold text-orange-600 mt-1">
                     {{ $rataTransaksi ?? 0 }}
                 </h2>
@@ -73,24 +48,18 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <div class="bg-white rounded-2xl shadow-sm p-6">
-                <p class="text-gray-500 text-sm">Total Pendapatan (Akumulasi)</p>
-                <h2 class="text-3xl font-bold text-emerald-600 mt-2 break-words">
-                    Rp {{ number_format($totalPendapatan ?? 0, 0, ',', '.') }}
-                </h2>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <a href="{{ route('admin.pembayaran.index') }}">
                 <p class="text-gray-500 text-sm">Rata-rata Pendapatan / Bulan</p>
                 <h2 class="text-3xl font-bold text-indigo-600 mt-2 break-words">
                     Rp {{ number_format($rataPendapatan ?? 0, 0, ',', '.') }}
-                </h2>
+                </h2> </a>
             </div>
 
         </div>
 
-
+        <!-- GRAFIK PENDAPATAN BULANAN -->
         <div class="bg-white rounded-3xl shadow p-6">
-
+            <a href="{{ route('admin.pembayaran.index') }}">
     <h2 class="text-xl font-bold mb-4">
         Grafik Pendapatan Bulanan
     </h2>
@@ -109,12 +78,13 @@
 
     @endif
 
-</div>
+</div> </a>
 
 
 <!-- ================= NOTIF BOOKING ================= -->
 <div class="bg-white rounded-3xl shadow p-6">
 
+    <a href="{{ route('admin.notifications') }}">
     <h2 class="text-xl font-bold mb-4">
         Notifikasi Booking Terbaru
     </h2>
@@ -160,13 +130,15 @@
 
     </div>
 
-</div>
+</div> </a>
 
         <!-- TABLE USER -->
         <div class="bg-white rounded-3xl shadow overflow-hidden">
 
+            <a href="{{ route('admin.user.index') }}">
+
             <div class="p-5 border-b">
-                <h2 class="text-xl font-bold">User Terbaru</h2>
+                <h2 class="text-xl font-bold">Daftar Akun Penyewa Terbaru</h2>
             </div>
 
             <table class="w-full">
@@ -176,7 +148,6 @@
                         <th class="p-4 text-left">Nama</th>
                         <th class="p-4 text-left">Username</th>
                         <th class="p-4 text-left">Email</th>
-                        <th class="p-4 text-left">Role</th>
                         <th class="p-4 text-left">Tanggal registrasi</th>
                     </tr>
                 </thead>
@@ -188,13 +159,6 @@
                             <td class="p-4">{{ $user->nama_lengkap }}</td>
                             <td class="p-4">{{ $user->username }}</td>
                             <td class="p-4">{{ $user->email }}</td>
-                            <td class="p-4">
-                                @if($user->is_admin)
-                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Admin</span>
-                                @else
-                                    <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">User</span>
-                                @endif
-                            </td>
                             <td class="p-4">
     {{ $user->created_at->format('d M Y H:i') }}
 </td>
@@ -211,7 +175,7 @@
 
             </table>
 
-        </div>
+        </div> </a>
 
     </div>
 

@@ -33,10 +33,12 @@
 
                 <thead class="bg-amber-600 text-white">
                     <tr>
+                        <th class="p-4 text-left">Tanggal Dibuat</th>
                         <th class="p-4 text-left">Nama</th>
                         <th class="p-4 text-left">Username</th>
                         <th class="p-4 text-left">Email</th>
                         <th class="p-4 text-left">Role</th>
+                        <th class="p-4 text-left">Foto Identitas</th>
                         <th class="p-4 text-left">Aksi</th>
                     </tr>
                 </thead>
@@ -47,7 +49,14 @@
 
                     <tr class="border-b hover:bg-gray-50">
 
+                        <td class="p-4 text-sm">
+
+    {{ $user->created_at?->setTimezone('Asia/Jakarta')->format('d M Y H:i') ?? '-' }}
+
+</td>
+
                         <!-- NAMA -->
+                        
                         <td class="p-4 font-semibold">
                             {{ $user->nama_lengkap ?? '-' }}
                         </td>
@@ -77,6 +86,30 @@
         </span>
 
     @endif
+</td>
+
+<td class="p-4">
+
+@php
+$bookingTerakhir = $user->bookings->sortByDesc('created_at')->first();
+@endphp
+
+@if($bookingTerakhir && $bookingTerakhir->foto_identitas)
+
+<button
+onclick="showIdentity('{{ asset('storage/'.$bookingTerakhir->foto_identitas) }}')"
+class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-xs">
+
+Lihat
+
+</button>
+
+@else
+
+-
+
+@endif
+
 </td>
 
                         <!-- AKSI -->
@@ -127,7 +160,6 @@
     </div>
 
 </div>
-
 
 
 @endsection

@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Kontrakan Raden Panghulu Djaja')</title>
+    
 
    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -34,7 +35,7 @@ tailwind.config = {
 <!-- BACKGROUND -->
 <div class="fixed inset-0 -z-10">
     <img
-        src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
+        src="{{ asset('images/Halaman Utama.png') }}"
         class="w-full h-full object-cover"
         alt="Background">
 </div>
@@ -58,7 +59,7 @@ tailwind.config = {
     Kontrakan Raden Panghulu Djaja
 </span>
                 <p class="text-xs text-gray-500 mt-1">
-                    Jl. Raden Panghulu Djaja no.23 Cimahpar, Bogor
+                    Jl. Raden Panghulu Djaja Gg. Insinyur RT 4 RW 3 Cimahpar, Bogor Utara, Kota Bogor
                 </p>
             </div>
         </a>
@@ -216,7 +217,7 @@ tailwind.config = {
 
         <a href="{{ route('kamar.index') }}"
            class="hover:text-gray-900 transition">
-            Kamar
+            Lihat Kontrakan
         </a>
 
         @auth
@@ -269,7 +270,7 @@ tailwind.config = {
             <div>
                 <h2 class="font-bold text-2xl mb-2">Kontrakan Raden Panghulu Djaja</h2>
                 <p class="text-sm text-amber-100">
-                    Platform penyewaan kamar yang mudah, cepat, dan terpercaya.
+                    Platform penyewaan kontrakan yang mudah, cepat, dan terpercaya.
                 </p>
             </div>
 
@@ -277,7 +278,7 @@ tailwind.config = {
                 <h3 class="font-semibold text-lg mb-3">Menu</h3>
                 <ul class="space-y-2 text-sm">
                     <li><a href="{{ route('home') }}">Beranda</a></li>
-                    <li><a href="{{ route('kamar.index') }}">Kamar</a></li>
+                    <li><a href="{{ route('kamar.index') }}">Kontrakan</a></li>
                     <li><a href="{{ route('ketentuan') }}">Ketentuan</a></li>
                     <li><a href="{{ route('qna') }}">QnA</a></li>
                 </ul>
@@ -319,7 +320,7 @@ tailwind.config = {
 
             <!-- ALAMAT (FIX YANG HILANG) -->
             <p class="text-sm mb-2">
-                Jl. Raden Panghulu Djaja No.23, Cimahpar, Bogor Utara, Kota Bogor 16155
+                Jl. Raden Panghulu Djaja Gg. Insinyur RT 4 RW 3 Cimahpar, Bogor Utara, Kota Bogor
             </p>
 
             <!-- COPYRIGHT -->

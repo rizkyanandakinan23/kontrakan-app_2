@@ -79,6 +79,27 @@
                             <p class="font-semibold"> {{ $booking->user->no_telp }}</p>
                         </div>
 
+                        <td class="p-4">
+
+@if($booking->foto_identitas)
+
+    <img
+        src="{{ asset('storage/'.$booking->foto_identitas) }}"
+        onclick="showIdentity(this.src)"
+        class="w-16 h-16 object-cover rounded-lg border cursor-pointer hover:scale-105 transition"
+        title="Klik untuk memperbesar"
+    >
+
+@else
+
+    <span class="text-gray-500 text-xs">
+        Belum Upload
+    </span>
+
+@endif
+
+</td>
+
                     </div>
 
                 </div>
@@ -227,5 +248,6 @@
     </div>
 
 </div>
+
 
 @endsection

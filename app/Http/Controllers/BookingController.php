@@ -63,6 +63,8 @@ $request->validate([
         'before_or_equal:' . $maxTanggal,
     ],
     'durasi' => 'required|integer|min:1|max:24',
+    'foto_identitas' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+
 ]);
 
 
@@ -108,32 +110,31 @@ foreach ($bookingLain as $booking) {
 // BARU SIMPAN
 // ==========================================
 
+$fotoIdentitas = null;
+
+if ($request->hasFile('foto_identitas')) {
+
+    $fotoIdentitas = $request
+        ->file('foto_identitas')
+        ->store('identitas', 'public');
+
+}
+
 $booking = Booking::create([
-
-            'user_id'=>auth()->id(),
-
-            'kamar_id'=>$kamar->id,
-
-             'whatsapp' => auth()->user()->no_telp,
-
-            'tanggal_masuk'=>$tanggalMasuk,
-
-            'tanggal_selesai'=>$tanggalSelesai,
-
-            'durasi'=>$durasi,
-
-            'total_harga'=>$kamar->harga * $durasi,
-
-            'status'=>'pending'
-
-        ]);
-
+    'user_id' => auth()->id(),
+    'kamar_id' => $kamar->id,
+    'whatsapp' => auth()->user()->no_telp,
+    'foto_identitas' => $fotoIdentitas,
+    'tanggal_masuk' => $tanggalMasuk,
+    'tanggal_selesai' => $tanggalSelesai,
+    'durasi' => $durasi,
+    'total_harga' => $kamar->harga * $durasi,
+    'status' => 'pending',
+]);
 
         return redirect()
             ->route('payment.create',$booking->id);
     }
-
-
 
     public function cancel($id)
 {

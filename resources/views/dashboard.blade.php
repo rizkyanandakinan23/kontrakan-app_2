@@ -40,7 +40,7 @@
                         href="{{ route('kamar.index') }}"
                         class="bg-amber-700 hover:bg-amber-800 text-white px-7 py-3 rounded-2xl font-semibold shadow-lg transition"
                     >
-                        Lihat Kamar
+                        Lihat Kontrakan
                     </a>
 
                     @guest
@@ -57,77 +57,62 @@
                 </div>
 
             </div>
+            
 
             <!-- IMAGE -->
-            <div>
+<div>
+        @php
+    $heroImages = [
+        'images/12.png',
+        'images/13.png',
+        'images/14.png',
+        'images/15.png',
+        'images/17.png',
+        'images/18.png',
+    ];
+@endphp
 
-                <img
-                    src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
-                    alt="Kamar"
-                    class="rounded-3xl shadow-xl w-full h-[420px] object-cover"
-                >
+    <div class="relative mx-auto overflow-hidden rounded-3xl shadow-xl bg-gray-100"
+     style="width:400px; height:531.60px; max-width:100%;">
 
-            </div>
+    @foreach($heroImages as $index => $img)
+        <img
+            src="{{ asset($img) }}"
+            class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 {{ $loop->first ? 'opacity-100' : 'opacity-0' }}"
+            alt="Kontrakan">
+    @endforeach
+
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black/25"></div>
+
+    </div>
+
+</div>
 
         </div>
 
     </div>
 
-    <!-- FITUR -->
-    <div class="grid md:grid-cols-3 gap-7 mb-14">
+    <div class="my-16">
 
-        <!-- CARD -->
-        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
+    <h2 class="text-3xl font-bold text-white mb-3">
+        Siap Menemukan Kontrakan yang Tepat?
+    </h2>
 
-            <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
-                🏠
-            </div>
+    <p class="text-white/90 text-lg mb-8 leading-relaxed">
+        Pilih kamar yang sesuai dengan kebutuhan Anda dan lakukan booking secara online dengan proses yang mudah, cepat, dan aman.
+    </p>
 
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">
-                Kamar Nyaman
-            </h3>
+    <a href="{{ route('kamar.index') }}"
+   class="inline-block bg-amber-700 hover:bg-amber-800 text-white text-lg font-bold px-10 py-4 rounded-2xl shadow-lg hover:shadow-xl transition duration-300">
+    Pesan Kamar
+    </a>
 
-            <p class="text-gray-600 leading-relaxed">
-                Kamar bersih, nyaman, dan cocok untuk mahasiswa maupun pekerja.
-            </p>
+    <p class="text-sm text-white/80 mt-4">
+        Cek ketersediaan kamar dan lakukan booking langsung melalui website.
+    </p>
 
-        </div>
-
-        <!-- CARD -->
-        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
-
-            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
-                📍
-            </div>
-
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">
-                Lokasi Strategis
-            </h3>
-
-            <p class="text-gray-600 leading-relaxed">
-                Dekat kampus, minimarket, tempat makan, dan akses transportasi.
-            </p>
-
-        </div>
-
-        <!-- CARD -->
-        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
-
-            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
-                💰
-            </div>
-
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">
-                Harga Terjangkau
-            </h3>
-
-            <p class="text-gray-600 leading-relaxed">
-                Harga sesuai fasilitas dengan proses booking yang mudah dan cepat.
-            </p>
-
-        </div>
-
-    </div>
+</div>
 
 <!-- FASILITAS UMUM -->
 <div class="mb-14">
@@ -226,165 +211,93 @@
     $tanggal = $tanggal ?? now()->toDateString();
 @endphp
 
+<!-- FITUR -->
+    <div class="grid md:grid-cols-3 gap-7 mb-14">
 
-<!-- KAMAR TERSEDIA -->
-    <div class="mb-10">
+        <!-- CARD -->
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-        <!-- HEADER -->
-        <div class="flex items-center justify-between mb-7">
-
-            <div>
-                
-                <h2 class="text-4xl font-bold text-white">
-                    Rekomendasi kamar
-                </h2>
-
-                <p class="text-white/80 mt-2">
-                    Pilihan kamar terbaru yang tersedia untuk Anda.
-                </p>
-
+            <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                🏠
             </div>
 
-            <a
-    href="{{ route('kamar.index') }}"
-    class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl transition font-semibold shadow-lg"
->
-    Lihat Semua
-</a>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                Kontrakan Nyaman
+            </h3>
+
+            <p class="text-gray-600 leading-relaxed">
+                Kontrakan bersih, nyaman, dan cocok untuk mahasiswa maupun pekerja.
+            </p>
 
         </div>
 
         <!-- CARD -->
-        <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-            @forelse ($kamars as $kamar)
-
-            <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-300">
-
-                <!-- IMAGE -->
-                <div class="relative overflow-hidden">
-
-                    @php
-                        $foto = $kamar->foto_kamar;
-
-                        if (is_string($foto)) {
-                            $decoded = json_decode($foto, true);
-                            $foto = is_array($decoded) ? $decoded : [$foto];
-                        }
-                    @endphp
-
-                    <img
-                        src="{{ asset('storage/' . ($foto[0] ?? 'default.jpg')) }}"
-                        class="max-w-full max-h-[450px] w-auto h-auto object-contain rounded-3xl shadow-lg transition duration-300 mx-auto"
-                        alt="{{ $kamar->nama_kamar }}"
-                    >
-
-                    <!-- STATUS -->
-                    <div class="absolute top-4 right-4">
-
-                        @if($kamar->status_booking == 'terisi')
-
-<span class="bg-red-500 text-white text-xs px-4 py-2 rounded-full shadow">
-    Sedang Ditempati
-</span>
-
-@elseif($kamar->status_booking == 'booking')
-
-<span class="bg-yellow-500 text-white text-xs px-4 py-2 rounded-full shadow">
-    Sudah Dibooking
-</span>
-
-@else
-
-<span class="bg-green-500 text-white text-xs px-4 py-2 rounded-full shadow">
-    Tersedia
-</span>
-
-@endif
-
-                    </div>
-
-                </div>
-
-                <!-- CONTENT -->
-                <div class="p-6">
-
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">
-                        {{ $kamar->nama_kamar }}
-                    </h3>
-
-                    <p class="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-3">
-                        {{ $kamar->deskripsi }}
-                    </p>
-
-                    <!-- FOOTER -->
-                    <div class="flex items-center justify-between">
-
-                        <div>
-
-                            <p class="text-sm text-gray-500">
-                                Harga
-                            </p>
-
-                            <h4 class="text-2xl font-bold text-amber-700">
-                                Rp {{ number_format($kamar->harga, 0, ',', '.') }}
-                            </h4>
-
-                            <p class="text-xs text-gray-400">
-                                / bulan
-                            </p>
-
-                        </div>
-
-                        @if($kamar->status_booking == 'terisi')
-
-<div class="bg-gray-400 text-white px-5 py-3 rounded-2xl font-semibold cursor-not-allowed text-sm">
-    Tidak Tersedia
-</div>
-
-@else
-
-<a
-    href="{{ route('kamar.show', $kamar->id) }}"
-    class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg transition"
->
-    Detail
-</a>
-
-@endif
-
-                    </div>
-
-                </div>
-
+            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                📍
             </div>
 
-            @empty
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                Lokasi Strategis
+            </h3>
 
-            <div class="col-span-3">
+            <p class="text-gray-600 leading-relaxed">
+                Dekat kampus, minimarket, tempat makan, dan akses transportasi.
+            </p>
 
-                <div class="bg-white rounded-3xl shadow-xl p-12 text-center">
+        </div>
 
-                    <h2 class="text-3xl font-bold text-gray-700 mb-3">
-                        Belum Ada Kamar
-                    </h2>
+        <!-- CARD -->
+        <div class="bg-white/95 rounded-3xl shadow-xl p-7 hover:-translate-y-1 transition duration-300">
 
-                    <p class="text-gray-500">
-                        Saat ini belum ada kamar yang tersedia.
-                    </p>
-
-                </div>
-
+            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                💰
             </div>
 
-            @endforelse
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                Harga Terjangkau
+            </h3>
+
+            <p class="text-gray-600 leading-relaxed">
+                Harga sesuai fasilitas dengan proses booking yang mudah dan cepat.
+            </p>
 
         </div>
 
     </div>
 
-</div>
 
 @include('components.maps')
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const slides = document.querySelectorAll('.hero-slide');
+
+    let current = 0;
+
+    if(slides.length <= 1) return;
+
+    setInterval(function(){
+
+        slides[current].classList.remove('opacity-100');
+        slides[current].classList.add('opacity-0');
+
+        current++;
+
+        if(current >= slides.length){
+            current = 0;
+        }
+
+        slides[current].classList.remove('opacity-0');
+        slides[current].classList.add('opacity-100');
+
+    },6000);
+
+});
+
+</script>
 
 @endsection

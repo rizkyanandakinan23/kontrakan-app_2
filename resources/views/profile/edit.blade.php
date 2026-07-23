@@ -10,7 +10,7 @@
     <div class="mb-8 text-center">
 
         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
-            Profile Saya
+            Profil Saya
         </h1>
 
         <p class="text-white/80 mt-2">
@@ -97,7 +97,7 @@
                 <div class="mb-6">
 
                     <h3 class="text-2xl font-bold text-gray-800">
-                        Informasi Profile
+                        Informasi Profil
                     </h3>
 
                     <p class="text-gray-500 mt-1 text-sm">

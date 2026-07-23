@@ -178,11 +178,12 @@
     </div>
 @endif
 
-            <form id="bookingForm" action="{{ route('booking.store', $kamar->id) }}" method="POST">
+            <form id="bookingForm"
+      action="{{ route('booking.store', $kamar->id) }}"
+      method="POST"
+      enctype="multipart/form-data">
 
                 @csrf
-
-
 
                 <!-- TANGGAL MASUK -->
                 <div class="mb-5">
@@ -249,12 +250,32 @@
         readonly
     >
 
-    <p
-        id="infoBooking"
-        class="hidden mt-2 text-sm text-red-600 font-medium"
-    >
+    <p id="infoBooking"
+        class="hidden mt-2 text-sm text-red-600 font-medium" >
         Durasi sewa melewati jadwal booking penyewa berikutnya.
         Silakan kurangi durasi atau pilih tanggal check-in lain.
+    </p>
+
+</div>
+
+<!-- FOTO IDENTITAS -->
+
+<div class="mb-6">
+
+    <label class="block mb-2 font-semibold">
+        Foto KTP / Identitas
+    </label>
+
+    <input
+        type="file"
+        name="foto_identitas"
+        accept=".jpg,.jpeg,.png"
+        class="w-full border border-gray-300 rounded-2xl px-4 py-3"
+        required
+    >
+
+    <p class="text-sm text-gray-500 mt-2">
+        Upload foto KTP, SIM, atau Paspor (JPG, JPEG, PNG maksimal 2 MB).
     </p>
 
 </div>
@@ -419,19 +440,38 @@ btnBooking.addEventListener('click', function () {
     Swal.fire({
         title: 'Konfirmasi Booking',
         html: `
-            <div class="text-left">
-                <p class="mb-3">
-                    Apakah Anda yakin ingin melakukan booking kontrakan ini?
-                </p>
+<div class="text-left leading-relaxed">
 
-                <ul style="text-align:left;">
-                    <li>✔ Pastikan tanggal masuk sudah sesuai.</li>
-                    <li>✔ Pastikan durasi sewa sudah benar.</li>
-                    <li>✔ Booking akan dilanjutkan ke halaman pembayaran.</li>
-                    <li>✔ Booking yang sudah dibayar tidak dapat diubah secara sepihak.</li>
-                </ul>
-            </div>
-        `,
+    <p class="mb-4">
+        Anda akan melanjutkan proses booking kontrakan. Mohon pastikan seluruh data yang telah diisi sudah benar sebelum melanjutkan ke tahap pembayaran.
+    </p>
+
+    <p class="font-semibold mb-2">
+        Dengan menekan tombol <b>"Ya, Lanjut Booking"</b>, Anda menyatakan bahwa:
+    </p>
+
+    <ul class="list-disc pl-5 space-y-2 text-left">
+        <li>Tanggal mulai sewa yang dipilih telah sesuai dengan rencana Anda.</li>
+
+        <li>Durasi sewa yang dipilih sudah benar dan telah diperiksa kembali.</li>
+
+        <li>Data yang Anda masukkan merupakan data yang benar dan dapat dipertanggungjawabkan.</li>
+
+        <li>Anda memahami bahwa proses booking akan dilanjutkan ke halaman pembayaran untuk menyelesaikan transaksi.</li>
+
+        <li>Setelah pembayaran berhasil dilakukan, booking akan diproses sesuai ketentuan yang berlaku pada sistem.</li>
+
+        <li>Segala kesalahan akibat kelalaian dalam memilih tanggal, durasi sewa, maupun data yang diinput menjadi tanggung jawab penyewa.</li>
+
+        <li>Dengan melanjutkan proses ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan booking yang berlaku.</li>
+    </ul>
+
+    <p class="mt-4 text-sm text-red-600 font-medium">
+        Pastikan seluruh informasi telah sesuai sebelum melanjutkan ke proses pembayaran.
+    </p>
+
+</div>
+`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#b45309',

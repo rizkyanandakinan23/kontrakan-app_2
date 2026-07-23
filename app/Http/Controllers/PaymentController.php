@@ -18,7 +18,7 @@ class PaymentController extends Controller
             ->findOrFail($id);
 
         Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = false;
+        Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
 

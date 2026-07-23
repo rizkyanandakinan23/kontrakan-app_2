@@ -17,7 +17,7 @@
 <!-- ================= BACKGROUND ================= -->
 <div class="fixed inset-0 -z-10">
     <img
-        src="{{ asset('images/IMG-20260607-WA0008.jpg') }}"
+        src="{{ asset('images/Halaman Utama.png') }}"
         class="w-full h-full object-cover"
         alt="Background">
 </div>
@@ -38,7 +38,7 @@
                     Kontrakan Raden Panghulu Djaja
                 </span>
                 <p class="text-xs text-gray-500">
-                    Jl. Raden Panghulu Djaja no.23 Cimahpar, Bogor Utara
+                    Jl. Raden Panghulu Djaja Gg. Insinyur RT 4 RW 3 Cimahpar, Bogor Utara, Kota Bogor
                 </p>
             </div>
 
@@ -73,10 +73,10 @@
                 {{ Auth::user()->nama_lengkap ?? 'Admin' }}
             </span>
 
-            <a href="{{ route('home') }}"
+            {{-- <a href="{{ route('home') }}"
                class="text-sm bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800">
                 Lihat Website
-            </a>
+            </a> --}}
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -97,15 +97,15 @@
 
         <div>
             <h1 class="text-2xl font-bold text-gray-800">
-                Admin Panel
+                Halaman Admin
             </h1>
             <p class="text-sm text-gray-500">
-                Control System Kontrakan Raden Panghulu Djaja
+                Halaman Admin Kontrakan Raden Panghulu Djaja
             </p>
         </div>
 
         <span class="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full">
-            ADMIN ACCESS
+            AKSES ADMIN
         </span>
 
     </div>
@@ -207,7 +207,7 @@
                     Kontrakan Raden Panghulu Djaja
                 </h2>
                 <p class="text-sm text-amber-100">
-                    Admin system pengelolaan kontrakan, booking, user, dan review.
+                    Sistem Administrasi Pengelolaan Kontrakan, Booking, Penyewa, Pembayaran, dll.
                 </p>
             </div>
 
@@ -232,7 +232,7 @@
                     <!-- ALAMAT -->
                     <div class="flex items-center gap-2">
                         <span>📍</span>
-                        <span>Cimahpar, Bogor Utara, Kota Bogor</span>
+                        <span>Jl. Raden Panghulu Djaja Gg. Insinyur RT 4 RW 3 Cimahpar, Bogor Utara, Kota Bogor</span>
                     </div>
 
                 </div>
@@ -249,7 +249,59 @@
 
 </footer>
 
+<!-- ================= PREVIEW FOTO IDENTITAS ================= -->
+
+<div
+id="identityModal"
+class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+
+    <div class="relative">
+
+        <button
+            onclick="closeIdentity()"
+            class="absolute -top-3 -right-3 bg-white rounded-full w-8 h-8 shadow font-bold">
+            ✕
+        </button>
+
+        <img
+            id="identityImage"
+            src=""
+            class="max-w-5xl max-h-[90vh] rounded-xl shadow-2xl">
+
+    </div>
+
+</div>
+
 <script>
+
+    // ======================
+// PREVIEW FOTO IDENTITAS
+// ======================
+
+function showIdentity(src){
+
+    document.getElementById('identityImage').src = src;
+
+    document.getElementById('identityModal').classList.remove('hidden');
+    document.getElementById('identityModal').classList.add('flex');
+
+}
+
+function closeIdentity(){
+
+    document.getElementById('identityModal').classList.remove('flex');
+    document.getElementById('identityModal').classList.add('hidden');
+
+}
+
+// klik area gelap untuk menutup
+document.getElementById('identityModal').addEventListener('click', function(e){
+
+    if(e.target === this){
+        closeIdentity();
+    }
+
+});
 
 function toggleSidebar() {
 
@@ -283,6 +335,25 @@ function toggleSidebar() {
 
 }
 
+</script>
+
+<script>
+document.querySelectorAll('.preview-identitas').forEach(function(img){
+
+    img.addEventListener('click', function(){
+
+        Swal.fire({
+            title: 'Foto Identitas Penyewa',
+            imageUrl: this.dataset.image,
+            imageAlt: 'Foto Identitas',
+            imageWidth: 700,
+            showCloseButton: true,
+            showConfirmButton: false
+        });
+
+    });
+
+});
 </script>
 
 </body>

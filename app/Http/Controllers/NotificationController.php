@@ -22,9 +22,7 @@ class NotificationController extends Controller
         //     ->get();
 
         // tandai sebagai dibaca (hanya external juga)
-        $user->unreadNotifications
-            ->where('data.type', 'external')
-            ->markAsRead();
+        $user->unreadNotifications->markAsRead();
 
         return view('notifications.index', compact('notifications'));
     }

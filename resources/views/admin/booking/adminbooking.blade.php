@@ -12,7 +12,7 @@
             Kelola Booking
         </h1>
         <p class="text-white/80 mt-2">
-            Monitoring booking & refund user
+            Monitoring booking kontrakan
         </p>
     </div>
 
@@ -32,9 +32,11 @@
                 <thead class="bg-amber-600 text-white">
                     <tr>
                         <th class="p-4 text-left">Booking ID</th>
+                        <th class="p-4 text-left">Tanggal Booking</th>
                         <th class="p-4 text-left">User</th>
                         <th class="p-4 text-left">Kamar</th>
                         <th class="p-4 text-left">WhatsApp</th>
+                        <th class="p-4 text-left">Foto Identitas</th>
                         <th class="p-4 text-left">Durasi</th>
                         <th class="p-4 text-left">Mulai</th>
                         <th class="p-4 text-left">Selesai</th>
@@ -60,15 +62,23 @@
 
 </td>
 
-                        <!-- USER -->
+<td class="p-4 text-sm">
+
+    {{ $booking->payment?->created_at?->setTimezone('Asia/Jakarta')->format('d M Y H:i') ?? '-' }}
+
+</td>
+
                         <td class="p-4">
+                            <a href="{{ route('admin.user.index', $booking->id) }}">
                             <div class="font-semibold">
                                 {{ $booking->user->nama_lengkap ?? '-' }}
                             </div>
+
                             <div class="text-xs text-gray-500">
                                 {{ $booking->user->email ?? '-' }}
-                            </div>
+                            </div></a>
                         </td>
+                        
 
                         <!-- KAMAR -->
                         <td class="p-4">
@@ -78,6 +88,27 @@
                         <!-- NO. TELEPON -->
 <td class="p-4">
     {{ $booking->user->no_telp }}
+</td>
+
+<!-- FOTO IDENTITAS -->
+<td class="p-4">
+
+@if($booking->foto_identitas)
+
+    <img
+        src="{{ asset('storage/'.$booking->foto_identitas) }}"
+        data-image="{{ asset('storage/'.$booking->foto_identitas) }}"
+        class="w-16 h-16 object-cover rounded-lg border cursor-pointer preview-identitas"
+    >
+
+@else
+
+    <span class="text-gray-500 text-xs">
+        Belum Upload
+    </span>
+
+@endif
+
 </td>
 
                         <!-- DURASI -->
@@ -196,5 +227,6 @@
     </div>
 
 </div>
+
 
 @endsection

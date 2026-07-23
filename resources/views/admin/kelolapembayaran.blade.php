@@ -21,12 +21,12 @@
     {{-- Statistik --}}
     <div class="grid md:grid-cols-2 gap-4">
 
-        <div class="bg-white rounded-2xl shadow p-6">
-            <p class="text-gray-500">Total Pendapatan</p>
-            <h2 class="text-3xl font-bold text-green-600 mt-2">
-                Rp {{ number_format($totalPendapatan,0,',','.') }}
-            </h2>
-        </div>
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+                <p class="text-gray-500 text-sm">Rata-rata Pendapatan / Bulan</p>
+                <h2 class="text-3xl font-bold text-indigo-600 mt-2 break-words">
+                    Rp {{ number_format($rataPendapatan ?? 0, 0, ',', '.') }}
+                </h2>
+            </div>
 
         <div class="bg-white rounded-2xl shadow p-6">
             <p class="text-gray-500">Total Transaksi Berhasil</p>
@@ -53,6 +53,7 @@
                     <th class="p-4 text-left">Bulan</th>
                     <th class="p-4 text-left">Jumlah Transaksi</th>
                     <th class="p-4 text-left">Pendapatan</th>
+                    <th class="p-4 text-center">Aksi</th>
                 </tr>
             </thead>
 
@@ -76,6 +77,13 @@
                     <td class="p-4 font-semibold text-green-600">
                         Rp {{ number_format($laporan->total_pendapatan,0,',','.') }}
                     </td>
+
+                    <td class="p-4 text-center">
+    <a href="{{ route('admin.pembayaran.detail', [$laporan->tahun, $laporan->bulan]) }}"
+       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
+        Detail
+    </a>
+</td>
 
                 </tr>
 
@@ -108,7 +116,7 @@
 
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="p-4 text-left">Order ID</th>
+                    <th class="p-4 text-left">Kamar</th>
                     <th class="p-4 text-left">Penyewa</th>
                     <th class="p-4 text-left">Metode</th>
                     <th class="p-4 text-left">Tanggal Bayar</th>
@@ -123,9 +131,8 @@
 <tr class="border-b">
 
     <td class="p-4">
-        {{ $item->order_id }}
-    </td>
-
+    {{ $item->booking?->kamar?->nama_kamar ?? '-' }}
+</td>
 
     <td class="p-4">
         {{ $item->booking->user->nama_lengkap ?? '-' }}
