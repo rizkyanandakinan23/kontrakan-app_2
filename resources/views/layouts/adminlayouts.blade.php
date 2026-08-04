@@ -15,12 +15,12 @@
 <body class="font-['Plus Jakarta Sans'] bg-cream text-gray-800 antialiased">
     
 <!-- ================= BACKGROUND ================= -->
-<div class="fixed inset-0 -z-10">
+{{-- <div class="fixed inset-0 -z-10">
     <img
         src="{{ asset('images/Halaman Utama.png') }}"
         class="w-full h-full object-cover"
         alt="Background">
-</div>
+</div> --}}
 <div class="fixed inset-0 bg-black/30 backdrop-blur-[2px] -z-10"></div>
 
 <!-- ================= NAVBAR ================= -->
@@ -72,8 +72,8 @@
             <span class="text-sm text-gray-700">
                 {{ Auth::user()->nama_lengkap ?? 'Admin' }}
             </span>
-
-            {{-- <a href="{{ route('home') }}"
+{{-- 
+            <a href="{{ route('home') }}"
                class="text-sm bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800">
                 Lihat Website
             </a> --}}
@@ -165,7 +165,7 @@
         <a href="{{ route('admin.user.index') }}"
             class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-100 transition">
             <span class="text-lg">👤</span>
-            <span class="menu-text">Kelola User</span>
+            <span class="menu-text">Kelola Penyewa</span>
         </a>
 
         <a href="{{ route('admin.review.index') }}"

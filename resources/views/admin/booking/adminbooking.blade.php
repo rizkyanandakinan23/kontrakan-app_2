@@ -33,9 +33,9 @@
                     <tr>
                         <th class="p-4 text-left">Booking ID</th>
                         <th class="p-4 text-left">Tanggal Booking</th>
-                        <th class="p-4 text-left">User</th>
-                        <th class="p-4 text-left">Kamar</th>
-                        <th class="p-4 text-left">WhatsApp</th>
+                        <th class="p-4 text-left">Penyewa</th>
+                        <th class="p-4 text-left">Nomor Kontrakan</th>
+                        <th class="p-4 text-left">Nomor Telepon</th>
                         <th class="p-4 text-left">Foto Identitas</th>
                         <th class="p-4 text-left">Durasi</th>
                         <th class="p-4 text-left">Mulai</th>
@@ -212,7 +212,7 @@
 
                 @empty
                     <tr>
-                        <td colspan="10" class="p-8 text-center text-gray-500">
+                        <td colspan="13" class="p-8 text-center text-gray-500">
                             Belum ada data booking
                         </td>
                     </tr>

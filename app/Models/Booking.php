@@ -78,76 +78,102 @@ class Booking extends Model
 
 public function getKeteranganAttribute()
 {
+    // =====================================
+    // BOOKING DIBATALKAN
+    // =====================================
+    if ($this->status == 'cancel') {
+        return [
+            'text' => 'Booking telah dibatalkan.',
+            'color' => 'red'
+        ];
+    }
 
-if ($this->status == 'cancel') {
+    // =====================================
+    // BELUM MELANJUTKAN PEMBAYARAN
+    // =====================================
+    if (!$this->payment) {
+        return [
+            'text' => 'Belum melanjutkan pembayaran',
+            'color' => 'yellow'
+        ];
+    }
+
+    // =====================================
+    // MENUNGGU PEMBAYARAN
+    // =====================================
+    if ($this->payment->status == 'pending') {
+        return [
+            'text' => 'Menunggu pembayaran',
+            'color' => 'yellow'
+        ];
+    }
+
+    // =====================================
+    // PEMBAYARAN BERHASIL
+    // =====================================
+    if ($this->payment->status == 'success') {
+
+        $hariIni = Carbon::today();
+
+        $tanggalMasuk = Carbon::parse(
+            $this->tanggal_masuk
+        )->startOfDay();
+
+        $tanggalSelesai = Carbon::parse(
+            $this->tanggal_selesai
+        )->startOfDay();
+
+        // =====================================
+        // BOOKING BERHASIL, BELUM MASUK MASA SEWA
+        // =====================================
+        if ($hariIni->lt($tanggalMasuk)) {
+            return [
+                'text' => 'Booking berhasil. Kontrakan akan segera diisi.',
+                'color' => 'blue'
+            ];
+        }
+
+        // =====================================
+        // MASA SEWA SUDAH SELESAI
+        // =====================================
+        if ($hariIni->gt($tanggalSelesai)) {
+            return [
+                'text' => 'Masa sewa selesai',
+                'color' => 'gray'
+            ];
+        }
+
+        // =====================================
+        // MASA SEWA HAMPIR HABIS
+        // =====================================
+        $hariSisa = $hariIni->diffInDays(
+            $tanggalSelesai,
+            false
+        );
+
+        if ($hariSisa <= 7 && $hariSisa > 0) {
+            return [
+                'text' => "Masa sewa hampir habis ({$hariSisa} hari lagi)",
+                'color' => 'orange'
+            ];
+        }
+
+        // =====================================
+        // KONTRAKAN SEDANG DIHUNI
+        // =====================================
+        return [
+            'text' => 'Kontrakan terisi',
+            'color' => 'green'
+        ];
+    }
+
+    // =====================================
+    // STATUS PEMBAYARAN LAIN
+    // =====================================
     return [
-        'text' => 'Booking telah dibatalkan.',
+        'text' => 'Booking dibatalkan',
         'color' => 'red'
     ];
-}
-
-    if(!$this->payment){
-
-        return [
-            'text'=>'Belum melanjutkan pembayaran',
-            'color'=>'yellow'
-        ];
-
-    }
-
-
-    if($this->payment->status == 'pending'){
-
-        return [
-            'text'=>'Menunggu pembayaran',
-            'color'=>'yellow'
-        ];
-
-    }
-
-
-    if($this->payment->status == 'success'){
-
-
-        $hariSisa = now()->startOfDay()->diffInDays(
-    Carbon::parse($this->tanggal_selesai)->startOfDay(),
-    false
-);
-
-
-        if($hariSisa <= 7 && $hariSisa > 0){
-
-            return [
-                'text'=>"Masa sewa hampir habis ({$hariSisa} hari lagi)",
-                'color'=>'orange'
-            ];
-
-        }
-
-
-        if($hariSisa <= 0){
-
-            return [
-                'text'=>'Masa sewa selesai',
-                'color'=>'gray'
-            ];
-
-        }
-
-
-        return [
-            'text'=>'Kontrakan terisi',
-            'color'=>'green'
-        ];
-
-    }
-
-
-    return [
-        'text'=>'Booking dibatalkan',
-        'color'=>'red'
-    ];
-
 }
 
 }

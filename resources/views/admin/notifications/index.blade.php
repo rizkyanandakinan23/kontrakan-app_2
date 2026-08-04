@@ -6,50 +6,134 @@
 
 <div class="max-w-5xl mx-auto">
 
+    {{-- HEADER --}}
     <h1 class="text-3xl font-bold text-white mb-6">
         Notifikasi Admin
     </h1>
 
- @forelse($notifications as $notif)
+    {{-- NOTIFICATION LIST --}}
+    @forelse($notifications as $notif)
 
-    @if(!empty($notif->data['url']))
-        <a href="{{ $notif->data['url'] }}" class="block">
-    @endif
+        @php
+            $title = $notif->data['title'] ?? '';
 
-    <div class="bg-white p-5 rounded-2xl shadow mb-4 border-l-4 border-amber-500 hover:bg-gray-50 transition cursor-pointer">
+            /*
+            |--------------------------------------------------------------------------
+            | URL NOTIFIKASI ADMIN
+            |--------------------------------------------------------------------------
+            | Prioritaskan route berdasarkan jenis notifikasi.
+            | Ini mencegah notifikasi lama yang masih menyimpan URL ngrok
+            | diarahkan ke alamat lama.
+            |--------------------------------------------------------------------------
+            */
 
-        <div class="flex justify-between items-start">
+            switch ($title) {
 
-            <div>
-                <h3 class="font-semibold text-gray-800">
-                    {{ $notif->data['title'] ?? 'Notifikasi' }}
-                </h3>
+                // Booking baru / booking masuk
+                case 'Booking Baru':
+                    $url = route('admin.booking.index');
+                    break;
 
-                <p class="text-gray-600 text-sm mt-1">
-                    {{ $notif->data['message'] ?? '-' }}
-                </p>
+                // Pembayaran berhasil
+                case 'Pembayaran Berhasil':
+                    $url = route('admin.pembayaran.index');
+                    break;
+
+                // Review baru
+                case 'Review Baru':
+                    $url = route('admin.review.index');
+                    break;
+
+                // Pesan / balasan chat
+                case 'Balasan Chat':
+                    $url = route('admin.chat.index');
+                    break;
+
+                // Review dilaporkan oleh user
+                case 'Review Dilaporkan':
+                    $url = route('admin.review.index');
+                    break;
+
+                // User mengirim pesan chat
+                case 'Pesan Chat Baru':
+                    $url = route('admin.chat.index');
+                    break;
+
+                // Jika notifikasi tidak dikenali
+                default:
+                    // Gunakan URL yang tersimpan jika tersedia
+                    $url = $notif->data['url'] ?? null;
+                    break;
+            }
+        @endphp
+
+
+        {{-- JIKA NOTIFIKASI MEMILIKI URL --}}
+        @if($url)
+            <a
+                href="{{ $url }}"   class="block" >
+        @endif
+
+            {{-- NOTIFICATION CARD --}}
+            <div
+                class="
+                    bg-white  p-5   rounded-2xl    shadow  mb-4  border-l-4   border-amber-500  hover:bg-gray-50 transition
+                    {{ $url ? 'cursor-pointer' : '' }}  " >
+
+                <div class="flex justify-between items-start gap-4">
+
+                    {{-- NOTIFICATION CONTENT --}}
+                    <div>
+
+                        {{-- TITLE --}}
+                        <h3 class="font-semibold text-gray-800">
+                            {{ $notif->data['title'] ?? 'Notifikasi' }}
+                        </h3>
+
+                        {{-- MESSAGE --}}
+                        <p class="text-gray-600 text-sm mt-1">
+                            {{ $notif->data['message'] ?? '-' }}
+                        </p>
+
+                    </div>
+
+                    {{-- TIME --}}
+                    <span class="text-xs text-gray-400 whitespace-nowrap">
+                        {{ $notif->created_at->diffForHumans() }}
+                    </span>
+
+                    <div class="mt-3 flex justify-end">
+
+                        <form action="{{ route('admin.notifications.destroy', $notif->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Hapus notifikasi ini?')">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="text-red-600 hover:text-red-700"
+                                title="Hapus">
+                                🗑
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
             </div>
 
-            <span class="text-xs text-gray-400">
-                {{ $notif->created_at->diffForHumans() }}
-            </span>
+        {{-- TUTUP LINK --}}
+        @if($url)
+            </a>
+        @endif
 
+    {{-- EMPTY --}}
+    @empty
+        <div class="bg-white p-5 rounded-xl shadow text-gray-500">
+            Tidak ada notifikasi
         </div>
-
-    </div>
-
-    @if(!empty($notif->data['url']))
-        </a>
-    @endif
-
-@empty
-
-<div class="bg-white p-5 rounded-xl shadow text-gray-500">
-    Tidak ada notifikasi
+    @endforelse
 </div>
-
-@endforelse
-
-</div>
-
 @endsection

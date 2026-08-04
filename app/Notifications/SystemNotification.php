@@ -16,8 +16,11 @@ class SystemNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $title, string $message, ?string $url = null)
-    {
+    public function __construct(
+        string $title,
+        string $message,
+        ?string $url = null
+    ) {
         $this->title = $title;
         $this->message = $message;
         $this->url = $url;

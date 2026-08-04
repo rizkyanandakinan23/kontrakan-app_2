@@ -12,6 +12,7 @@
                 type="date"
                 name="tanggal"
                 value="{{ request('tanggal', now()->toDateString()) }}"
+                min="{{ now()->toDateString() }}"
                 class="w-full md:w-64 border border-gray-300 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:outline-none"
             >
         </div>

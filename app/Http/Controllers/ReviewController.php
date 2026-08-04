@@ -11,6 +11,7 @@ use App\Models\Kamar;
 use App\Models\ReviewReport;
 use App\Models\User;
 use App\Models\Booking;
+use Carbon\Carbon;
 
 class ReviewController extends Controller
 {
@@ -32,28 +33,35 @@ class ReviewController extends Controller
     $userId = Auth::id();
 
     // =====================================
-    // CEK USER SUDAH BOOKING & LUNAS
+    // CEK USER SUDAH MULAI MENYEWA & LUNAS
     // =====================================
     $hasBooking = Booking::where('user_id', $userId)
-    ->where('kamar_id', $kamar->id)
-    ->whereHas('payment', function ($q) {
-        $q->where('status', 'success');
-    })
-    ->exists();
+        ->where('kamar_id', $kamar->id)
+        ->whereDate('tanggal_masuk', '<=', Carbon::today())
+        ->whereHas('payment', function ($q) {
+            $q->where('status', 'success');
+        })
+        ->exists();
 
     if (!$hasBooking) {
-        return back()->with('error', 'Anda hanya bisa memberi review setelah menyewa kamar ini.');
+        return back()->with(
+            'error',
+            'Anda hanya bisa memberikan review setelah masa sewa dimulai.'
+        );
     }
 
     // =====================================
-    // CEK REVIEW DUPLIKAT (OPTIONAL TAPI DISARANKAN)
+    // CEK REVIEW DUPLIKAT
     // =====================================
     $alreadyReview = Review::where('user_id', $userId)
         ->where('kamar_id', $kamar->id)
         ->exists();
 
     if ($alreadyReview) {
-        return back()->with('error', 'Anda sudah memberikan review untuk kamar ini.');
+        return back()->with(
+            'error',
+            'Anda sudah memberikan review untuk kamar ini.'
+        );
     }
 
     // =====================================
@@ -66,7 +74,10 @@ class ReviewController extends Controller
         'komentar' => $request->komentar
     ]);
 
-    return back()->with('success', 'Review berhasil dikirim.');
+    return back()->with(
+        'success',
+        'Review berhasil dikirim.'
+    );
 }
 
     /*
@@ -136,14 +147,14 @@ class ReviewController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $cek = ReviewReport::where('review_id', $review->id)
-            ->where('user_id', Auth::id())
-            ->first();
+        // $cek = ReviewReport::where('review_id', $review->id)
+        //     ->where('user_id', Auth::id())
+        //     ->first();
 
-        if ($cek) {
+        // if ($cek) {
 
-            return back()->with('error', 'Anda sudah mereport review ini.');
-        }
+        //     return back()->with('error', 'Anda sudah mereport review ini.');
+        // }
 
         /*
         |--------------------------------------------------------------------------
@@ -157,20 +168,30 @@ class ReviewController extends Controller
             'alasan' => $request->alasan
         ]);
 
-        /*
-    |----------------------------------------
-    | 🔥 KIRIM NOTIF KE ADMIN
-    |----------------------------------------
-    */
-    User::where('is_admin', true)->get()
-        ->each(function ($admin) use ($review, $request) {
-            $admin->notify(new SystemNotification(
-                'Review Dilaporkan',
-                'Review dari user ID ' . $review->user_id .
-                ' dilaporkan dengan alasan: ' . $request->alasan,
-                'review-report'
-            ));
-        });
+    // =====================================================
+// NOTIF ADMIN - REVIEW DILAPORKAN
+// =====================================================
+
+$pelapor = Auth::user();
+
+$admins = User::where('is_admin', 1)->get();
+
+foreach ($admins as $admin) {
+
+    $admin->notify(
+        new SystemNotification(
+            'Review Dilaporkan',
+            $pelapor->nama_lengkap .
+            ' melaporkan review milik ' .
+            ($review->user->nama_lengkap ?? 'Pengguna') .
+            ' pada kamar "' .
+            ($review->kamar->nama_kamar ?? '-') .
+            '". Alasan: ' .
+            ($request->alasan ?? '-')
+        )
+    );
+
+}
 
         return back()->with('success', 'Review berhasil direport.');
     }

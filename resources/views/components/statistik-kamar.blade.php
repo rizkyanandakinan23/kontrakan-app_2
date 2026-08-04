@@ -1,46 +1,62 @@
-<div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+<div class="bg-white rounded-2xl shadow-lg p-5 mb-6">
 
-    <h3 class="text-base font-semibold text-gray-800 mb-1">
-        Statistik Ketersediaan
-    </h3>
-
-    <p class="text-sm text-gray-500 mb-4">
-        Per tanggal
-        <span class="font-semibold">
-            {{ \Carbon\Carbon::parse($tanggal ?? now())->format('d M Y') }}
-        </span>
-    </p>
-
-    <div class="grid grid-cols-3 gap-3 text-center">
+    {{-- HEADER --}}
+    <div class="flex items-center justify-between mb-5">
 
         <div>
-            <div class="text-3xl mb-1">🏠</div>
-            <h2 class="text-2xl font-bold text-amber-700">
+            <h3 class="text-lg font-bold text-gray-800">
+                Ketersediaan Kontrakan
+            </h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Data ketersediaan per
+                <span class="font-semibold text-gray-700">
+                    {{ \Carbon\Carbon::parse($tanggal ?? now())->format('d M Y') }}
+                </span>
+            </p>
+        </div>
+
+        <div class="text-3xl">
+            🏠
+        </div>
+
+    </div>
+
+    {{-- STATISTIK --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        {{-- TOTAL KONTRAKAN --}}
+        <div class="bg-amber-50 rounded-2xl p-5 text-center border border-amber-100">
+
+            <div class="text-3xl mb-2">
+                🏠
+            </div>
+
+            <h2 class="text-3xl font-bold text-amber-700">
                 {{ $totalKamar }}
             </h2>
-            <p class="text-sm text-gray-500">
+
+            <p class="text-sm font-medium text-gray-600 mt-1">
                 Total Kontrakan
             </p>
+
         </div>
 
-        <div>
-            <div class="text-3xl mb-1">✅</div>
-            <h2 class="text-2xl font-bold text-green-600">
+        {{-- TERSEDIA --}}
+        <div class="bg-green-50 rounded-2xl p-5 text-center border border-green-100">
+
+            <div class="text-3xl mb-2">
+                ✅
+            </div>
+
+            <h2 class="text-3xl font-bold text-green-600">
                 {{ $kamarKosong }}
             </h2>
-            <p class="text-sm text-gray-500">
-                Tersedia
-            </p>
-        </div>
 
-        <div>
-            <div class="text-3xl mb-1">🔒</div>
-            <h2 class="text-2xl font-bold text-red-600">
-                {{ $kamarTerisi }}
-            </h2>
-            <p class="text-sm text-gray-500">
-                Terisi
+            <p class="text-sm font-medium text-gray-600 mt-1">
+                Kontrakan Tersedia
             </p>
+
         </div>
 
     </div>

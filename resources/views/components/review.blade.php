@@ -1,5 +1,15 @@
 @php
     $reviews = $kamar->reviews ?? collect();
+
+    $userBooking = auth()->check()
+        ? \App\Models\Booking::where('user_id', auth()->id())
+            ->where('kamar_id', $kamar->id)
+            ->whereHas('payment', function ($query) {
+                $query->where('status', 'success');
+            })
+            ->latest('tanggal_masuk')
+            ->first()
+        : null;
 @endphp
 
 <div id="review"></div>
@@ -36,44 +46,102 @@
         </div>
     @endif
 
-    <!-- FORM REVIEW (ONLY IF AUTH) -->
-    @auth
+   <!-- FORM REVIEW -->
+@auth
 
-        <form action="{{ route('review.store', $kamar->id) }}" method="POST" class="mb-8">
+    @if(!$userBooking)
+
+        {{-- BELUM PERNAH BOOKING --}}
+        <div class="bg-gray-100 text-gray-500 px-4 py-3 rounded-xl mb-6">
+            Anda harus menyewa kamar ini terlebih dahulu untuk memberikan review.
+        </div>
+
+        <button
+            type="button"
+            disabled
+            class="bg-gray-300 text-gray-500 px-5 py-2 rounded-xl cursor-not-allowed mb-8">
+
+            Kirim Review
+
+        </button>
+
+    @elseif(now()->startOfDay()->lt($userBooking->tanggal_masuk))
+
+        {{-- SUDAH BOOKING, TAPI BELUM MASUK MASA SEWA --}}
+        <div class="bg-yellow-100 text-yellow-700 px-4 py-3 rounded-xl mb-3">
+            Anda belum memasuki masa sewa. Review dapat diberikan setelah masa sewa dimulai.
+        </div>
+
+        <button
+            type="button"
+            disabled
+            class="bg-gray-300 text-gray-500 px-5 py-2 rounded-xl cursor-not-allowed mb-8">
+
+            Kirim Review
+
+        </button>
+
+    @else
+
+        {{-- SUDAH MEMASUKI MASA SEWA --}}
+        <form action="{{ route('review.store', $kamar->id) }}"
+              method="POST"
+              class="mb-8">
+
             @csrf
 
             <div class="mb-3">
-                <label class="text-sm font-semibold">Rating</label>
+                <label class="text-sm font-semibold">
+                    Rating
+                </label>
 
-                <select name="rating"
+                <select
+                    name="rating"
                     class="w-full border rounded-xl px-3 py-2 mt-1">
+
                     <option value="5">⭐⭐⭐⭐⭐</option>
                     <option value="4">⭐⭐⭐⭐</option>
                     <option value="3">⭐⭐⭐</option>
                     <option value="2">⭐⭐</option>
                     <option value="1">⭐</option>
+
                 </select>
             </div>
 
             <div class="mb-3">
-                <label class="text-sm font-semibold">Komentar</label>
 
-                <textarea name="komentar"
+                <label class="text-sm font-semibold">
+                    Komentar
+                </label>
+
+                <textarea
+                    name="komentar"
                     rows="4"
                     class="w-full border rounded-xl px-3 py-2 mt-1"
                     placeholder="Tulis pengalaman Anda..."></textarea>
+
             </div>
 
-            <button class="bg-amber-700 text-white px-5 py-2 rounded-xl">
+            <button
+                class="bg-amber-700 hover:bg-amber-800 text-white px-5 py-2 rounded-xl">
+
                 Kirim Review
+
             </button>
+
         </form>
 
-    @else
-        <div class="bg-yellow-100 text-yellow-700 px-4 py-3 rounded-xl mb-6">
-            Login untuk memberikan review.
-        </div>
-    @endauth
+    @endif
+
+@else
+
+    <div class="bg-yellow-100 text-yellow-700 px-4 py-3 rounded-xl mb-6">
+
+        Login untuk memberikan review.
+
+    </div>
+
+@endauth
 
     <!-- LIST REVIEW -->
     <div class="space-y-4">

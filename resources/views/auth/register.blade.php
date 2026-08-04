@@ -84,16 +84,18 @@
                 </label>
 
                 <input
-    type="tel"
-    name="no_telp"
-    value="{{ old('no_telp') }}"
-    required
-    maxlength="15"
-    inputmode="numeric"
-    pattern="^(08[0-9]{8,13}|\+628[0-9]{8,13})$"
-    placeholder="Contoh: 081234567890"
-    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
->
+                type="tel"
+                name="no_telp"
+                value="{{ old('no_telp') }}"
+                required
+                maxlength="15"
+                inputmode="numeric"
+                pattern="^(08[0-9]{8,13}|\+628[0-9]{8,13})$"
+                placeholder="Contoh: 081234567890"
+                oninput="this.value = this.value.replace(/[^0-9+]/g, '')"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-amber-200"
+            >
+            <script>oninput="this.value = this.value.replace(/[^0-9+]/g, '')"</script>
 
                 <x-input-error :messages="$errors->get('no_telp')" class="mt-2" />
 

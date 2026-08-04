@@ -103,7 +103,7 @@
 
 @elseif($statusBooking == 'booking')
 
-    <span class="bg-yellow-100 text-yellow-700 px-5 py-2 rounded-full text-sm font-bold">
+    <span class="bg-green-100 text-white-700 px-5 py-2 rounded-full text-sm font-bold">
         Sudah Dibooking
     </span>
 
@@ -165,7 +165,7 @@
 
 <button
     disabled
-    class="bg-yellow-500 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
+    class="bg-green-500 text-white px-8 py-4 rounded-2xl font-bold cursor-not-allowed"
 >
     Sudah Dibooking
 </button>

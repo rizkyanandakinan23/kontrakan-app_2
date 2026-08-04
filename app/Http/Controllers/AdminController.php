@@ -315,12 +315,13 @@ if ($booking->payment) {
     );
 }
 
-    /*
-    |--------------------------------------------------------------------------
-    | KAMAR MANAGEMENT
-    |--------------------------------------------------------------------------
-    */
-    public function kamarIndex(Request $request)
+  /*
+|--------------------------------------------------------------------------
+| KAMAR MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+public function kamarIndex(Request $request)
 {
     $tanggal = Carbon::parse(
         $request->tanggal ?? now()->toDateString()
@@ -333,58 +334,196 @@ if ($booking->payment) {
     ->orderBy('nama_kamar', 'asc')
     ->get();
 
-   foreach ($kamars as $kamar) {
+    foreach ($kamars as $kamar) {
 
-    $status = 'tersedia';
-    $bookingAktif = null;
+        /*
+        |--------------------------------------------------------------------------
+        | DEFAULT
+        |--------------------------------------------------------------------------
+        */
 
-    foreach ($kamar->bookings as $booking) {
+        $status = 'tersedia';
 
-        if ($booking->status == 'cancel') {
-            continue;
+        $bookingAktif = null;
+
+        $bookingTerdekat = null;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEK SEMUA BOOKING
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($kamar->bookings as $booking) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | SKIP BOOKING YANG DIBATALKAN
+            |--------------------------------------------------------------------------
+            */
+
+            if ($booking->status === 'cancel') {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | HANYA PEMBAYARAN SETTLEMENT YANG VALID
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !$booking->payment ||
+                $booking->payment->transaction_status !== 'settlement'
+            ) {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | TANGGAL BOOKING
+            |--------------------------------------------------------------------------
+            */
+
+            $mulai = Carbon::parse(
+                $booking->tanggal_masuk
+            );
+
+            $selesai = Carbon::parse(
+                $booking->tanggal_selesai
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PRIORITAS 1
+            | SEDANG DITEMPATI
+            |--------------------------------------------------------------------------
+            |
+            | Masa cleaning 2 hari tetap diperhitungkan.
+            |
+            */
+
+            $batasTerisi = $selesai
+                ->copy()
+                ->addDays(2);
+
+
+            if (
+                $tanggal->greaterThanOrEqualTo($mulai) &&
+                $tanggal->lessThan($batasTerisi)
+            ) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | LANGSUNG PRIORITASKAN TERISI
+                |--------------------------------------------------------------------------
+                */
+
+                $status = 'terisi';
+
+                $bookingAktif = $booking;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Tidak perlu mengecek booking lain.
+                | Status TERISI memiliki prioritas tertinggi.
+                |--------------------------------------------------------------------------
+                */
+
+                break;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PRIORITAS 2
+            | AKAN DIBOOKING DALAM 30 HARI
+            |--------------------------------------------------------------------------
+            */
+
+            $selisihHari = $tanggal->diffInDays(
+                $mulai,
+                false
+            );
+
+
+            if (
+                $selisihHari > 0 &&
+                $selisihHari <= 30
+            ) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Jangan langsung mengubah bookingAktif.
+                |
+                | Simpan dulu booking yang paling dekat dengan tanggal
+                | yang sedang dipilih admin.
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $bookingTerdekat === null ||
+                    $mulai->lessThan(
+                        Carbon::parse(
+                            $bookingTerdekat->tanggal_masuk
+                        )
+                    )
+                ) {
+
+                    $bookingTerdekat = $booking;
+                }
+            }
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRIORITAS 2
+        |
+        | Hanya jika TIDAK ADA yang sedang ditempati.
+        |--------------------------------------------------------------------------
+        */
 
         if (
-            !$booking->payment ||
-            $booking->payment->transaction_status != 'settlement'
+            $status !== 'terisi' &&
+            $bookingTerdekat !== null
         ) {
-            continue;
-        }
-
-        $mulai = Carbon::parse($booking->tanggal_masuk);
-        $selesai = Carbon::parse($booking->tanggal_selesai)->addDays(2);
-
-        // =============================
-        // Sedang ditempati
-        // =============================
-        if ($tanggal->between($mulai, $selesai->copy()->subDay())) {
-
-            $status = 'terisi';
-            $bookingAktif = $booking;
-            break;
-        }
-
-        // =============================
-        // Akan dibooking (< 1 bulan)
-        // =============================
-        $selisihHari = $tanggal->diffInDays($mulai, false);
-
-        if ($selisihHari > 0 && $selisihHari <= 30) {
 
             $status = 'booking';
-            $bookingAktif = $booking;
-            break;
+
+            $bookingAktif = $bookingTerdekat;
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SIMPAN STATUS DAN BOOKING AKTIF
+        |--------------------------------------------------------------------------
+        */
+
+        $kamar->status_booking = $status;
+
+        $kamar->booking_aktif = $bookingAktif;
     }
 
-    $kamar->status_booking = $status;
-    $kamar->booking_aktif = $bookingAktif;
-}
 
-    return view('admin.kamar.index', compact(
-        'kamars',
-        'tanggal'
-    ));
+    /*
+    |--------------------------------------------------------------------------
+    | RETURN VIEW
+    |--------------------------------------------------------------------------
+    */
+
+    return view(
+        'admin.kamar.index',
+        compact(
+            'kamars',
+            'tanggal'
+        )
+    );
 }
 
     public function kamarCreate()
@@ -414,15 +553,6 @@ if ($booking->payment) {
             'harga' => $request->harga,
             'foto_kamar' => $fotoPaths,
         ]);
-
-        $admins = User::where('is_admin', 1)->get();
-
-foreach ($admins as $admin) {
-    $admin->notify(new SystemNotification(
-        'Kamar Baru Ditambahkan',
-        'Kamar ' . $request->nama_kamar . ' berhasil dibuat'
-    ));
-}
 
         return redirect()->route('admin.kamar.index')
             ->with('success', 'Kamar berhasil ditambahkan');
@@ -513,17 +643,25 @@ foreach ($admins as $admin) {
 }
 
     public function kamarDestroy(Kamar $kamar)
-    {
-        if (is_array($kamar->foto_kamar)) {
-            foreach ($kamar->foto_kamar as $foto) {
-                Storage::disk('public')->delete($foto);
-            }
+{
+    // Simpan nama kamar sebelum data dihapus
+    $namaKamar = $kamar->nama_kamar;
+
+    // Hapus semua foto kamar
+    if (is_array($kamar->foto_kamar)) {
+        foreach ($kamar->foto_kamar as $foto) {
+            Storage::disk('public')->delete($foto);
         }
-
-        $kamar->delete();
-
-        return back()->with('success', 'Kamar berhasil dihapus');
     }
+
+    // Hapus data kamar
+    $kamar->delete();
+
+    return back()->with(
+        'success',
+        'Kamar berhasil dihapus'
+    );
+}
     /*
     |--------------------------------------------------------------------------
     | REVIEW MANAGEMENT
@@ -719,21 +857,6 @@ public function pembayaranDetail($tahun, $bulan)
         'bulan' => $bulan,
         'namaBulan' => $namaBulan,
     ]);
-}
-
-public function notificationIndex()
-{
-    $admin = auth()->user();
-
-    $notifications = $admin->notifications()
-        ->latest()
-        ->get();
-
-    // mark all as read (simple & clean)
-    $admin->unreadNotifications()
-        ->update(['read_at' => now()]);
-
-    return view('admin.notifications.index', compact('notifications'));
 }
 
 }

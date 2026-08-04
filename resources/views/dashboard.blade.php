@@ -20,7 +20,7 @@
                 </span>
 
                 <h1 class="text-5xl font-bold text-gray-800 leading-tight mb-6">
-                    Cari Kamar Kontrakan
+                    Cari Kontrakan
                     <span class="text-amber-700">
                         Nyaman & Strategis
                     </span>
@@ -28,7 +28,7 @@
 
                 <p class="text-gray-600 text-lg leading-relaxed mb-8">
 
-                    Temukan kamar kontrakan terbaik dengan fasilitas lengkap,
+                    Temukan kontrakan terbaik dengan fasilitas lengkap,
                     lingkungan nyaman, lokasi strategis, dan harga yang terjangkau
                     untuk kebutuhan tempat tinggal Anda.
 
@@ -100,16 +100,16 @@
     </h2>
 
     <p class="text-white/90 text-lg mb-8 leading-relaxed">
-        Pilih kamar yang sesuai dengan kebutuhan Anda dan lakukan booking secara online dengan proses yang mudah, cepat, dan aman.
+        Pilih kontrakan yang sesuai dengan kebutuhan Anda dan lakukan booking secara online dengan proses yang mudah, cepat, dan aman.
     </p>
 
     <a href="{{ route('kamar.index') }}"
    class="inline-block bg-amber-700 hover:bg-amber-800 text-white text-lg font-bold px-10 py-4 rounded-2xl shadow-lg hover:shadow-xl transition duration-300">
-    Pesan Kamar
+    Pesan Kontrakan
     </a>
 
     <p class="text-sm text-white/80 mt-4">
-        Cek ketersediaan kamar dan lakukan booking langsung melalui website.
+        Cek ketersediaan kontrakan dan lakukan booking langsung melalui website.
     </p>
 
 </div>

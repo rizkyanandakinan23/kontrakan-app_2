@@ -4,43 +4,113 @@
 
 <div class="max-w-4xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6 text-white">
-    Notifikasi
-</h1>
-
-    @forelse($notifications as $notif)
-
-    @if(!empty($notif->data['url']))
-        <a href="{{ $notif->data['url'] }}">
-    @endif
-
-    <div class="bg-white p-4 rounded-xl shadow mb-3 hover:bg-gray-50 transition cursor-pointer">
-
-        <!-- TITLE -->
-        <h3 class="font-semibold text-gray-800">
-            {{ $notif->data['title'] ?? 'Notifikasi' }}
-        </h3>
-
-        <!-- MESSAGE -->
-        <p class="text-gray-600 text-sm mt-1">
-            {{ $notif->data['message'] ?? '-' }}
-        </p>
-
-        <!-- TIME -->
-        <small class="text-gray-400">
-            {{ $notif->created_at->diffForHumans() }}
-        </small>
-
+    {{-- HEADER --}}
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-white">
+            Notifikasi
+        </h1>
     </div>
 
-    @if(!empty($notif->data['url']))
-        </a>
-    @endif
+    {{-- NOTIFICATION LIST --}}
+    @forelse($notifications as $notif)
 
-@empty
+        @php
+            $title = $notif->data['title'] ?? '';
 
-        <div class="bg-white p-4 rounded-xl shadow text-gray-500">
-            Belum ada notifikasi
+            switch ($title) {
+
+                case 'Peringatan Masa Sewa':
+                    $url = route('booking.riwayat');
+                    break;
+
+                case 'Pembayaran Berhasil':
+                    $url = route('booking.riwayat');
+                    break;
+
+                case 'Balasan Chat':
+                    $url = route('chat.index');
+                    break;
+
+                default:
+                    $url = $notif->data['url'] ?? null;
+                    break;
+            }
+        @endphp
+
+        <div class="relative bg-white rounded-xl shadow mb-4 overflow-hidden">
+
+            {{-- Dropdown --}}
+            <div class="absolute top-4 right-4 z-20">
+
+                <details class="relative">
+
+                    <summary class="list-none cursor-pointer text-2xl text-gray-500 hover:text-gray-700 select-none">
+                        ⋮
+                    </summary>
+
+                    <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border">
+
+                        <form action="{{ route('notifications.destroy', $notif->id) }}"
+                              method="POST"
+                              onsubmit="return confirm('Hapus notifikasi ini?')">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="w-full text-left px-4 py-3 hover:bg-red-50 text-red-600">
+                                🗑 Hapus
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </details>
+
+            </div>
+
+            {{-- Card Klik --}}
+            @if($url)
+
+                <a href="{{ $url }}"
+                   class="block p-5 pr-16 hover:bg-gray-50 transition">
+
+            @else
+
+                <div class="p-5 pr-16">
+
+            @endif
+
+                    <h3 class="font-semibold text-lg text-gray-800">
+                        {{ $notif->data['title'] ?? 'Notifikasi' }}
+                    </h3>
+
+                    <p class="text-gray-600 mt-2">
+                        {{ $notif->data['message'] ?? '-' }}
+                    </p>
+
+                    <p class="text-sm text-gray-400 mt-3">
+                        {{ $notif->created_at->diffForHumans() }}
+                    </p>
+
+            @if($url)
+
+                </a>
+
+            @else
+
+                </div>
+
+            @endif
+
+        </div>
+
+    @empty
+
+        <div class="bg-white rounded-xl shadow p-6 text-center text-gray-500">
+            Belum ada notifikasi.
         </div>
 
     @endforelse

@@ -103,13 +103,14 @@ class PaymentController extends Controller
 if ($payment->booking->user) {
 
     $payment->booking->user->notify(
-        new SystemNotification(
-            'Pembayaran Berhasil',
-            'Pembayaran booking untuk kamar "' .
-            $payment->booking->kamar->nama_kamar .
-            '" berhasil. Terima kasih telah melakukan pembayaran.'
-        )
-    );
+    new SystemNotification(
+        'Pembayaran Berhasil',
+        'Pembayaran booking untuk kamar "' .
+        $payment->booking->kamar->nama_kamar .
+        '" berhasil. Terima kasih telah melakukan pembayaran.',
+        route('booking.riwayat')
+    )
+);
 
 }
         }
@@ -130,6 +131,18 @@ if ($payment->booking->user) {
             'message' => 'OK'
         ]);
     }
+
+    public function invoice($id)
+{
+    $booking = Booking::with([
+        'payment',
+        'kamar',
+        'user'
+    ])->findOrFail($id);
+
+
+    return view('booking.buktipembayaran', compact('booking'));
+}
 
    
 }

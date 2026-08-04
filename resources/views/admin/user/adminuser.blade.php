@@ -10,7 +10,7 @@
     <!-- HEADER -->
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
-            Kelola User
+            Kelola Penyewa
         </h1>
         <p class="text-white/80 mt-2">
             Manajemen akun pengguna aplikasi
@@ -23,7 +23,7 @@
 
         <div class="p-6 border-b">
             <h2 class="text-xl font-bold text-gray-800">
-                Daftar User
+                Daftar Penyewa
             </h2>
         </div>
 

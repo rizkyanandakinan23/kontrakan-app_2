@@ -45,7 +45,7 @@
                         {{-- AVATAR --}}
                         <div class="w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shrink-0">
 
-                            {{ strtoupper(substr($conv->user->nama_lengkap ?? 'U', 0, 1)) }}
+                            {{ strtoupper(substr($conv->user->username  ?? 'U', 0, 1)) }}
 
                         </div>
 
@@ -53,7 +53,7 @@
                         <div class="flex-1 min-w-0">
 
                             <div class="font-semibold text-gray-800 truncate">
-                                {{ $conv->user->nama_lengkap ?? 'User' }}
+                                {{ $conv->user->username ?? 'User' }}
                             </div>
 
                             <div class="text-sm text-gray-500 truncate">
@@ -282,7 +282,8 @@ function renderMessage(msg)
                 : 'justify-start'
         } mb-3">
 
-            <div class="
+           <div class="
+                w-fit
                 max-w-[75%]
                 px-4
                 py-2
@@ -290,6 +291,7 @@ function renderMessage(msg)
                 text-sm
                 shadow-sm
                 break-words
+                inline-block
 
                 ${
                     msg.is_admin

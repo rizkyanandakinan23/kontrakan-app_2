@@ -26,4 +26,40 @@ class NotificationController extends Controller
 
         return view('notifications.index', compact('notifications'));
     }
+
+        public function destroy($id)
+    {
+        auth()->user()
+            ->notifications()
+            ->where('id', $id)
+            ->delete();
+
+        return back()->with('success', 'Notifikasi berhasil dihapus.');
+    }
+
+    public function adminIndex()
+    {
+        $admin = auth()->user();
+
+        $notifications = $admin->notifications()
+            ->latest()
+            ->get();
+
+        // Tandai semua sebagai sudah dibaca
+        $admin->unreadNotifications()
+            ->update(['read_at' => now()]);
+
+        return view('admin.notifications.index', compact('notifications'));
+    }
+
+        public function adminDestroy($id)
+    {
+        auth()->user()
+            ->notifications()
+            ->where('id', $id)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Notifikasi berhasil dihapus.');
+    }
+
 }

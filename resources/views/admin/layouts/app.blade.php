@@ -14,10 +14,11 @@
 
 <body class="font-['Plus_Jakarta_Sans']">
 
-<!-- BACKGROUND -->
+{{-- <!-- BACKGROUND -->
 <div class="fixed inset-0 -z-10">
     <img src="https://wallpapercave.com/wp/wp12225686.jpg" class="w-full h-full object-cover">
-</div>
+</div> --}}
+
 <div class="fixed inset-0 bg-black/30 backdrop-blur-[2px] -z-10"></div>
 
 <!-- ===================== NAVBAR ===================== -->

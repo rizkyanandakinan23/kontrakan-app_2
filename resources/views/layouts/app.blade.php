@@ -247,7 +247,7 @@ tailwind.config = {
 
             <a href="{{ route('register') }}"
                class="bg-amber-700 text-white px-4 py-3 rounded-xl text-center hover:bg-amber-800 transition">
-                Register
+                Registrasi
             </a>
 
         @endauth

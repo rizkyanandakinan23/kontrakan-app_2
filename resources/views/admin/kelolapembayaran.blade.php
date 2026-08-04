@@ -116,7 +116,7 @@
 
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="p-4 text-left">Kamar</th>
+                    <th class="p-4 text-left">Nomor Kontrakan</th>
                     <th class="p-4 text-left">Penyewa</th>
                     <th class="p-4 text-left">Metode</th>
                     <th class="p-4 text-left">Tanggal Bayar</th>

@@ -112,12 +112,6 @@ Route::middleware('auth')->group(function(){
 |--------------------------------------------------------------------------
 */
 
-/*
-|--------------------------------------------------------------------------
-| PAYMENT
-|--------------------------------------------------------------------------
-*/
-
 // ==========================
 // MIDTRANS CALLBACK
 // (TIDAK BOLEH pakai auth)
@@ -138,6 +132,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/success/{id}', [PaymentController::class, 'success'])
         ->whereNumber('id')
         ->name('payment.success');
+
+     // LIHAT BUKTI PEMBAYARAN / INVOICE
+    Route::get('/payment/invoice/{id}', [PaymentController::class, 'invoice'])
+        ->whereNumber('id')
+        ->name('payment.invoice');
 
 });
 
@@ -166,8 +165,13 @@ Route::middleware(['auth', 'is_admin'])
         | Notification Admin
         |--------------------------------------------------------------------------
         */
-            Route::get('/notifications', [AdminController::class, 'notificationIndex'])
-    ->name('notifications');
+            Route::get('/notifications', [NotificationController::class, 'adminIndex'])
+                ->name('notifications');
+
+            Route::delete('/notifications/{id}', [NotificationController::class, 'adminDestroy'])
+                ->name('notifications.destroy');
+
+
         /*
         |--------------------------------------------------------------------------
         | USER MANAGEMENT
@@ -314,6 +318,12 @@ Route::view('/ketentuan', 'ketentuan')
 Route::get('/user/notifications', [NotificationController::class, 'index'])
     ->name('notifications.user')
     ->middleware('auth');
+
+Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])
+    ->name('notifications.destroy');
+
+Route::delete('/notifications', [NotificationController::class, 'destroyAll'])
+    ->name('notifications.destroyAll');
 
 
 /*
