@@ -50,104 +50,197 @@ class BookingController extends Controller
 
 
     public function store(Request $request, $id)
-    {
-        $kamar = Kamar::findOrFail($id);
+{
+    $kamar = Kamar::findOrFail($id);
 
-       $maxTanggal = Carbon::today()->addMonths(6)->format('Y-m-d');
+    // ==========================================
+    // BATAS TANGGAL BOOKING
+    // ==========================================
 
-$request->validate([
-    'tanggal_masuk' => [
-        'required',
-        'date',
-        'after_or_equal:today',
-        'before_or_equal:' . $maxTanggal,
-    ],
-    'durasi' => 'required|integer|min:1|max:24',
-    'foto_identitas' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    $maxTanggal = Carbon::today()
+        ->addMonths(6)
+        ->format('Y-m-d');
 
-]);
+    // ==========================================
+    // VALIDASI
+    // ==========================================
 
+    $request->validate([
+        'tanggal_masuk' => [
+            'required',
+            'date',
+            'after_or_equal:today',
+            'before_or_equal:' . $maxTanggal,
+        ],
 
-        $durasi = (int)$request->durasi;
+        'durasi' => [
+            'required',
+            'integer',
+            'min:1',
+            'max:24',
+        ],
 
+        'foto_identitas' => [
+            'required',
+            'image',
+            'mimes:jpg,jpeg,png',
+            'max:2048',
+        ],
+    ]);
 
-        $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
+    // ==========================================
+    // HITUNG TANGGAL SEWA
+    // ==========================================
 
-$tanggalSelesai = $tanggalMasuk
-    ->copy()
-    ->addMonthsNoOverflow($durasi);
+    $durasi = (int) $request->durasi;
 
-// ==========================================
-// CEK APAKAH ADA BOOKING LAIN
-// ==========================================
+    $tanggalMasuk = Carbon::parse(
+        $request->tanggal_masuk
+    );
 
-$bookingLain = Booking::where('kamar_id', $kamar->id)
-    ->where('status', '!=', 'cancel')
-    ->orderBy('tanggal_masuk')
-    ->get();
+    $tanggalSelesai = $tanggalMasuk
+        ->copy()
+        ->addMonthsNoOverflow($durasi);
 
-foreach ($bookingLain as $booking) {
+    // ==========================================
+    // CEK BOOKING LAIN
+    // ==========================================
 
-    $mulai = Carbon::parse($booking->tanggal_masuk);
+    $bookingLain = Booking::where('kamar_id', $kamar->id)
+        ->where('status', '!=', 'cancel')
+        ->orderBy('tanggal_masuk')
+        ->get();
 
-    $selesai = Carbon::parse($booking->tanggal_selesai);
+    foreach ($bookingLain as $booking) {
 
-    // jeda 2 hari setelah checkout
-    $bolehMasuk = $selesai->copy()->addDays(2);
-
-    if (
-        $tanggalMasuk < $bolehMasuk &&
-        $tanggalSelesai > $mulai
-    ) {
-        return back()->with(
-            'error',
-            'Tanggal booking bertabrakan dengan jadwal penyewa lain.'
+        $mulai = Carbon::parse(
+            $booking->tanggal_masuk
         );
+
+        $selesai = Carbon::parse(
+            $booking->tanggal_selesai
+        );
+
+        // Jeda 2 hari setelah checkout
+        $bolehMasuk = $selesai->copy()->addDays(2);
+
+        if (
+            $tanggalMasuk < $bolehMasuk &&
+            $tanggalSelesai > $mulai
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Tanggal booking bertabrakan dengan jadwal penyewa lain.'
+                );
+        }
     }
+
+    // ==========================================
+    // UPLOAD IDENTITAS
+    // ==========================================
+
+    $fotoIdentitas = null;
+
+    if ($request->hasFile('foto_identitas')) {
+
+        $fotoIdentitas = $request
+            ->file('foto_identitas')
+            ->store('identitas', 'public');
+    }
+
+    // ==========================================
+    // TOTAL NILAI SELURUH MASA SEWA
+    // ==========================================
+
+    $totalHarga = $kamar->harga * $durasi;
+
+    // ==========================================
+    // BUAT BOOKING
+    // ==========================================
+
+    $booking = Booking::create([
+        'user_id' => auth()->id(),
+        'kamar_id' => $kamar->id,
+        'whatsapp' => auth()->user()->no_telp,
+        'foto_identitas' => $fotoIdentitas,
+
+        'tanggal_masuk' => $tanggalMasuk,
+        'tanggal_selesai' => $tanggalSelesai,
+
+        'durasi' => $durasi,
+
+        // Total keseluruhan masa sewa
+        'total_harga' => $totalHarga,
+
+        'status' => 'pending',
+    ]);
+
+    // ==========================================
+    // LANJUT KE PEMBAYARAN PERIODE PERTAMA
+    // ==========================================
+
+    return redirect()
+        ->route('payment.create', $booking->id);
 }
 
-// ==========================================
-// BARU SIMPAN
-// ==========================================
-
-$fotoIdentitas = null;
-
-if ($request->hasFile('foto_identitas')) {
-
-    $fotoIdentitas = $request
-        ->file('foto_identitas')
-        ->store('identitas', 'public');
-
-}
-
-$booking = Booking::create([
-    'user_id' => auth()->id(),
-    'kamar_id' => $kamar->id,
-    'whatsapp' => auth()->user()->no_telp,
-    'foto_identitas' => $fotoIdentitas,
-    'tanggal_masuk' => $tanggalMasuk,
-    'tanggal_selesai' => $tanggalSelesai,
-    'durasi' => $durasi,
-    'total_harga' => $kamar->harga * $durasi,
-    'status' => 'pending',
-]);
-
-        return redirect()
-            ->route('payment.create',$booking->id);
-    }
 
     public function cancel($id)
 {
     $booking = Booking::findOrFail($id);
 
-    if ($booking->user_id != auth()->id()) {
-        return back()->with('error', 'Akses ditolak');
+    // Pastikan booking milik user yang sedang login
+    if ($booking->user_id !== auth()->id()) {
+        abort(403, 'Akses ditolak.');
     }
 
-    $booking->status = 'cancel';
-    $booking->save();
+    // Sudah dibatalkan
+    if ($booking->status === 'cancel') {
+        return back()->with(
+            'error',
+            'Booking sudah dibatalkan.'
+        );
+    }
 
-    return back()->with('success', 'Status booking: ' . $booking->fresh()->status);
+    // ==========================================
+    // CEK APAKAH SUDAH PERNAH BERHASIL BAYAR
+    // ==========================================
+
+    $sudahBayar = $booking->payments()
+        ->where('status', 'success')
+        ->exists();
+
+    if ($sudahBayar) {
+        return back()->with(
+            'error',
+            'Booking yang sudah dibayar tidak dapat dibatalkan.'
+        );
+    }
+
+    // ==========================================
+    // BATALKAN BOOKING
+    // ==========================================
+
+    $booking->update([
+        'status' => 'cancel',
+    ]);
+
+    // ==========================================
+    // BATALKAN PAYMENT YANG MASIH PENDING
+    // ==========================================
+
+    $booking->payments()
+        ->where('status', 'pending')
+        ->update([
+            'status' => 'failed',
+            'transaction_status' => 'cancel',
+        ]);
+
+    return back()->with(
+        'success',
+        'Booking berhasil dibatalkan.'
+    );
 }
 
 
@@ -157,7 +250,7 @@ $booking = Booking::create([
 
         $bookings = Booking::with([
             'kamar',
-            'payment'
+            'payments'
         ])
         ->where('user_id',auth()->id())
         ->latest()

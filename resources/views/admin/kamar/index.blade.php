@@ -138,7 +138,7 @@ $bookingAktif = $kamar->booking_aktif;
                             @elseif($kamar->status_booking == 'booking')
 
                                 <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-semibold">
-    Akan Dibooking
+    Dibooking
 </span>
 
                             @else

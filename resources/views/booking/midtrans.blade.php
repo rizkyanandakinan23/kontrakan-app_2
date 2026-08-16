@@ -4,245 +4,472 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-5xl mx-auto">
 
-
-    <div class="mb-6 flex justify-between items-center">
-
-    <!-- KIRI: BACK -->
-    <div>
-        @include('components.back')
-    </div>
+<!-- NAVIGATION -->
+<div class="mb-6 mt-6 flex justify-end items-center">
 
     <!-- KANAN: KE BERANDA -->
-    <a href="{{ route('home') }}"
-       class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow">
+    <a 
+        href="{{ route('home') }}" 
+        class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow"
+    >
         Kembali ke Halaman Utama
     </a>
 
 </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-        <!-- HEADER -->
-        <div class="bg-amber-700 p-8 text-white">
+<!-- MAIN CARD -->
+<div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-            <h1 class="text-3xl font-bold">
-                Pembayaran Booking
-            </h1>
+    <!-- HEADER -->
+    <div class="bg-amber-700 p-8 text-white">
 
-            <p class="mt-2 text-amber-100">
-                Selesaikan pembayaran untuk mengamankan kamar pilihan Anda
-            </p>
+        <h1 class="text-3xl font-bold">
+            Pembayaran Sewa
+        </h1>
+
+        <p class="mt-2 text-amber-100">
+            Selesaikan pembayaran untuk periode sewa yang sedang berjalan.
+        </p>
+
+    </div>
+
+
+    <div class="p-8">
+
+
+        <!-- INFORMASI PEMBAYARAN -->
+        <div class="mb-8 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
+
+            <div class="flex items-start gap-4">
+
+                <div class="text-yellow-700 text-xl">
+                    ⚠
+                </div>
+
+                <div>
+
+                    <h3 class="font-semibold text-yellow-800">
+                        Pembayaran Periode {{ $payment->periode_ke ?? 1 }}
+                    </h3>
+
+                    <p class="text-sm text-yellow-700 mt-1">
+
+                        Pembayaran dilakukan secara bertahap setiap periode sewa.
+                        Saat ini Anda perlu melakukan pembayaran untuk
+                        periode sewa bulan ke-{{ $payment->periode_ke ?? 1 }}.
+
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="p-8">
 
-            <!-- NOTIFIKASI -->
-<div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-xl mb-6">
-    <div class="flex items-start gap-3">
-        <span class="text-xl">🔔</span>
+        <!-- INFO BOOKING -->
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
 
-        <div>
-            <h3 class="font-semibold text-yellow-800">
-                Menunggu Pembayaran
+
+            <!-- DATA KAMAR -->
+            <div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+
+                    {{ $kamar->nama_kamar }}
+
+                </h2>
+
+
+                <div class="space-y-3 text-gray-600">
+
+
+                    <!-- TANGGAL MASUK -->
+                    <div>
+
+                        <span class="font-semibold">
+                            Tanggal Masuk :
+                        </span>
+
+                        {{ \Carbon\Carbon::parse($booking->tanggal_masuk)->translatedFormat('d F Y') }}
+
+                    </div>
+
+
+                    <!-- DURASI -->
+                    <div>
+
+                        <span class="font-semibold">
+                            Durasi Sewa :
+                        </span>
+
+                        {{ $booking->durasi }} Bulan
+
+                    </div>
+
+
+                    <!-- TANGGAL SELESAI KONTRAK -->
+                    <div>
+
+                        <span class="font-semibold">
+                            Tanggal Selesai Sewa :
+                        </span>
+
+                        {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->translatedFormat('d F Y') }}
+
+                    </div>
+
+
+                    <!-- NOMOR WHATSAPP -->
+                    <div>
+
+                        <span class="font-semibold">
+                            WhatsApp :
+                        </span>
+
+                        {{ $booking->whatsapp }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PERIODE PEMBAYARAN -->
+            <div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+
+                    <p class="text-gray-500 mb-2">
+                        Periode Pembayaran
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-blue-700">
+
+                        Periode {{ $payment->periode_ke ?? 1 }}
+
+                    </h3>
+
+
+                    <div class="mt-4 space-y-2 text-sm text-gray-600">
+
+
+                        @if($payment->tanggal_periode_mulai)
+
+                            <div>
+
+                                <span class="font-semibold">
+                                    Mulai :
+                                </span>
+
+                                {{ \Carbon\Carbon::parse($payment->tanggal_periode_mulai)->translatedFormat('d F Y') }}
+
+                            </div>
+
+                        @endif
+
+
+                        @if($payment->tanggal_periode_selesai)
+
+                            <div>
+
+                                <span class="font-semibold">
+                                    Selesai :
+                                </span>
+
+                                {{ \Carbon\Carbon::parse($payment->tanggal_periode_selesai)->translatedFormat('d F Y') }}
+
+                            </div>
+
+                        @endif
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RINGKASAN PEMBAYARAN -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+
+            <!-- TOTAL KONTRAK -->
+            <div class="border border-gray-200 rounded-2xl p-6">
+
+                <p class="text-gray-500 mb-2">
+                    Total Nilai Sewa
+                </p>
+
+                <h2 class="text-3xl font-extrabold text-gray-800">
+
+                    Rp {{ number_format(
+                        $booking->total_harga,
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+
+                </h2>
+
+                <p class="text-sm text-gray-500 mt-2">
+
+                    Nilai sewa berdasarkan seluruh
+                    {{ $booking->durasi }} bulan.
+
+                </p>
+
+            </div>
+
+
+            <!-- PEMBAYARAN SAAT INI -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+
+                <p class="text-gray-500 mb-2">
+                    Pembayaran Periode Ini
+                </p>
+
+                <h2 class="text-4xl font-extrabold text-amber-700">
+
+                    Rp {{ number_format(
+                        $payment->jumlah,
+                        0,
+                        ',',
+                        '.'
+                    ) }}
+
+                </h2>
+
+                <p class="text-sm text-gray-500 mt-2">
+
+                    Pembayaran untuk
+                    periode ke-{{ $payment->periode_ke ?? 1 }}.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- JATUH TEMPO -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8">
+
+            <h3 class="font-bold text-gray-700 mb-3">
+                Informasi Pembayaran
             </h3>
 
-            <p class="text-sm text-yellow-700 mt-1">
-                Silahkan lakukan pembayaran untuk menyelesaikan proses booking kamar.
-                Setelah pembayaran berhasil, status booking akan otomatis diperbarui oleh sistem.
-            </p>
-        </div>
-    </div>
-</div>
 
-            <!-- INFO KAMAR -->
-            <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div class="grid sm:grid-cols-2 gap-4 text-sm">
 
-                <div>
 
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                        {{ $kamar->nama_kamar }}
-                    </h2>
+                @if($payment->tanggal_jatuh_tempo)
 
-                    <div class="space-y-3 text-gray-600">
+                    <div>
 
-                        <div>
-                            <span class="font-semibold">
-                                Tanggal Masuk :
-                            </span>
-                            {{ \Carbon\Carbon::parse($booking->tanggal_masuk)->format('d M Y') }}
-                        </div>
-
-                        <div>
-                            <span class="font-semibold">
-                                Durasi :
-                            </span>
-                            {{ $booking->durasi }} Bulan
-                        </div>
-
-                         <div>
-        <span class="font-semibold">
-            Tanggal Selesai :
-        </span>
-        {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->format('d M Y') }}
-    </div>
-
-                        <div>
-                            <span class="font-semibold">
-                                WhatsApp :
-                            </span>
-                            {{ $booking->whatsapp }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- TOTAL -->
-                <div>
-
-                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-
-                        <p class="text-gray-500 mb-2">
-                            Total Pembayaran
+                        <p class="text-gray-500">
+                            Jatuh Tempo
                         </p>
 
-                        <h2 class="text-4xl font-extrabold text-amber-700">
-                            Rp {{ number_format($payment->jumlah,0,',','.') }}
-                        </h2>
+                        <p class="font-semibold text-gray-800 mt-1">
+
+                            {{ \Carbon\Carbon::parse($payment->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}
+
+                        </p>
 
                     </div>
 
-                </div>
+                @endif
+
+
+                @if($payment->batas_pembayaran)
+
+                    <div>
+
+                        <p class="text-gray-500">
+                            Batas Pembayaran
+                        </p>
+
+                        <p class="font-semibold text-red-600 mt-1">
+
+                            {{ \Carbon\Carbon::parse($payment->batas_pembayaran)->translatedFormat('d F Y') }}
+
+                        </p>
+
+                    </div>
+
+                @endif
 
             </div>
 
-            <!-- INFORMASI -->
-            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-8">
 
-                <h3 class="font-bold text-blue-700 mb-2">
-                    Informasi Pembayaran
-                </h3>
+            <p class="text-xs text-gray-500 mt-4">
 
-                <ul class="space-y-2 text-sm text-gray-700">
+                Pembayaran periode berikutnya dilakukan sesuai jadwal
+                yang ditentukan sistem. Apabila pembayaran belum dilakukan
+                sampai batas waktu yang ditentukan, status pembayaran
+                akan diproses sesuai ketentuan sewa.
 
-                    <li>
-                        ✓ Pembayaran diproses aman
-                    </li>
-
-                    <li>
-                        ✓ Mendukung QRIS, GoPay, ShopeePay, Transfer Bank, dan E-Wallet lainnya
-                    </li>
-
-                    <li>
-                        ✓ Status booking akan otomatis diperbarui setelah pembayaran berhasil
-                    </li>
-
-                    <li>
-                        ✓ Simpan bukti pembayaran jika diperlukan
-                    </li>
-
-                </ul>
-
-            </div>
-
-            <!-- BUTTON -->
-            <button
-                id="pay-button"
-                class="w-full bg-amber-700 hover:bg-amber-800 text-white py-4 rounded-2xl text-lg font-bold transition"
-            >
-                Bayar Sekarang
-            </button>
+            </p>
 
         </div>
+
+
+        <!-- INFORMASI METODE -->
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-8">
+
+            <h3 class="font-bold text-blue-700 mb-3">
+                Informasi Pembayaran
+            </h3>
+
+
+            <ul class="space-y-2 text-sm text-gray-700">
+
+                <li>
+                    ✓ Pembayaran diproses menggunakan Midtrans.
+                </li>
+
+                <li>
+                    ✓ Pembayaran dilakukan untuk satu periode sewa.
+                </li>
+
+                <li>
+                    ✓ Mendukung QRIS, GoPay, ShopeePay,
+                    Transfer Bank, dan metode pembayaran lainnya
+                    yang tersedia pada Midtrans.
+                </li>
+
+                <li>
+                    ✓ Status pembayaran akan diperbarui
+                    setelah transaksi berhasil dikonfirmasi.
+                </li>
+
+                <li>
+                    ✓ Simpan bukti pembayaran apabila diperlukan.
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <button
+            id="pay-button"
+            type="button"
+            class="w-full bg-amber-700 hover:bg-amber-800 text-white py-4 rounded-2xl text-lg font-bold transition shadow-lg"
+        >
+            Bayar Periode {{ $payment->periode_ke ?? 1 }}
+        </button>
+
 
     </div>
 
 </div>
 
+</div>
+
+<!-- MIDTRANS SNAP -->
+
 <script
-src="https://app.sandbox.midtrans.com/snap/snap.js"
-data-client-key="{{ config('midtrans.client_key') }}">
-</script>
+    type="text/javascript"
+    src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="{{ config('midtrans.client_key') }}"
+></script>
 
 <script>
 
-const payButton = document.getElementById('pay-button');
-const snapToken = "{{ $payment->snap_token }}";
+document
+    .getElementById('pay-button')
+    .addEventListener('click', function () {
 
-// ❌ kalau token kosong
-if (!snapToken) {
-    payButton.disabled = true;
-    payButton.innerText = "Token tidak tersedia";
-}
+        snap.pay(
+            '{{ $payment->snap_token }}',
+            {
 
-payButton.addEventListener('click', function(){
+                onSuccess: function(result) {
 
-    if (!snapToken) return;
+                    Swal.fire({
 
-    // 🔒 disable button + loading
-    payButton.disabled = true;
-    payButton.innerHTML = `
-        <span class="animate-pulse">
-            Memproses Pembayaran...
-        </span>
-    `;
+                        icon: 'success',
 
-    snap.pay(snapToken, {
+                        title: 'Pembayaran Berhasil',
 
-        // ✅ SUCCESS
-        onSuccess: function(result){
+                        text: 'Pembayaran periode sewa berhasil diproses.',
 
-    console.log(result);
+                        confirmButtonColor: '#b45309'
 
+                    }).then(function () {
 
-    payButton.innerHTML =
-    "Pembayaran berhasil, memproses...";
+                        window.location.href =
+                            "{{ route('booking.riwayat') }}";
+
+                    });
+
+                },
 
 
-    setTimeout(()=>{
+                onPending: function(result) {
 
-        window.location.href =
-        "{{ route('booking.riwayat') }}";
+                    Swal.fire({
 
-    },2000);
+                        icon: 'info',
+
+                        title: 'Menunggu Pembayaran',
+
+                        text: 'Silakan selesaikan pembayaran sesuai instruksi yang diberikan.',
+
+                        confirmButtonColor: '#b45309'
+
+                    });
+
+                },
 
 
-},
+                onError: function(result) {
 
-        // ⏳ PENDING
-        onPending: function(result){
+                    Swal.fire({
 
-            console.log('PENDING:', result);
+                        icon: 'error',
 
-            window.location.href =
-                "{{ route('booking.riwayat') }}?pending=1";
-        },
+                        title: 'Pembayaran Gagal',
 
-        // ❌ ERROR
-        onError: function(result){
+                        text: 'Pembayaran tidak dapat diproses. Silakan coba kembali.',
 
-            console.error('ERROR:', result);
+                        confirmButtonColor: '#b45309'
 
-            window.location.href =
-                "{{ route('booking.riwayat') }}?error=1";
-        },
+                    });
 
-        // ❌ USER CLOSE
-        onClose: function(){
+                },
 
-            console.log('USER CLOSED');
 
-            // balikin button
-            payButton.disabled = false;
-            payButton.innerText = 'Bayar Sekarang';
-        }
+                onClose: function() {
+
+                    Swal.fire({
+
+                        icon: 'info',
+
+                        title: 'Pembayaran Belum Selesai',
+
+                        text: 'Anda menutup halaman pembayaran sebelum transaksi selesai.',
+
+                        confirmButtonColor: '#b45309'
+
+                    });
+
+                }
+
+            }
+        );
 
     });
-
-});
 
 </script>
 

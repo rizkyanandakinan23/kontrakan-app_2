@@ -34,6 +34,10 @@
                 default:
                     $url = $notif->data['url'] ?? null;
                     break;
+
+                case 'Peringatan Pembayaran':
+                    $url = route('booking.riwayat');
+                    break;
             }
         @endphp
 

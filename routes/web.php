@@ -119,7 +119,6 @@ Route::middleware('auth')->group(function(){
 Route::post('/payment/callback', [PaymentController::class, 'callback'])
     ->name('payment.callback');
 
-
 // ==========================
 // USER PAYMENT
 // ==========================
@@ -129,15 +128,20 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('id')
         ->name('payment.create');
 
+    Route::get(
+        '/payment/{booking}/next-period',
+        [PaymentController::class, 'createNextPeriod']
+    )
+        ->whereNumber('booking')
+        ->name('payment.next-period');
+
     Route::get('/payment/success/{id}', [PaymentController::class, 'success'])
         ->whereNumber('id')
         ->name('payment.success');
 
-     // LIHAT BUKTI PEMBAYARAN / INVOICE
     Route::get('/payment/invoice/{id}', [PaymentController::class, 'invoice'])
         ->whereNumber('id')
         ->name('payment.invoice');
-
 });
 
 /*
@@ -219,12 +223,6 @@ Route::middleware(['auth', 'is_admin'])
 
         Route::get('/booking', [AdminController::class, 'bookingIndex'])
             ->name('booking.index');
-
-        Route::patch('/booking/{id}/approve', [AdminController::class, 'approveBooking'])
-            ->name('booking.approve');
-
-        Route::patch('/booking/{id}/reject', [AdminController::class, 'rejectBooking'])
-            ->name('booking.reject');
 
         Route::delete('/booking/{id}', [AdminController::class, 'deleteBooking'])
             ->name('booking.delete');
