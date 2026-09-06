@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" pages="2">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="class diagram 1">
-    <mxGraphModel dx="1570" dy="713" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="594" dy="270" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -80,7 +80,7 @@
         <mxCell id="qFh0dNfcqnpYiV7QSkdw-38" parent="qFh0dNfcqnpYiV7QSkdw-22" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ kontrakan() : BelongsTo" vertex="1">
           <mxGeometry height="26" width="200" y="270" as="geometry" />
         </mxCell>
-        <mxCell id="qFh0dNfcqnpYiV7QSkdw-39" parent="qFh0dNfcqnpYiV7QSkdw-22" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ payment() : HasMany" vertex="1">
+        <mxCell id="qFh0dNfcqnpYiV7QSkdw-39" parent="qFh0dNfcqnpYiV7QSkdw-22" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ payments() : HasMany" vertex="1">
           <mxGeometry height="26" width="200" y="296" as="geometry" />
         </mxCell>
         <mxCell id="qFh0dNfcqnpYiV7QSkdw-49" parent="WIyWlLk6GJQsqaUBKTNV-1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" value="Payment" vertex="1">
@@ -135,7 +135,7 @@
         <mxCell id="qFh0dNfcqnpYiV7QSkdw-77" parent="qFh0dNfcqnpYiV7QSkdw-70" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ messages() : HasMany" vertex="1">
           <mxGeometry height="26" width="180" y="78" as="geometry" />
         </mxCell>
-        <mxCell id="dxd-OLqLJ--M8ACBmgYH-11" parent="qFh0dNfcqnpYiV7QSkdw-70" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ kamar() : BelongTo" vertex="1">
+        <mxCell id="dxd-OLqLJ--M8ACBmgYH-11" parent="qFh0dNfcqnpYiV7QSkdw-70" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="+ kontrakan() : BelongTo" vertex="1">
           <mxGeometry height="26" width="180" y="104" as="geometry" />
         </mxCell>
         <mxCell id="qFh0dNfcqnpYiV7QSkdw-88" parent="WIyWlLk6GJQsqaUBKTNV-1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" value="Message" vertex="1">
