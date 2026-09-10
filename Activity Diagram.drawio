@@ -781,7 +781,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="R9PkLKih2qs2bhqzC6Gi" name="Booking Kontrakan">
-    <mxGraphModel dx="999" dy="454" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="956" dy="434" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -829,33 +829,24 @@
         <mxCell id="lbL_q07HXW8jVo4fkmoh-11" parent="lbL_q07HXW8jVo4fkmoh-4" style="rounded=1;whiteSpace=wrap;html=1;" value="memilih kontrakan" vertex="1">
           <mxGeometry height="50" width="121" x="60" y="303" as="geometry" />
         </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-12" parent="lbL_q07HXW8jVo4fkmoh-4" style="rounded=1;whiteSpace=wrap;html=1;" value="klik simpan" vertex="1">
+        <mxCell id="lbL_q07HXW8jVo4fkmoh-27" edge="1" parent="lbL_q07HXW8jVo4fkmoh-4" source="lbL_q07HXW8jVo4fkmoh-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120.5" y="463" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbL_q07HXW8jVo4fkmoh-12" parent="lbL_q07HXW8jVo4fkmoh-4" style="rounded=1;whiteSpace=wrap;html=1;" value="melihat detail kontrakan" vertex="1">
           <mxGeometry height="50" width="121" x="60" y="383" as="geometry" />
+        </mxCell>
+        <mxCell id="lbL_q07HXW8jVo4fkmoh-28" parent="lbL_q07HXW8jVo4fkmoh-4" style="rounded=1;whiteSpace=wrap;html=1;" value="mengisi form booking (durasi sewa, upload foto identitas)" vertex="1">
+          <mxGeometry height="50" width="121" x="60" y="463" as="geometry" />
         </mxCell>
         <mxCell id="lbL_q07HXW8jVo4fkmoh-13" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" value="Sistem" vertex="1">
           <mxGeometry height="703" width="228" x="392" y="147" as="geometry" />
         </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-14" edge="1" parent="lbL_q07HXW8jVo4fkmoh-13" source="lbL_q07HXW8jVo4fkmoh-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="129" y="323" />
-            </Array>
-            <mxPoint x="-82" y="323" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-15" parent="lbL_q07HXW8jVo4fkmoh-13" style="rounded=1;whiteSpace=wrap;html=1;" value="Menampilkan form tambah kontrakan" vertex="1">
-          <mxGeometry height="50" width="121" x="68" y="223" as="geometry" />
-        </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-16" edge="1" parent="lbL_q07HXW8jVo4fkmoh-13" source="lbL_q07HXW8jVo4fkmoh-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="lbL_q07HXW8jVo4fkmoh-19">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-17" parent="lbL_q07HXW8jVo4fkmoh-13" style="rounded=1;whiteSpace=wrap;html=1;" value="menyimpan data kontrakan" vertex="1">
-          <mxGeometry height="50" width="121" x="68" y="383" as="geometry" />
-        </mxCell>
         <mxCell id="lbL_q07HXW8jVo4fkmoh-18" edge="1" parent="lbL_q07HXW8jVo4fkmoh-13" source="lbL_q07HXW8jVo4fkmoh-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="lbL_q07HXW8jVo4fkmoh-21">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-19" parent="lbL_q07HXW8jVo4fkmoh-13" style="rounded=1;whiteSpace=wrap;html=1;" value="menampilkan notifikasi berhasil" vertex="1">
+        <mxCell id="lbL_q07HXW8jVo4fkmoh-19" parent="lbL_q07HXW8jVo4fkmoh-13" style="rounded=1;whiteSpace=wrap;html=1;" value="melakukan validasi data booking" vertex="1">
           <mxGeometry height="50" width="121" x="68" y="463" as="geometry" />
         </mxCell>
         <mxCell id="lbL_q07HXW8jVo4fkmoh-20" edge="1" parent="lbL_q07HXW8jVo4fkmoh-13" source="lbL_q07HXW8jVo4fkmoh-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="lbL_q07HXW8jVo4fkmoh-22">
@@ -867,7 +858,7 @@
         <mxCell id="lbL_q07HXW8jVo4fkmoh-22" parent="lbL_q07HXW8jVo4fkmoh-13" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#B0B0B0;" value="" vertex="1">
           <mxGeometry height="30" width="30" x="113.5" y="633" as="geometry" />
         </mxCell>
-        <mxCell id="lbL_q07HXW8jVo4fkmoh-24" edge="1" parent="1" source="lbL_q07HXW8jVo4fkmoh-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="lbL_q07HXW8jVo4fkmoh-17">
+        <mxCell id="lbL_q07HXW8jVo4fkmoh-29" edge="1" parent="1" source="lbL_q07HXW8jVo4fkmoh-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="lbL_q07HXW8jVo4fkmoh-19">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
