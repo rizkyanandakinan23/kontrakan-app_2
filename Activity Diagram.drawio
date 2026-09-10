@@ -234,7 +234,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="LUsNz0xBC0ulkfFMeumR" name="activity Diagram Admin kelola Kamar">
-    <mxGraphModel dx="1099" dy="499" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="733" dy="333" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -713,8 +713,30 @@
             <mxPoint x="460.5" y="50" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-48" edge="1" parent="0Ln3RZ2pd_1Se0VaWyHu-5" source="0Ln3RZ2pd_1Se0VaWyHu-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="0Ln3RZ2pd_1Se0VaWyHu-47">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-50" connectable="0" parent="0Ln3RZ2pd_1Se0VaWyHu-48" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="edit" vertex="1">
+          <mxGeometry relative="1" x="-0.1881" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-49" edge="1" parent="0Ln3RZ2pd_1Se0VaWyHu-5" source="0Ln3RZ2pd_1Se0VaWyHu-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="0Ln3RZ2pd_1Se0VaWyHu-46">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-51" connectable="0" parent="0Ln3RZ2pd_1Se0VaWyHu-49" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="tambah" vertex="1">
+          <mxGeometry relative="1" x="-0.194" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-45" parent="0Ln3RZ2pd_1Se0VaWyHu-5" style="rounded=1;whiteSpace=wrap;html=1;" value="admin memilih tindakan" vertex="1">
           <mxGeometry height="50" width="115" x="60" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-46" parent="0Ln3RZ2pd_1Se0VaWyHu-5" style="rounded=1;whiteSpace=wrap;html=1;" value="admin memilih tindakan" vertex="1">
+          <mxGeometry height="50" width="115" x="60" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-47" parent="0Ln3RZ2pd_1Se0VaWyHu-5" style="rounded=1;whiteSpace=wrap;html=1;" value="admin memilih tindakan" vertex="1">
+          <mxGeometry height="50" width="115" x="280" y="360" as="geometry" />
         </mxCell>
         <mxCell id="0Ln3RZ2pd_1Se0VaWyHu-21" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" value="Sistem" vertex="1">
           <mxGeometry height="1261" width="200" x="1672" y="1157" as="geometry" />
