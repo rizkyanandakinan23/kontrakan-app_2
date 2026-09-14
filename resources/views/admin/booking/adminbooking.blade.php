@@ -434,35 +434,36 @@
                         </a>
 
 
-                        <!-- DELETE -->
+                       <!-- DELETE HANYA JIKA PEMBAYARAN GAGAL -->
 
-                        <form
-                            action="{{ route(
-                                'admin.booking.delete',
-                                $booking->id
-                            ) }}"
-
-                            method="POST">
-
-                            @csrf
-
-                            @method('DELETE')
-
-
-                            <button
-                                onclick="return confirm(
-                                    'Hapus booking ini?'
-                                )"
-
-                                class="bg-gray-600 hover:bg-gray-700
-                                text-white px-3 py-1
-                                rounded-lg text-xs">
-
-                                Delete
-
-                            </button>
-
-                        </form>
+                        @if($payments->contains('status', 'failed'))
+                        
+                            <form
+                                action="{{ route(
+                                    'admin.booking.delete',
+                                    $booking->id
+                                ) }}"
+                                method="POST">
+                        
+                                @csrf
+                                @method('DELETE')
+                        
+                                <button
+                                    type="submit"
+                                    onclick="return confirm(
+                                        'Hapus booking ini karena pembayaran gagal?'
+                                    )"
+                                    class="bg-red-600 hover:bg-red-700
+                                    text-white px-3 py-1
+                                    rounded-lg text-xs">
+                        
+                                    Delete
+                        
+                                </button>
+                        
+                            </form>
+                        
+                        @endif
 
                     </div>
 
@@ -492,6 +493,11 @@
 
     </table>
 
+</div>
+
+{{-- PAGINATION --}}
+<div class="p-6">
+    {{ $bookings->links() }}
 </div>
 
 </div>

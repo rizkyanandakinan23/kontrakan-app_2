@@ -142,17 +142,32 @@
                 <!-- ================================================= -->
                 <td class="p-4">
                     @if($booking->status === 'cancel')
+
                         <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm whitespace-nowrap">
                             Dibatalkan
                         </span>
+
+                    @elseif(
+                        $booking->status === 'paid' &&
+                        \Carbon\Carbon::today()->gte($tanggalSelesai)
+                    )
+
+                        <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm whitespace-nowrap">
+                            Selesai
+                        </span>
+
                     @elseif($booking->status === 'paid')
+
                         <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm whitespace-nowrap">
                             Aktif
                         </span>
+
                     @else
+
                         <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm whitespace-nowrap">
                             Menunggu Pembayaran
                         </span>
+
                     @endif
                 </td>
 
@@ -331,30 +346,40 @@
                 Semua periode lunas
             </span>
 
-        {{-- ========================================== --}}
-        {{-- PERIODE BERIKUTNYA --}}
-        {{-- ========================================== --}}
+{{-- ========================================== --}}
+{{-- PERIODE BERIKUTNYA --}}
+{{-- ========================================== --}}
+@else
+
+    <button
+        type="button"
+        onclick="openPaymentPopup(
+            {{ $booking->id }},
+            {{ $periodeBerikutnya }},
+            @js($booking->kamar->nama_kamar),
+            @js($paymentBerikutnya?->status)
+        )"
+        class="inline-block bg-amber-600 hover:bg-amber-700
+               text-white px-4 py-2 rounded-lg text-sm text-center"
+    >
+
+        @if($paymentBerikutnya && $paymentBerikutnya->status === 'pending')
+
+            Lanjut Bayar Periode {{ $periodeBerikutnya }}
+
+        @elseif($paymentBerikutnya && $paymentBerikutnya->status === 'failed')
+
+            Bayar Ulang Periode {{ $periodeBerikutnya }}
+
         @else
 
-            <a
-                href="{{ route(
-                    'payment.next-period',
-                    $booking->id
-                ) }}"
-                class="inline-block bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm text-center"
-            >
+            Bayar Periode {{ $periodeBerikutnya }}
 
-                @if($paymentBerikutnya && $paymentBerikutnya->status === 'pending')
-
-                    Lanjut Bayar Periode {{ $periodeBerikutnya }}
-
-                @else
-
-                    Bayar Periode {{ $periodeBerikutnya }}
-
-                @endif
-            </a>
         @endif
+
+    </button>
+
+@endif
 
         {{-- ========================================== --}}
         {{-- INVOICE PAYMENT TERAKHIR --}}
@@ -389,5 +414,176 @@
 </div>
 
 </div>
+
+<!-- PAYMENT POPUP -->
+
+<div
+    id="paymentPopup"
+    class="hidden fixed inset-0 bg-black/50
+           items-center justify-center z-50"
+>
+
+    <div class="bg-white rounded-3xl shadow-2xl
+                w-full max-w-md mx-4 p-6">
+
+        <div class="text-center">
+
+            <div class="text-4xl mb-3">
+                💳
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-800">
+                Lanjut Pembayaran
+            </h2>
+
+            <p class="text-gray-600 mt-2">
+                Anda akan melanjutkan pembayaran
+                periode berikutnya.
+            </p>
+
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4 mt-5">
+
+            <div class="text-sm text-gray-500">
+                Kontrakan
+            </div>
+
+            <div
+                id="popupKamar"
+                class="font-semibold text-gray-800"
+            >
+            </div>
+
+            <div class="text-sm text-gray-500 mt-3">
+                Periode
+            </div>
+
+            <div
+                id="popupPeriode"
+                class="font-semibold text-gray-800"
+            >
+            </div>
+
+            <div class="text-sm text-gray-500 mt-3">
+                Status Pembayaran
+            </div>
+
+            <div
+                id="popupStatus"
+                class="font-semibold"
+            >
+            </div>
+
+        </div>
+
+        <div class="flex gap-3 mt-5">
+
+            <button
+                type="button"
+                onclick="closePaymentPopup()"
+                class="flex-1 bg-gray-200 hover:bg-gray-300
+                       text-gray-700 px-4 py-2
+                       rounded-lg"
+            >
+                Batal
+            </button>
+
+            <a
+                id="popupPaymentButton"
+                href="#"
+                class="flex-1 bg-amber-600 hover:bg-amber-700
+                       text-white px-4 py-2
+                       rounded-lg text-center"
+            >
+                Lanjut Bayar
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function openPaymentPopup(
+    bookingId,
+    periode,
+    kamar,
+    status
+) {
+
+    document.getElementById('popupKamar').textContent = kamar;
+
+    document.getElementById('popupPeriode').textContent =
+        'Periode ke-' + periode;
+
+    let statusElement =
+        document.getElementById('popupStatus');
+
+    if (status === 'pending') {
+
+        statusElement.textContent =
+            'Pembayaran belum selesai';
+
+        statusElement.className =
+            'font-semibold text-yellow-600';
+
+    } else if (status === 'failed') {
+
+        statusElement.textContent =
+            'Pembayaran gagal';
+
+        statusElement.className =
+            'font-semibold text-red-600';
+
+    } else {
+
+        statusElement.textContent =
+            'Belum dibayar';
+
+        statusElement.className =
+            'font-semibold text-gray-700';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | URL PAYMENT
+    |--------------------------------------------------------------------------
+    */
+
+    let url =
+        "{{ url('/payment') }}/"
+        + bookingId
+        + "/next-period";
+
+    document.getElementById('popupPaymentButton')
+        .href = url;
+
+    /*
+    |--------------------------------------------------------------------------
+    | TAMPILKAN POPUP
+    |--------------------------------------------------------------------------
+    */
+
+    const popup =
+        document.getElementById('paymentPopup');
+
+    popup.classList.remove('hidden');
+    popup.classList.add('flex');
+}
+
+
+function closePaymentPopup() {
+
+    const popup =
+        document.getElementById('paymentPopup');
+
+    popup.classList.remove('flex');
+    popup.classList.add('hidden');
+}
+
+</script>
 
 @endsection

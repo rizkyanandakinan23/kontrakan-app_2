@@ -157,6 +157,11 @@ Lihat
 
         </div>
 
+        {{-- PAGINATION --}}
+        <div class="p-6">
+            {{ $users->links() }}
+        </div>
+
     </div>
 
 </div>

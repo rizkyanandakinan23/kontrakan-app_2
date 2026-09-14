@@ -6,11 +6,6 @@
 
 <div class="max-w-5xl mx-auto">
 
-    <!-- BACK -->
-    <div class="mb-6">
-        @include('components.back')
-    </div>
-
     <!-- HEADER -->
     <div class="text-center mb-10">
 
@@ -19,14 +14,16 @@
         </h1>
 
         <p class="text-white/90 text-lg">
-            Seluruh pengguna wajib membaca dan memahami aturan penggunaan sistem
+            Seluruh penyewa wajib membaca dan memahami aturan penggunaan sistem
             serta ketentuan penyewaan kontrakan.
         </p>
 
     </div>
 
+
     <!-- CONTENT -->
     <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-10 space-y-8">
+
 
         <!-- 1 -->
         <div>
@@ -36,15 +33,15 @@
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Sistem Kontrakan RDP dibuat untuk membantu proses pencarian,
-                pemesanan, dan pengelolaan kamar kontrakan secara online.
-                Pengguna wajib menggunakan sistem dengan bijak dan tidak
-                menyalahgunakan layanan yang tersedia.
-
+                Sistem Kontrakan RDP merupakan sistem informasi berbasis web
+                yang digunakan untuk membantu proses pencarian kontrakan,
+                booking, pembayaran, serta pengelolaan data penyewaan.
+                Penyewa wajib menggunakan sistem sesuai dengan ketentuan
+                yang berlaku.
             </p>
 
         </div>
+
 
         <!-- 2 -->
         <div>
@@ -54,14 +51,14 @@
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pengguna wajib menggunakan data asli dan valid saat melakukan
-                pendaftaran akun. Sistem berhak menangguhkan atau menghapus akun
-                yang menggunakan identitas palsu atau mencurigakan.
-
+                Penyewa wajib memberikan data yang benar dan sesuai ketika
+                melakukan registrasi akun. Data akun digunakan untuk
+                keperluan proses booking, pembayaran, dan pengelolaan
+                penyewaan.
             </p>
 
         </div>
+
 
         <!-- 3 -->
         <div>
@@ -71,30 +68,30 @@
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pengguna bertanggung jawab penuh terhadap keamanan akun,
-                termasuk menjaga kerahasiaan password dan aktivitas akun masing-masing.
-
+                Penyewa bertanggung jawab menjaga keamanan akun,
+                termasuk menjaga kerahasiaan password dan tidak
+                memberikan informasi akun kepada pihak lain.
             </p>
 
         </div>
+
 
         <!-- 4 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                4. Pemesanan Kamar
+                4. Booking Kontrakan
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Booking kamar hanya dapat dilakukan apabila kamar masih tersedia.
-                Status kamar dapat berubah sewaktu-waktu berdasarkan aktivitas pengguna lain
-                maupun keputusan admin.
-
+                Booking hanya dapat dilakukan terhadap kontrakan yang
+                tersedia. Penyewa wajib mengisi data booking dengan benar
+                dan menentukan durasi serta tanggal penyewaan sesuai
+                kebutuhan.
             </p>
 
         </div>
+
 
         <!-- 5 -->
         <div>
@@ -104,246 +101,310 @@
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pembayaran dilakukan melalui metode yang disediakan oleh pengelola.
-                Pengguna wajib mengupload bukti pembayaran yang jelas dan valid
-                untuk proses verifikasi.
-
+                Pembayaran dilakukan secara online melalui layanan
+                pembayaran <strong>Midtrans</strong> dengan metode pembayaran
+                yang tersedia pada halaman pembayaran.
             </p>
 
         </div>
+
 
         <!-- 6 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                6. Verifikasi Pembayaran
+                6. Pembayaran Per Periode
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Admin memiliki hak untuk menerima atau menolak pembayaran apabila
-                ditemukan bukti pembayaran yang tidak valid, buram, atau mencurigakan.
-
+                Pembayaran penyewaan dilakukan berdasarkan periode pembayaran
+                sesuai dengan durasi booking. Setiap periode memiliki
+                status pembayaran masing-masing dan harus diselesaikan
+                sesuai dengan ketentuan penyewaan.
             </p>
 
         </div>
+
 
         <!-- 7 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                7. Pembatalan Booking
+                7. Status Pembayaran
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pembatalan booking dapat dilakukan sesuai kebijakan pengelola.
-                Pengguna dianjurkan menghubungi admin apabila ingin melakukan pembatalan.
-
+                Sistem menggunakan beberapa status pembayaran, yaitu:
             </p>
 
-        </div>
+            <ul class="list-disc pl-6 text-gray-600 leading-relaxed space-y-2 mt-3">
 
-        <!-- 8 -->
-        <div>
+                <li>
+                    <strong>Pending</strong> — pembayaran belum selesai
+                    atau masih menunggu proses pembayaran.
+                </li>
 
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                8. Review dan Komentar
-            </h2>
+                <li>
+                    <strong>Success</strong> — pembayaran berhasil dan
+                    periode tersebut telah dinyatakan lunas.
+                </li>
 
-            <p class="text-gray-600 leading-relaxed">
-
-                Pengguna diperbolehkan memberikan review terhadap kamar,
-                namun wajib menggunakan bahasa yang sopan dan tidak mengandung
-                unsur penghinaan, SARA, spam, atau informasi palsu.
-
-            </p>
-
-        </div>
-
-        <!-- 9 -->
-        <div>
-
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                9. Pelaporan Review
-            </h2>
-
-            <p class="text-gray-600 leading-relaxed">
-
-                Pengguna dapat melaporkan review yang dianggap tidak pantas.
-                Admin berhak melakukan moderasi, penghapusan, atau tindakan lainnya
-                terhadap review yang melanggar aturan.
-
-            </p>
-
-        </div>
-
-        <!-- 10 -->
-        <div>
-
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                10. Larangan Pengguna
-            </h2>
-
-            <ul class="list-disc pl-6 text-gray-600 leading-relaxed space-y-2">
-
-                <li>Menggunakan identitas palsu</li>
-
-                <li>Melakukan spam atau aktivitas mencurigakan</li>
-
-                <li>Menyebarkan konten negatif atau ilegal</li>
-
-                <li>Melakukan booking palsu</li>
-
-                <li>Merusak sistem atau mencoba membobol keamanan website</li>
-
-                <li>Mengupload file berbahaya</li>
-
-                <li>Menyalahgunakan fitur review dan report</li>
+                <li>
+                    <strong>Failed</strong> — pembayaran gagal dan
+                    penyewa dapat melakukan pembayaran kembali.
+                </li>
 
             </ul>
 
         </div>
 
+
+        <!-- 8 -->
+        <div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">
+                8. Pembayaran Periode Berikutnya
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed">
+                Setelah periode sebelumnya berhasil dibayar, penyewa dapat
+                melanjutkan pembayaran periode berikutnya melalui menu
+                <strong>Riwayat Booking</strong>. Penyewa wajib menyelesaikan
+                pembayaran setiap periode sesuai dengan durasi penyewaan.
+            </p>
+
+        </div>
+
+
+        <!-- 9 -->
+        <div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">
+                9. Pembatalan Booking
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed">
+                Booking yang belum memiliki pembayaran berhasil dapat
+                dibatalkan melalui fitur pembatalan booking yang tersedia
+                pada sistem. Setelah dibatalkan, status booking akan
+                berubah menjadi <strong>Dibatalkan</strong>.
+            </p>
+
+        </div>
+
+
+        <!-- 10 -->
+        <div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">
+                10. Riwayat Booking
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed">
+                Penyewa dapat melihat informasi booking, periode pembayaran,
+                status pembayaran, tanggal penyewaan, serta informasi
+                terkait lainnya melalui menu <strong>Riwayat Booking</strong>.
+            </p>
+
+        </div>
+
+
         <!-- 11 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                11. Penghapusan Akun
+                11. Bukti Pembayaran
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Admin berhak menonaktifkan atau menghapus akun pengguna
-                yang terbukti melanggar aturan sistem atau melakukan aktivitas merugikan.
-
+                Setelah pembayaran berhasil, penyewa dapat melihat dan
+                mencetak bukti pembayaran melalui fitur
+                <strong>Bukti Pembayaran</strong> yang tersedia pada
+                riwayat booking.
             </p>
 
         </div>
+
 
         <!-- 12 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                12. Ketersediaan Sistem
+                12. Status Kontrakan
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pengelola berusaha menjaga sistem tetap aktif dan stabil,
-                namun tidak menjamin layanan bebas gangguan setiap saat.
-
+                Informasi ketersediaan kontrakan dapat berubah sesuai
+                dengan kondisi penyewaan. Kontrakan yang sedang ditempati
+                tidak dapat dibooking oleh penyewa lain.
             </p>
 
         </div>
+
 
         <!-- 13 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                13. Perubahan Data
+                13. Review dan Rating
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Admin dapat memperbarui data kamar, harga, fasilitas,
-                maupun informasi lainnya sesuai kondisi terbaru.
-
+                Penyewa dapat memberikan review dan rating terhadap
+                kontrakan sesuai dengan pengalaman penyewaan.
+                Review harus ditulis secara sopan dan tidak mengandung
+                penghinaan, spam, maupun informasi yang menyesatkan.
             </p>
 
         </div>
+
 
         <!-- 14 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                14. Privasi Pengguna
+                14. Pelaporan Review
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Data pengguna digunakan hanya untuk keperluan operasional sistem
-                dan tidak diperjualbelikan kepada pihak lain tanpa izin pengguna.
-
+                Penyewa dapat menggunakan fitur <strong>Report</strong>
+                untuk melaporkan review yang dianggap tidak sesuai.
+                Admin dapat melakukan pemeriksaan dan tindakan moderasi
+                terhadap laporan tersebut.
             </p>
 
         </div>
+
 
         <!-- 15 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                15. Hak Pengelola
+                15. Chat dengan Admin
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Pengelola memiliki hak untuk melakukan maintenance,
-                pembaruan fitur, moderasi konten, dan tindakan lain
-                demi menjaga kualitas layanan sistem.
-
+                Fitur chat dapat digunakan oleh penyewa untuk
+                berkomunikasi dengan admin mengenai informasi atau
+                kebutuhan yang berkaitan dengan penyewaan kontrakan.
             </p>
 
         </div>
+
 
         <!-- 16 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                16. Tanggung Jawab Pengguna
+                16. Larangan Penggunaan Sistem
             </h2>
 
-            <p class="text-gray-600 leading-relaxed">
+            <ul class="list-disc pl-6 text-gray-600 leading-relaxed space-y-2">
 
-                Pengguna bertanggung jawab atas seluruh aktivitas yang dilakukan
-                menggunakan akun masing-masing di dalam sistem.
+                <li>
+                    Menggunakan data atau identitas palsu.
+                </li>
 
-            </p>
+                <li>
+                    Melakukan booking secara tidak bertanggung jawab.
+                </li>
+
+                <li>
+                    Menyalahgunakan fitur review dan report.
+                </li>
+
+                <li>
+                    Menggunakan sistem untuk aktivitas yang merugikan
+                    pengguna lain atau pengelola.
+                </li>
+
+                <li>
+                    Mencoba mengakses atau mengubah data yang bukan
+                    merupakan hak aksesnya.
+                </li>
+
+                <li>
+                    Mengganggu atau mencoba merusak sistem.
+                </li>
+
+            </ul>
 
         </div>
+
 
         <!-- 17 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                17. Penyalahgunaan Sistem
+                17. Pengelolaan Data
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Segala bentuk penyalahgunaan sistem dapat dikenakan pembatasan akses,
-                penghapusan akun, atau tindakan lain sesuai kebijakan pengelola.
-
+                Data yang diberikan oleh penyewa digunakan untuk mendukung
+                proses registrasi, booking, pembayaran, penyewaan, dan
+                pengelolaan layanan dalam sistem.
             </p>
 
         </div>
+
 
         <!-- 18 -->
         <div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-3">
-                18. Perubahan Ketentuan
+                18. Hak Pengelola
             </h2>
 
             <p class="text-gray-600 leading-relaxed">
-
-                Ketentuan dan aturan ini dapat diperbarui sewaktu-waktu
-                sesuai kebutuhan sistem tanpa pemberitahuan sebelumnya.
-
+                Admin atau pengelola memiliki hak untuk mengelola data
+                kontrakan, booking, pembayaran, penyewa, review, dan
+                komunikasi dalam sistem sesuai dengan hak akses yang
+                diberikan.
             </p>
 
         </div>
+
+
+        <!-- 19 -->
+        <div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">
+                19. Ketersediaan Sistem
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed">
+                Pengelola berupaya menjaga sistem agar dapat digunakan
+                dengan baik. Namun, gangguan teknis, maintenance,
+                maupun kendala layanan pihak ketiga dapat menyebabkan
+                sistem tidak dapat digunakan sementara.
+            </p>
+
+        </div>
+
+
+        <!-- 20 -->
+        <div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">
+                20. Perubahan Ketentuan
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed">
+                Ketentuan dan aturan penggunaan sistem dapat diperbarui
+                sesuai dengan kebutuhan pengelolaan sistem dan perubahan
+                layanan.
+            </p>
+
+        </div>
+
 
         <!-- FOOTER -->
         <div class="pt-6 border-t border-gray-200">
 
             <p class="text-sm text-gray-500 text-center">
-
-                Dengan menggunakan sistem Kontrakan RDP,
-                pengguna dianggap telah membaca, memahami,
-                dan menyetujui seluruh ketentuan yang berlaku.
-
+                Dengan menggunakan sistem Kontrakan RDP, penyewa dianggap
+                telah membaca dan memahami ketentuan penggunaan sistem
+                serta aturan penyewaan yang berlaku.
             </p>
 
         </div>

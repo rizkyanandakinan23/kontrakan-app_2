@@ -483,6 +483,11 @@
 
         </div>
 
+        {{-- PAGINATION --}}
+        <div class="p-6">
+            {{ $detailPembayaran->links() }}
+        </div>
+
     </div>
 
 </div>

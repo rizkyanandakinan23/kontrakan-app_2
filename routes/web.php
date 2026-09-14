@@ -82,27 +82,22 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
 
-    Route::get('/booking/{id}',
-        [BookingController::class,'index']
+    Route::get(
+        '/booking/{id}',
+        [BookingController::class, 'index']
     )->name('booking.index');
 
-
-    Route::post('/booking/{id}',
-        [BookingController::class,'store']
+    Route::post(
+        '/booking/{id}',
+        [BookingController::class, 'store']
     )->name('booking.store');
 
-
-    Route::get('/riwayat-booking',
-        [BookingController::class,'riwayat']
+    Route::get(
+        '/riwayat-booking',
+        [BookingController::class, 'riwayat']
     )->name('booking.riwayat');
-
-
-    Route::patch('/booking/{id}/cancel',
-        [BookingController::class,'cancel']
-    )->name('booking.cancel');
-
 
 });
 
@@ -215,6 +210,9 @@ Route::middleware(['auth', 'is_admin'])
         Route::post('/kamar/set-semua-kosong', [AdminController::class, 'setSemuaKosong'])
     ->name('kamar.setSemuaKosong');
 
+    Route::post('/kamar/{id}/set-tersedia', [AdminController::class, 'setTersedia'])
+    ->name('kamar.setTersedia');
+
         /*
         |--------------------------------------------------------------------------
         | BOOKING MANAGEMENT
@@ -229,6 +227,7 @@ Route::middleware(['auth', 'is_admin'])
 
             Route::get('/booking/{id}', [AdminController::class, 'bookingDetail'])
     ->name('booking.detail');
+
   
 /*
 |--------------------------------------------------------------------------

@@ -16,12 +16,12 @@
 <body class="font-['Plus Jakarta Sans'] bg-cream text-gray-800 antialiased">
     
 <!-- ================= BACKGROUND ================= -->
-<div class="fixed inset-0 -z-10">
+{{-- <div class="fixed inset-0 -z-10">
     <img
         src="{{ asset('images/Halaman Utama.png') }}"
         class="w-full h-full object-cover"
         alt="Background">
-</div>
+</div> --}}
 
 <div class="fixed inset-0 bg-black/30 backdrop-blur-[2px] -z-10"></div>
 

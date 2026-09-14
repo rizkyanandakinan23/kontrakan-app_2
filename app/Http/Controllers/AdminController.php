@@ -169,7 +169,7 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
     // ======================
 
     $users = User::latest()
-        ->take(10)
+        ->take(8)
         ->get();
 
     // ======================
@@ -261,7 +261,7 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
         'payments'
     ])
         ->latest()
-        ->take(6)
+        ->take(5)
         ->get();
 
     return view('admin.adminpanel', compact(
@@ -288,7 +288,10 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
     */
     public function userIndex()
     {
-        $users = User::latest()->get();
+        $users = User::where('is_admin', 0)
+        ->with('bookings')
+        ->latest()
+        ->paginate(10);
         return view('admin.user.adminuser', compact('users'));
     }
 
@@ -319,12 +322,12 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
     public function bookingIndex()
 {
     $bookings = Booking::with([
-        'user',
-        'kamar',
-        'payments'
+    'user',
+    'kamar',
+    'payments'
     ])
-        ->latest()
-        ->get();
+    ->latest()
+    ->paginate(10);
 
     return view(
         'admin.booking.adminbooking',
@@ -336,14 +339,24 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
 {
     $booking = Booking::findOrFail($id);
 
-    // Tandai booking sebagai dibatalkan / diakhiri
-    $booking->update([
-        'status' => 'cancel',
-    ]);
+    // Cek apakah masih ada pembayaran yang berhasil
+    $adaPembayaranBerhasil = $booking->payments()
+        ->where('status', 'success')
+        ->exists();
+
+    if ($adaPembayaranBerhasil) {
+        return back()->with(
+            'error',
+            'Booking tidak dapat dihapus karena sudah memiliki pembayaran berhasil.'
+        );
+    }
+
+    // Jika tidak ada pembayaran berhasil, booking boleh dihapus
+    $booking->delete();
 
     return back()->with(
         'success',
-        'Booking berhasil diakhiri. Kontrakan tidak lagi terikat pada booking ini.'
+        'Booking berhasil dihapus.'
     );
 }
 
@@ -365,9 +378,18 @@ private function tentukanStatusKamar($kamar, Carbon $tanggal)
 
 public function kamarIndex(Request $request)
 {
+    // =====================================================
+    // TANGGAL UNTUK FILTER STATUS
+    // =====================================================
+
     $tanggal = Carbon::parse(
         $request->tanggal ?? now()->toDateString()
     )->startOfDay();
+
+
+    // =====================================================
+    // AMBIL DATA KONTRAKAN
+    // =====================================================
 
     $kamars = Kamar::with([
         'bookings.user',
@@ -376,37 +398,42 @@ public function kamarIndex(Request $request)
     ->orderBy('nama_kamar', 'asc')
     ->get();
 
+
+    // =====================================================
+    // TANGGAL REALTIME UNTUK VALIDASI PENGHAPUSAN
+    // =====================================================
+
+    $tanggalSekarang = Carbon::today();
+
+
     foreach ($kamars as $kamar) {
 
-        // ==========================================
-        // DEFAULT
-        // ==========================================
+        // =================================================
+        // DEFAULT STATUS UNTUK TANGGAL FILTER
+        // =================================================
 
         $status = 'tersedia';
         $bookingAktif = null;
         $bookingTerdekat = null;
 
 
-        // ==========================================
-        // CEK SEMUA BOOKING
-        // ==========================================
+        // =================================================
+        // CEK STATUS BERDASARKAN TANGGAL FILTER
+        // =================================================
 
         foreach ($kamar->bookings as $booking) {
 
-            // ==========================================
-            // SKIP BOOKING YANG DIBATALKAN
-            // ==========================================
-
+            // Booking yang dibatalkan tidak dihitung
             if ($booking->status === 'cancel') {
                 continue;
             }
 
 
-            // ==========================================
+            // ---------------------------------------------
             // TANGGAL BOOKING
-            // ==========================================
+            // ---------------------------------------------
 
-           $mulai = Carbon::parse(
+            $mulai = Carbon::parse(
                 $booking->tanggal_masuk
             )->startOfDay();
 
@@ -416,20 +443,25 @@ public function kamarIndex(Request $request)
 
             $batasTerisi = $selesai->copy()->addDays(2);
 
+
+            // ---------------------------------------------
+            // SEDANG DITEMPATI
+            // ---------------------------------------------
+
             if (
                 $tanggal->greaterThanOrEqualTo($mulai) &&
                 $tanggal->lessThan($batasTerisi)
             ) {
                 $status = 'terisi';
                 $bookingAktif = $booking;
+
                 break;
             }
 
 
-            // ==========================================
-            // PRIORITAS 2
+            // ---------------------------------------------
             // AKAN DIGUNAKAN DALAM 30 HARI
-            // ==========================================
+            // ---------------------------------------------
 
             if ($tanggal->lt($mulai)) {
 
@@ -451,7 +483,6 @@ public function kamarIndex(Request $request)
                             )
                         )
                     ) {
-
                         $bookingTerdekat = $booking;
                     }
                 }
@@ -459,32 +490,92 @@ public function kamarIndex(Request $request)
         }
 
 
-        // ==========================================
+        // =================================================
         // BOOKING TERDEKAT
-        // ==========================================
+        // =================================================
 
         if (
             $status !== 'terisi' &&
             $bookingTerdekat !== null
         ) {
-
             $status = 'booking';
             $bookingAktif = $bookingTerdekat;
         }
 
 
-        // ==========================================
-        // SIMPAN HASIL
-        // ==========================================
+        // =================================================
+        // SIMPAN STATUS UNTUK TAMPILAN
+        // =================================================
 
         $kamar->status_booking = $status;
         $kamar->booking_aktif = $bookingAktif;
+
+
+        // =================================================
+        // CEK BOLEH / TIDAK DIHAPUS
+        // BERDASARKAN TANGGAL REALTIME
+        // =================================================
+
+        $kamar->tidak_bisa_dihapus = false;
+        $kamar->alasan_tidak_bisa_dihapus = null;
+
+
+        foreach ($kamar->bookings as $booking) {
+
+            // Booking yang dibatalkan tidak mengunci kamar
+            if ($booking->status === 'cancel') {
+                continue;
+            }
+
+
+            $mulai = Carbon::parse(
+                $booking->tanggal_masuk
+            )->startOfDay();
+
+            $selesai = Carbon::parse(
+                $booking->tanggal_selesai
+            )->startOfDay();
+
+            $batasTerisi = $selesai->copy()->addDays(2);
+
+
+            // ---------------------------------------------
+            // MASIH DITEMPATI
+            // ---------------------------------------------
+
+            if (
+                $tanggalSekarang->greaterThanOrEqualTo($mulai) &&
+                $tanggalSekarang->lessThan($batasTerisi)
+            ) {
+                $kamar->tidak_bisa_dihapus = true;
+
+                $kamar->alasan_tidak_bisa_dihapus =
+                    'Tidak dapat dihapus karena kontrakan sedang ditempati.';
+
+                break;
+            }
+
+
+            // ---------------------------------------------
+            // SUDAH DIBOOKING UNTUK MASA MENDATANG
+            // ---------------------------------------------
+
+            if ($tanggalSekarang->lt($mulai)) {
+
+                $kamar->tidak_bisa_dihapus = true;
+
+                $kamar->alasan_tidak_bisa_dihapus =
+                    'Tidak dapat dihapus karena kontrakan sedang dibooking.';
+
+                break;
+            }
+        }
     }
 
 
-    // ==========================================
+    // =====================================================
     // RETURN VIEW
-    // ==========================================
+    // =====================================================
 
     return view(
         'admin.kamar.index',
@@ -494,6 +585,7 @@ public function kamarIndex(Request $request)
         )
     );
 }
+
     public function kamarCreate()
     {
         return view('admin.kamar.create');
@@ -610,26 +702,114 @@ public function kamarIndex(Request $request)
         ->with('success', 'Kamar berhasil diupdate');
 }
 
-    public function kamarDestroy(Kamar $kamar)
+public function setTersedia($id)
 {
-    // Simpan nama kamar sebelum data dihapus
-    $namaKamar = $kamar->nama_kamar;
+    $booking = Booking::findOrFail($id);
 
-    // Hapus semua foto kamar
-    if (is_array($kamar->foto_kamar)) {
-        foreach ($kamar->foto_kamar as $foto) {
-            Storage::disk('public')->delete($foto);
-        }
+    // Pastikan booking belum dibatalkan
+    if ($booking->status === 'cancel') {
+        return back()->with(
+            'error',
+            'Booking sudah dibatalkan.'
+        );
     }
 
-    // Hapus data kamar
-    $kamar->delete();
+    // Batalkan booking agar kamar tidak lagi dianggap terisi
+    $booking->update([
+        'status' => 'cancel',
+    ]);
+
+    // Batalkan pembayaran yang masih pending
+    $booking->payments()
+        ->where('status', 'pending')
+        ->update([
+            'status' => 'failed',
+            'transaction_status' => 'cancel',
+        ]);
 
     return back()->with(
         'success',
-        'Kamar berhasil dihapus'
+        'Kontrakan berhasil diset tersedia kembali.'
     );
 }
+
+    public function kamarDestroy(Kamar $kamar)
+{
+    // =====================================================
+    // TANGGAL REALTIME
+    // =====================================================
+
+    $tanggalSekarang = Carbon::today();
+
+
+    // =====================================================
+    // CEK BOOKING YANG MASIH MENGUNCI KONTRAKAN
+    // =====================================================
+
+    foreach ($kamar->bookings as $booking) {
+
+        // Booking yang dibatalkan tidak dihitung
+        if ($booking->status === 'cancel') {
+            continue;
+        }
+
+
+        $mulai = Carbon::parse(
+            $booking->tanggal_masuk
+        )->startOfDay();
+
+        $selesai = Carbon::parse(
+            $booking->tanggal_selesai
+        )->startOfDay();
+
+        $batasTerisi = $selesai->copy()->addDays(2);
+
+
+        // =================================================
+        // MASIH DITEMPATI
+        // =================================================
+
+        if (
+            $tanggalSekarang->greaterThanOrEqualTo($mulai) &&
+            $tanggalSekarang->lessThan($batasTerisi)
+        ) {
+            return back()->with(
+                'error',
+                'Kontrakan tidak dapat dihapus karena sedang ditempati oleh penyewa.'
+            );
+        }
+
+
+        // =================================================
+        // SUDAH DIBOOKING UNTUK MASA MENDATANG
+        // =================================================
+
+        if ($tanggalSekarang->lt($mulai)) {
+            return back()->with(
+                'error',
+                'Kontrakan tidak dapat dihapus karena sedang dibooking.'
+            );
+        }
+    }
+
+
+    // =====================================================
+    // SOFT DELETE
+    // =====================================================
+
+    $kamar->delete();
+
+
+    // =====================================================
+    // HASIL
+    // =====================================================
+
+    return back()->with(
+        'success',
+        'Kontrakan berhasil dihapus. Histori booking dan pembayaran tetap tersimpan.'
+    );
+}
+
     /*
     |--------------------------------------------------------------------------
     | REVIEW MANAGEMENT
@@ -792,12 +972,12 @@ public function pembayaranIndex()
     // ==========================
 
     $detailPembayaran = Payment::with([
-        'booking.user',
-        'booking.kamar'
+    'booking.kamar',
+    'booking.user'
     ])
-        ->where('transaction_status', 'settlement')
-        ->orderBy('paid_at', 'desc')
-        ->get();
+    ->where('transaction_status', 'settlement')
+    ->latest('paid_at')
+    ->paginate(10);
 
     // ==========================
     // RATA-RATA PENDAPATAN

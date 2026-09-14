@@ -106,47 +106,54 @@ public function getKeteranganAttribute()
     // =========================================================
     // PEMBAYARAN MASIH MENUNGGU
     // =========================================================
-    if ($this->payment->status === 'pending') {
+if ($this->payment->status === 'pending') {
 
-        // -----------------------------------------------------
-        // CEK TANGGAL JATUH TEMPO
-        // -----------------------------------------------------
-        if ($this->payment->tanggal_jatuh_tempo) {
-            $hariIni = Carbon::today();
-            $tanggalJatuhTempo = Carbon::parse(
-                $this->payment->tanggal_jatuh_tempo
-            )->startOfDay();
-
-            // -------------------------------------------------
-            // PEMBAYARAN SUDAH JATUH TEMPO
-            // -------------------------------------------------
-
-            if ($hariIni->gte($tanggalJatuhTempo)) {
-                $hariTerlambat = $tanggalJatuhTempo->diffInDays(
-                    $hariIni,
-                    false
-                );
-
-                return [
-                    'text' => 'Pembayaran periode ke-' .
-                        $this->payment->periode_ke .
-                        ' telah jatuh tempo' .
-                        ($hariTerlambat > 0
-                            ? " dan terlambat {$hariTerlambat} hari."
-                            : '.'),
-                    'color' => 'red'
-                ];
-            }
-        }
-
-        // -----------------------------------------------------
-        // BELUM JATUH TEMPO
-        // -----------------------------------------------------
+    // =====================================================
+    // PERIODE 1
+    // Tetap dianggap menunggu pembayaran
+    // =====================================================
+    if ($this->payment->periode_ke == 1) {
         return [
             'text' => 'Menunggu pembayaran.',
             'color' => 'yellow'
         ];
     }
+
+    // =====================================================
+    // PERIODE BERIKUTNYA
+    // =====================================================
+    if ($this->payment->tanggal_jatuh_tempo) {
+
+        $hariIni = Carbon::today();
+
+        $tanggalJatuhTempo = Carbon::parse(
+            $this->payment->tanggal_jatuh_tempo
+        )->startOfDay();
+
+        if ($hariIni->gte($tanggalJatuhTempo)) {
+
+            $hariTerlambat = $tanggalJatuhTempo->diffInDays(
+                $hariIni,
+                false
+            );
+
+            return [
+                'text' => 'Pembayaran periode ke-' .
+                    $this->payment->periode_ke .
+                    ' telah jatuh tempo' .
+                    ($hariTerlambat > 0
+                        ? " dan terlambat {$hariTerlambat} hari."
+                        : '.'),
+                'color' => 'red'
+            ];
+        }
+    }
+
+    return [
+        'text' => 'Menunggu pembayaran.',
+        'color' => 'yellow'
+    ];
+}
 
     // =========================================================
     // PEMBAYARAN BERHASIL
@@ -181,9 +188,9 @@ public function getKeteranganAttribute()
         // -----------------------------------------------------
         // MASA SEWA SUDAH SELESAI
         // -----------------------------------------------------
-        if ($hariIni->gt($tanggalSelesai)) {
+        if ($hariIni->gte($tanggalSelesai)) {
             return [
-                'text' => 'Masa sewa selesai.',
+                'text' => 'Masa sewa berakhir.',
                 'color' => 'gray'
             ];
         }

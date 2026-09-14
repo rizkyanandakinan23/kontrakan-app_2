@@ -185,39 +185,76 @@ public function createNextPeriod($bookingId)
     }
 
     // ==========================================
-    // CEK PEMBAYARAN TERAKHIR
+    // CEK BOOKING DIBATALKAN
     // ==========================================
+    if ($booking->status === 'cancel') {
+        return back()->with(
+            'error',
+            'Booking ini telah dibatalkan.'
+        );
+    }
+
+    // ==========================================
+    // CEK PAYMENT PENDING
+    // ==========================================
+    // Jika user sebelumnya sudah masuk halaman
+    // pembayaran lalu menekan tombol Back,
+    // gunakan payment yang masih pending.
+    // Jangan membuat transaksi baru.
+    // ==========================================
+
+    $paymentPending = $booking->payments()
+        ->where('status', 'pending')
+        ->orderByDesc('periode_ke')
+        ->first();
+
+    if ($paymentPending) {
+        return view('booking.midtrans', [
+            'booking' => $booking,
+            'payment' => $paymentPending,
+            'kamar' => $booking->kamar
+        ]);
+    }
+
+    // ==========================================
+    // CARI PAYMENT TERAKHIR YANG SUDAH LUNAS
+    // ==========================================
+
     $lastPayment = $booking->payments()
         ->where('status', 'success')
         ->orderByDesc('periode_ke')
         ->first();
 
+    // ==========================================
+    // BELUM ADA PEMBAYARAN BERHASIL
+    // ==========================================
+
     if (!$lastPayment) {
-        return back()->with(
-            'error',
-            'Pembayaran periode pertama belum berhasil.'
-        );
+        return redirect()
+            ->route('payment.create', $booking->id);
     }
 
     // ==========================================
     // PERIODE BERIKUTNYA
     // ==========================================
+
     $periodeKe = $lastPayment->periode_ke + 1;
 
     // ==========================================
-    // CEK APAKAH MASIH ADA PERIODE
+    // CEK BATAS DURASI
     // ==========================================
+
     if ($periodeKe > $booking->durasi) {
         return back()->with(
-            'error',
+            'success',
             'Seluruh periode sewa sudah dibayar.'
         );
     }
 
+    // ==========================================
+    // CEK APAKAH PAYMENT PERIODE TERSEBUT SUDAH ADA
+    // ==========================================
 
-    // ==========================================
-    // CEK APAKAH PERIODE SUDAH ADA
-    // ==========================================
     $existingPayment = $booking->payments()
         ->where('periode_ke', $periodeKe)
         ->latest()
@@ -232,8 +269,9 @@ public function createNextPeriod($bookingId)
     }
 
     // ==========================================
-    // TANGGAL PERIODE
+    // LANJUTKAN KODE LAMA
     // ==========================================
+
     $tanggalMulai = Carbon::parse(
         $booking->tanggal_masuk
     )->addMonthsNoOverflow($periodeKe - 1);
@@ -242,34 +280,19 @@ public function createNextPeriod($bookingId)
         ->copy()
         ->addMonthNoOverflow();
 
-    // ==========================================
-    // JATUH TEMPO
-    // ==========================================
     $tanggalJatuhTempo = $tanggalMulai->copy();
 
-    // ==========================================
-    // BATAS PEMBAYARAN H+10
-    // ==========================================
     $batasPembayaran = $tanggalJatuhTempo
         ->copy()
         ->addDays(10);
 
-    // ==========================================
-    // NOMINAL
-    // ==========================================
     $jumlah = $booking->kamar->harga;
 
-    // ==========================================
-    // KONFIGURASI MIDTRANS
-    // ==========================================
     Config::$serverKey = config('midtrans.server_key');
     Config::$isProduction = config('midtrans.is_production');
     Config::$isSanitized = true;
     Config::$is3ds = true;
 
-    // ==========================================
-    // ORDER ID
-    // ==========================================
     $orderId = 'PAY-' .
         $booking->id .
         '-P' .
@@ -277,9 +300,6 @@ public function createNextPeriod($bookingId)
         '-' .
         time();
 
-    // ==========================================
-    // SNAP TOKEN
-    // ==========================================
     $snapToken = Snap::getSnapToken([
         'transaction_details' => [
             'order_id' => $orderId,
@@ -291,9 +311,6 @@ public function createNextPeriod($bookingId)
         ]
     ]);
 
-    // ==========================================
-    // SIMPAN PAYMENT
-    // ==========================================
     $payment = Payment::create([
         'booking_id' => $booking->id,
         'periode_ke' => $periodeKe,
@@ -309,9 +326,6 @@ public function createNextPeriod($bookingId)
         'transaction_status' => 'pending'
     ]);
 
-    // ==========================================
-    // TAMPILKAN HALAMAN PEMBAYARAN
-    // ==========================================
     return view('booking.midtrans', [
         'booking' => $booking,
         'payment' => $payment,
