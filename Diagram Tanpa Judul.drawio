@@ -180,7 +180,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="aBjSm7OwetwFOMmLdlro" name="Use Case Diagram (revisi)">
-    <mxGraphModel dx="1465" dy="665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2442" dy="1109" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -311,7 +311,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-83" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=90;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="" vertex="1">
-          <mxGeometry height="560" width="860" x="1230.01" y="360" as="geometry" />
+          <mxGeometry height="560" width="770" x="1275.01" y="315" as="geometry" />
         </mxCell>
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-84" edge="1" parent="1" source="v9mVmAqd3LDeVG_FVsu6-92" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" target="v9mVmAqd3LDeVG_FVsu6-99">
           <mxGeometry relative="1" as="geometry" />
@@ -334,10 +334,7 @@
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-90" edge="1" parent="1" source="v9mVmAqd3LDeVG_FVsu6-92" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="v9mVmAqd3LDeVG_FVsu6-101">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-91" edge="1" parent="1" source="v9mVmAqd3LDeVG_FVsu6-92" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" target="v9mVmAqd3LDeVG_FVsu6-102">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-92" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Penyewa" vertex="1">
+        <mxCell id="v9mVmAqd3LDeVG_FVsu6-92" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Admin" vertex="1">
           <mxGeometry height="80" width="40" x="1260" y="609.9850000000001" as="geometry" />
         </mxCell>
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-93" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Login" vertex="1">
@@ -352,7 +349,7 @@
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-96" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Mengelola Pengguna" vertex="1">
           <mxGeometry height="60" width="130" x="1750" y="639.9949999999999" as="geometry" />
         </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-97" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="mengelola profile" vertex="1">
+        <mxCell id="v9mVmAqd3LDeVG_FVsu6-97" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Mengelola Review" vertex="1">
           <mxGeometry height="60" width="130" x="1720" y="709.9949999999999" as="geometry" />
         </mxCell>
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-98" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Mengelola Booking" vertex="1">
@@ -361,14 +358,11 @@
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-99" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Melihat Dahboard / Statistik" vertex="1">
           <mxGeometry height="60" width="130" x="1550" y="349.9949999999999" as="geometry" />
         </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-100" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="memberikan review" vertex="1">
+        <mxCell id="v9mVmAqd3LDeVG_FVsu6-100" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="memberikan Chat" vertex="1">
           <mxGeometry height="60" width="130" x="1660" y="789.9900000000002" as="geometry" />
         </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-101" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="mengirim chat" vertex="1">
+        <mxCell id="v9mVmAqd3LDeVG_FVsu6-101" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="Logout" vertex="1">
           <mxGeometry height="60" width="130" x="1620" y="858.1100000000001" as="geometry" />
-        </mxCell>
-        <mxCell id="v9mVmAqd3LDeVG_FVsu6-102" parent="1" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="logout" vertex="1">
-          <mxGeometry height="60" width="130" x="1540" y="929.9900000000002" as="geometry" />
         </mxCell>
         <mxCell id="v9mVmAqd3LDeVG_FVsu6-103" edge="1" parent="1" source="v9mVmAqd3LDeVG_FVsu6-92" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.083;entryY=0.746;entryDx=0;entryDy=0;entryPerimeter=0;" target="v9mVmAqd3LDeVG_FVsu6-93">
           <mxGeometry relative="1" as="geometry" />
