@@ -384,7 +384,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="asozRqEN_dkV7zt46xXX" name="Halaman-2">
-    <mxGraphModel dx="628" dy="285" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="440" dy="200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -478,7 +478,7 @@
         <mxCell id="uZAld5SC1EXb8-QrvFaz-104" parent="uZAld5SC1EXb8-QrvFaz-26" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="- booking_id : integer&#xa;" vertex="1">
           <mxGeometry height="26" width="218" y="52" as="geometry" />
         </mxCell>
-        <mxCell id="uZAld5SC1EXb8-QrvFaz-105" parent="uZAld5SC1EXb8-QrvFaz-26" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="- order_id : integer&#xa;" vertex="1">
+        <mxCell id="uZAld5SC1EXb8-QrvFaz-105" parent="uZAld5SC1EXb8-QrvFaz-26" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="- order_id : string&#xa;" vertex="1">
           <mxGeometry height="26" width="218" y="78" as="geometry" />
         </mxCell>
         <mxCell id="uZAld5SC1EXb8-QrvFaz-29" parent="uZAld5SC1EXb8-QrvFaz-26" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" value="- snap_token : string" vertex="1">
